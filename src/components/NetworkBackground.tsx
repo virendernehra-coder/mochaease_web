@@ -22,15 +22,16 @@ export default function NetworkBackground() {
 
     if (init) {
         return (
-            <div className="absolute inset-0 -z-10 bg-black">
+            <div className="absolute inset-0 z-0 overflow-hidden">
                 <Particles
                     id="tsparticles"
                     particlesLoaded={particlesLoaded}
                     className="w-full h-full"
                     options={{
+                        fullScreen: { enable: false },
                         background: {
                             color: {
-                                value: "#000000",
+                                value: "transparent",
                             },
                         },
                         fpsLimit: 60,
@@ -109,5 +110,5 @@ export default function NetworkBackground() {
             </div>
         );
     }
-    return <div className="absolute inset-0 -z-10 bg-black" />;
+    return <div className="absolute inset-0 z-0 pointer-events-none" />;
 }
