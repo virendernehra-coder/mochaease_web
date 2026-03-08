@@ -1,0 +1,322 @@
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/about/page.tsx
+   3:8    warning  'Link' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   4:29   warning  'useTransform' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   5:10   warning  'ArrowRight' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+  11:13   warning  'scrollY' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  14:9    error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/about/page.tsx:14:9
+  12 |
+  13 |     useEffect(() => {
+> 14 |         setMounted(true);
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  15 |     }, []);
+  16 |
+  17 |     if (!mounted) return null;  react-hooks/set-state-in-effect
+  70:215  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/blog/[slug]/page.tsx
+  5:38  warning  'ArrowRight' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/blog/page.tsx
+  23:23  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/blog/page.tsx:23:23
+  21 |     const [subscribed, setSubscribed] = useState(false);
+  22 |
+> 23 |     useEffect(() => { setMounted(true); }, []);
+     |                       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  24 |     if (!mounted) return null;
+  25 |
+  26 |     const fadeUpVariant: Variants = {  react-hooks/set-state-in-effect
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/calculator/page.tsx
+    7:37  warning  'PieChartIcon' is defined but never used                         @typescript-eslint/no-unused-vars
+    8:5   warning  'TrendingUp' is defined but never used                           @typescript-eslint/no-unused-vars
+    8:23  warning  'Store' is defined but never used                                @typescript-eslint/no-unused-vars
+    8:30  warning  'AlertTriangle' is defined but never used                        @typescript-eslint/no-unused-vars
+    9:5   warning  'CheckCircle2' is defined but never used                         @typescript-eslint/no-unused-vars
+    9:19  warning  'Cpu' is defined but never used                                  @typescript-eslint/no-unused-vars
+    9:24  warning  'Clock' is defined but never used                                @typescript-eslint/no-unused-vars
+  158:57  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  340:80  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/contact/page.tsx
+   6:8    warning  'Link' is defined but never used                                 @typescript-eslint/no-unused-vars
+  32:24   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  80:164  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/cookie-policy/page.tsx
+  36:64   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  36:74   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  36:77   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  36:80   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  36:83   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  36:86   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  36:92   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  36:96   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  41:315  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/demo/page.tsx
+  54:90   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  77:109  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/experience/page.tsx
+  22:9    error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/experience/page.tsx:22:9
+  20 |
+  21 |     useEffect(() => {
+> 22 |         setMounted(true);
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  23 |     }, []);
+  24 |
+  25 |     // Listen to query param changes if user navigates while already on the page via Navbar                                                                                        react-hooks/set-state-in-effect
+  29:17   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/experience/page.tsx:29:17
+  27 |         if (mounted) {
+  28 |             if (isValidQueryRole) {
+> 29 |                 setRole(queryRole);
+     |                 ^^^^^^^ Avoid calling setState() directly within an effect
+  30 |             } else if (!queryRole) {
+  31 |                 // If the URL has no role parameter, reset the state
+  32 |                 setRole(null);  react-hooks/set-state-in-effect
+  64:81   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react/no-unescaped-entities
+  64:171  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/guides/page.tsx
+    8:34  warning  'ChevronRight' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  126:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/guides/page.tsx:126:9
+  124 |     useEffect(() => {
+  125 |         // Only run on client side
+> 126 |         setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+      |         ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  127 |         const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+  128 |         window.addEventListener('resize', handleResize);
+  129 |         return () => window.removeEventListener('resize', handleResize);  react-hooks/set-state-in-effect
+  172:49  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/login/page.tsx
+  104:28   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  119:25   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  119:170  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/pricing/page.tsx
+  15:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/pricing/page.tsx:15:9
+  13 |
+  14 |     useEffect(() => {
+> 15 |         setMounted(true);
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  16 |     }, []);
+  17 |
+  18 |     const getPricing = (tier: 'lite' | 'core' | 'max') => {  react-hooks/set-state-in-effect
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/privacy/page.tsx
+  47:55   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  47:58   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  47:61   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  47:65   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  47:71   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  47:74   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  47:411  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  47:420  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/shipping-and-delivery/page.tsx
+  73:95   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  73:105  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/support/page.tsx
+    4:51  warning  'CheckCircle2' is defined but never used                         @typescript-eslint/no-unused-vars
+    4:73  warning  'Zap' is defined but never used                                  @typescript-eslint/no-unused-vars
+  138:61  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  138:77  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  176:84  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  176:98  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/terms/page.tsx
+   47:201  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   47:209  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   47:262  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   47:268  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   64:95   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   64:111  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   81:132  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   81:142  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   81:145  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   81:159  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   81:161  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   81:167  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  103:210  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/use-cases/cafe/page.tsx
+    4:18   warning  'Store' is defined but never used                                @typescript-eslint/no-unused-vars
+    4:118  warning  'AlertOctagon' is defined but never used                         @typescript-eslint/no-unused-vars
+   52:89   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  134:71   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  278:21   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  278:69   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  278:201  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/use-cases/enterprise/page.tsx
+  278:21   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  278:234  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/use-cases/fashion/page.tsx
+    5:91   warning  'TrendingUp' is defined but never used                           @typescript-eslint/no-unused-vars
+   45:89   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   46:148  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   57:116  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  186:88   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  269:21   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  269:179  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  269:191  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/app/use-cases/qsr/page.tsx
+    4:10   warning  'Coffee' is defined but never used                               @typescript-eslint/no-unused-vars
+    4:140  warning  'Wallet' is defined but never used                               @typescript-eslint/no-unused-vars
+   52:89   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  278:21   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  278:179  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/components/Chatbot.tsx
+  5:19  warning  'Sparkles' is defined but never used  @typescript-eslint/no-unused-vars
+  5:29  warning  'Users' is defined but never used     @typescript-eslint/no-unused-vars
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/components/ExperienceJourney.tsx
+    6:5    warning  'Coffee' is defined but never used          @typescript-eslint/no-unused-vars
+    6:13   warning  'ShoppingBag' is defined but never used     @typescript-eslint/no-unused-vars
+    6:26   warning  'Zap' is defined but never used             @typescript-eslint/no-unused-vars
+    6:31   warning  'Building' is defined but never used        @typescript-eslint/no-unused-vars
+    6:41   warning  'Scissors' is defined but never used        @typescript-eslint/no-unused-vars
+    6:51   warning  'Dumbbell' is defined but never used        @typescript-eslint/no-unused-vars
+    6:61   warning  'Map' is defined but never used             @typescript-eslint/no-unused-vars
+    6:73   warning  'Receipt' is defined but never used         @typescript-eslint/no-unused-vars
+    6:82   warning  'Box' is defined but never used             @typescript-eslint/no-unused-vars
+    6:87   warning  'LineChart' is defined but never used       @typescript-eslint/no-unused-vars
+    7:5    warning  'HeartHandshake' is defined but never used  @typescript-eslint/no-unused-vars
+    7:21   warning  'Truck' is defined but never used           @typescript-eslint/no-unused-vars
+    7:28   warning  'Smartphone' is defined but never used      @typescript-eslint/no-unused-vars
+    7:40   warning  'QrCode' is defined but never used          @typescript-eslint/no-unused-vars
+    7:48   warning  'ChefHat' is defined but never used         @typescript-eslint/no-unused-vars
+    7:57   warning  'Globe' is defined but never used           @typescript-eslint/no-unused-vars
+    7:64   warning  'Megaphone' is defined but never used       @typescript-eslint/no-unused-vars
+    7:75   warning  'ShieldAlert' is defined but never used     @typescript-eslint/no-unused-vars
+    7:88   warning  'Monitor' is defined but never used         @typescript-eslint/no-unused-vars
+    7:97   warning  'Star' is defined but never used            @typescript-eslint/no-unused-vars
+    7:103  warning  'Factory' is defined but never used         @typescript-eslint/no-unused-vars
+    7:112  warning  'FileText' is defined but never used        @typescript-eslint/no-unused-vars
+    7:130  warning  'LinkIcon' is defined but never used        @typescript-eslint/no-unused-vars
+    7:140  warning  'CalendarDays' is defined but never used    @typescript-eslint/no-unused-vars
+    7:154  warning  'UserCircle' is defined but never used      @typescript-eslint/no-unused-vars
+    7:166  warning  'Ticket' is defined but never used          @typescript-eslint/no-unused-vars
+    7:174  warning  'Lock' is defined but never used            @typescript-eslint/no-unused-vars
+    7:180  warning  'Target' is defined but never used          @typescript-eslint/no-unused-vars
+    7:188  warning  'Trophy' is defined but never used          @typescript-eslint/no-unused-vars
+   11:10   warning  'ROLES' is defined but never used           @typescript-eslint/no-unused-vars
+  129:61   error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  157:29   warning  'index' is defined but never used           @typescript-eslint/no-unused-vars
+  157:60   error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/components/HomeComponent.tsx
+    3:28   warning  'Rocket' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+    3:36   warning  'Shield' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+    3:44   warning  'Settings2' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+    3:55   warning  'FileText' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+    3:77   warning  'Coffee' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+    5:8    warning  'Image' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+    6:18   warning  'AnimatePresence' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   11:41   warning  'country' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   15:5    error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/components/HomeComponent.tsx:15:5
+  13 |
+  14 |   useEffect(() => {
+> 15 |     setMounted(true);
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  16 |   }, []);
+  17 |
+  18 |   if (!mounted) return null;  react-hooks/set-state-in-effect
+   51:24   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react/no-unescaped-entities
+   76:86   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react/no-unescaped-entities
+  175:169  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react/no-unescaped-entities
+  232:186  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react/no-unescaped-entities
+  234:80   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react/no-unescaped-entities
+  234:93   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react/no-unescaped-entities
+  250:136  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react/no-unescaped-entities
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/components/Navbar.tsx
+   86:9  error    Error: Cannot reassign variable after render completes
+
+Reassigning `businessTypesTimeout` after render has completed can cause inconsistent behavior on subsequent renders. Consider using state instead.
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/components/Navbar.tsx:86:9
+  84 |     };
+  85 |     const handleBusinessTypesLeave = () => {
+> 86 |         businessTypesTimeout = setTimeout(() => setIsBusinessTypesOpen(false), 200); // 200ms delay
+     |         ^^^^^^^^^^^^^^^^^^^^ Cannot reassign `businessTypesTimeout` after render completes
+  87 |     };
+  88 |
+  89 |     const handleResourcesEnter = () => {  react-hooks/immutability
+  109:8  warning  React Hook useEffect has missing dependencies: 'businessTypesTimeout' and 'resourcesTimeout'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/components/NetworkBackground.tsx
+  24:36  warning  'container' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/data/blog.ts
+  1:10  warning  'Metadata' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/virendernehra/.gemini/antigravity/scratch/mochaease_web/src/data/experience.ts
+   2:51  warning  'Dumbbell' is defined but never used      @typescript-eslint/no-unused-vars
+   2:98  warning  'ChevronDown' is defined but never used   @typescript-eslint/no-unused-vars
+  29:99  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 151 problems (84 errors, 67 warnings)
+

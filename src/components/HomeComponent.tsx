@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, Clock, Rocket, Shield, Settings2, FileText, Smartphone, Coffee, Store, Users, Zap, CheckCircle2, Globe } from 'lucide-react';
+import { BarChart3, Clock, Rocket, Shield, Settings2, FileText, Smartphone, Coffee, Store, Users, Zap, CheckCircle2, Globe, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,33 +9,11 @@ import NetworkBackground from '@/components/NetworkBackground';
 import Chatbot from '@/components/Chatbot';
 
 export default function HomeComponent({ country = 'us' }: { country?: string }) {
-  const getPricing = (tier: 'lite' | 'core' | 'max') => {
-    const prices = {
-      in: { lite: 1399, core: 1999, max: 2999, symbol: '₹' },
-      id: { lite: 259000, core: 359000, max: 559000, symbol: 'Rp ' },
-      us: { lite: 19, core: 29, max: 49, symbol: '$' }
-    };
-    const code = (country.toLowerCase() === 'in' || country.toLowerCase() === 'id') ? country.toLowerCase() as 'in' | 'id' : 'us';
-    const plan = prices[code];
-    const amount = isAnnual ? Math.floor(plan[tier] * 0.8) : plan[tier];
-    return { symbol: plan.symbol, amount: amount.toLocaleString('en-US') };
-  };
   const [mounted, setMounted] = useState(false);
-  const [isAnnual, setIsAnnual] = useState(false); // Make toggle state
-
-  // Calculator State
-  const [dailyOrders, setDailyOrders] = useState(150);
-  const [avgOrderValue, setAvgOrderValue] = useState(450);
-  const [leakagePercent, setLeakagePercent] = useState(8);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // Derived Calculator Values
-  const monthlyRevenue = dailyOrders * avgOrderValue * 30;
-  const monthlyLeakage = (monthlyRevenue * leakagePercent) / 100;
-  const potentialSavings = monthlyLeakage * 0.75; // assume saving 75% of leakage
 
   if (!mounted) return null;
 
@@ -74,9 +52,9 @@ export default function HomeComponent({ country = 'us' }: { country?: string }) 
           </motion.p>
 
           <motion.div variants={fadeUpVariant} className="flex flex-col sm:flex-row items-center gap-6 w-full sm:w-auto">
-            <button className="w-full sm:w-auto px-8 py-4 rounded-full bg-[#1A1A1A] border border-white/10 text-white font-bold hover:bg-white/10 hover:border-white/30 transition-all flex items-center justify-center gap-2 group">
+            <Link href="/experience" className="w-full sm:w-auto px-8 py-4 rounded-full bg-[#1A1A1A] border border-white/10 text-white font-bold hover:bg-white/10 hover:border-white/30 transition-all flex items-center justify-center gap-2 group">
               Find Your Business Type
-            </button>
+            </Link>
             <Link href="/demo" className="w-full sm:w-auto px-10 py-4 rounded-full bg-[#C3EB7A] text-black font-black hover:brightness-110 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_30px_rgba(195,235,122,0.4)] flex items-center justify-center gap-2 group">
               Book a Free Demo
               <span className="group-hover:translate-x-2 transition-transform">→</span>
@@ -180,84 +158,26 @@ export default function HomeComponent({ country = 'us' }: { country?: string }) 
         </motion.div>
       </section>
 
-      {/* Interactive Savings Calculator */}
-      <section className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12 md:py-20 z-10 relative">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant} className="bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] rounded-[40px] border border-white/10 p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.8)] relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#4A90E2]/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-[#4A90E2]/10 transition-colors duration-700" />
+      {/* Revenue Leakage Prompt CTA */}
+      <section className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-12 md:py-20 z-10 relative">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant} className="bg-gradient-to-br from-red-500/10 via-[#1A1A1A] to-[#0A0A0A] rounded-[40px] border border-red-500/20 p-8 md:p-14 text-center shadow-[0_20px_60px_rgba(0,0,0,0.8)] relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-red-500/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-red-500/10 transition-colors duration-700" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#4A90E2]/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
-          <div className="text-center mb-12 relative z-10">
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-4">Calculate Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C3EB7A] to-[#4A90E2]">Lost Revenue.</span></h2>
-            <p className="text-white/60 text-lg">See how much profit you could recover monthly with MochaEase.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
-            {/* Sliders */}
-            <div className="space-y-10 flex flex-col justify-center">
-              {/* Daily Orders */}
-              <div>
-                <div className="flex justify-between text-white mb-3">
-                  <span className="font-bold">Daily Orders</span>
-                  <span className="text-[#C3EB7A] font-bold bg-[#C3EB7A]/10 px-3 py-1 rounded-full text-sm">{dailyOrders}</span>
-                </div>
-                <input
-                  type="range" min="10" max="1000" step="10"
-                  value={dailyOrders} onChange={(e) => setDailyOrders(Number(e.target.value))}
-                  className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#C3EB7A] hover:accent-white transition-all shadow-[0_0_10px_rgba(195,235,122,0.2)]"
-                />
-              </div>
-
-              {/* Avg Order Value */}
-              <div>
-                <div className="flex justify-between text-white mb-3">
-                  <span className="font-bold">Avg. Order Value</span>
-                  <span className="text-[#C3EB7A] font-bold bg-[#C3EB7A]/10 px-3 py-1 rounded-full text-sm">₹{avgOrderValue}</span>
-                </div>
-                <input
-                  type="range" min="50" max="2000" step="10"
-                  value={avgOrderValue} onChange={(e) => setAvgOrderValue(Number(e.target.value))}
-                  className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#C3EB7A] hover:accent-white transition-all shadow-[0_0_10px_rgba(195,235,122,0.2)]"
-                />
-              </div>
-
-              {/* Leakage/Waste % */}
-              <div>
-                <div className="flex justify-between text-white mb-3">
-                  <span className="font-bold">Estimated Leakage & Waste</span>
-                  <span className="text-red-400 font-bold bg-red-500/10 px-3 py-1 rounded-full text-sm">{leakagePercent}%</span>
-                </div>
-                <input
-                  type="range" min="1" max="25" step="1"
-                  value={leakagePercent} onChange={(e) => setLeakagePercent(Number(e.target.value))}
-                  className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-red-500 hover:accent-white transition-all shadow-[0_0_10px_rgba(239,68,68,0.2)]"
-                />
-              </div>
+          <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
+            <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center border border-red-500/20 mb-6 group-hover:scale-110 transition-transform duration-500">
+              <span className="text-3xl">💸</span>
             </div>
-
-            {/* Results */}
-            <div className="bg-gradient-to-b from-white/5 to-transparent rounded-3xl p-8 border border-white/10 flex flex-col justify-center relative overflow-hidden group/card hover:border-white/20 transition-colors duration-500">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#C3EB7A]/0 to-[#C3EB7A]/5 group-hover/card:to-[#C3EB7A]/10 transition-colors duration-700" />
-
-              <div className="mb-6 relative z-10">
-                <p className="text-white/50 text-xs font-bold uppercase tracking-wider mb-2">Revenue Lost Monthly</p>
-                <div className="text-4xl font-black text-red-400 transition-all duration-300">₹{monthlyLeakage.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
-              </div>
-
-              <div className="w-full h-[1px] bg-white/10 mb-6 relative z-10" />
-
-              <div className="relative z-10">
-                <p className="text-white/50 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#C3EB7A]" />
-                  Potential Savings
-                </p>
-                <div className="text-5xl font-black text-[#C3EB7A] drop-shadow-[0_0_20px_rgba(195,235,122,0.2)] transition-all duration-300">
-                  ₹{potentialSavings.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                </div>
-              </div>
-
-              <Link href="/register" className="w-full mt-8 py-4 rounded-xl bg-[#C3EB7A] text-black font-black hover:brightness-110 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_20px_rgba(195,235,122,0.3)] text-center relative z-10 block">
-                Stop the Leakage
-              </Link>
-            </div>
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
+              You are likely <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-500">losing money</span> every single day.
+            </h2>
+            <p className="text-white/70 text-lg md:text-xl font-medium mb-10 leading-relaxed">
+              Without an intelligent system tracking your inventory, staff, and sales, hidden leakages quietly eat away at your profit margins. Do you know how much you're actually losing?
+            </p>
+            <Link href="/calculator" className="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-white text-black font-black hover:bg-white/90 active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] text-lg group/btn hover:shadow-[0_0_50px_rgba(255,255,255,0.4)]">
+              Find Out How Much
+              <ChevronRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </motion.div>
       </section>
@@ -351,91 +271,24 @@ export default function HomeComponent({ country = 'us' }: { country?: string }) 
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-20 md:py-32 z-10 relative">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant} className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-4">Affordable Plans for <span className="text-[#4A90E2]">Every Scale</span>.</h2>
+      {/* Pricing CTA Section */}
+      <section id="pricing" className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-20 md:py-32 z-10 relative">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant} className="bg-gradient-to-br from-[#C3EB7A]/10 via-[#1A1A1A] to-[#0A0A0A] rounded-[40px] border border-[#C3EB7A]/20 p-8 md:p-14 text-center shadow-[0_20px_60px_rgba(0,0,0,0.8)] relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#C3EB7A]/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-[#C3EB7A]/10 transition-colors duration-700" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#4A90E2]/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
-          {/* Working Toggle Switch */}
-          <div className="inline-flex items-center bg-white/5 p-1.5 rounded-full border border-white/10 mt-8 relative">
-            <button
-              onClick={() => setIsAnnual(false)}
-              className={`relative z-10 px-8 py-3 rounded-full font-bold text-sm transition-colors duration-300 ${!isAnnual ? "text-black" : "text-white/70 hover:text-white"}`}
-            >
-              {`Monthly`}
-              {!isAnnual && (
-                <motion.div
-                  layoutId="pricing-pill"
-                  className="absolute inset-0 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.3)] z-[-1]"
-                  transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                />
-              )}
-            </button>
-            <button
-              onClick={() => setIsAnnual(true)}
-              className={`relative z-10 px-8 py-3 rounded-full font-bold text-sm transition-colors duration-300 ${isAnnual ? "text-black" : "text-white/70 hover:text-white"}`}
-            >
-              {`Annually (Save 20%)`}
-              {isAnnual && (
-                <motion.div
-                  layoutId="pricing-pill"
-                  className="absolute inset-0 bg-[#C3EB7A] rounded-full shadow-[0_0_15px_rgba(195,235,122,0.4)] z-[-1]"
-                  transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                />
-              )}
-            </button>
+          <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
+              Affordable Plans for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C3EB7A] to-[#4A90E2]">Every Scale</span>.
+            </h2>
+            <p className="text-white/70 text-lg md:text-xl font-medium mb-10 leading-relaxed">
+              Start free, scale infinitely. View our transparent pricing tiers and extensive feature comparison matrix to see exactly how MochaEase pays for itself.
+            </p>
+            <Link href="/pricing" className="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-[#C3EB7A] text-black font-black hover:brightness-110 active:scale-95 transition-all shadow-[0_0_40px_rgba(195,235,122,0.4)] text-lg group/btn">
+              View Pricing & Features
+              <ChevronRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+            </Link>
           </div>
-        </motion.div>
-
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Lite */}
-          <motion.div variants={fadeUpVariant} className="p-8 rounded-3xl bg-white/5 border border-white/10 flex flex-col">
-            <h3 className="text-2xl font-bold text-white mb-2">MochaLite</h3>
-            <p className="text-white/50 text-sm mb-6">For single-location cafes & shops.</p>
-            <div className="flex items-baseline mb-8">
-              <span className="text-4xl font-black text-white">{getPricing('lite').symbol}{getPricing('lite').amount}</span>
-              <span className="text-lg text-white/50 font-normal ml-1">/mo</span>
-            </div>
-            <ul className="space-y-4 mb-8 flex-1">
-              {['SmartPOS System', 'Basic Inventory', 'Digital Menu (QR)', '1 Register Account'].map((feat, i) => (
-                <li key={i} className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-gray-400 shrink-0" /><span className="text-white/80">{feat}</span></li>
-              ))}
-            </ul>
-            <button className="w-full py-3 rounded-xl border border-white/20 text-white font-bold hover:bg-white/10 transition-colors">Start Free Trial</button>
-          </motion.div>
-
-          {/* Core */}
-          <motion.div variants={fadeUpVariant} className="p-8 rounded-3xl bg-gradient-to-b from-[#C3EB7A]/10 to-[#1A1A1A] border border-[#C3EB7A]/30 flex flex-col relative transform md:-translate-y-4 shadow-[0_0_40px_rgba(195,235,122,0.1)]">
-            <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-[#C3EB7A] text-black text-xs font-bold px-3 py-1 rounded-full">MOST POPULAR</div>
-            <h3 className="text-2xl font-bold text-white mb-2">MochaCore</h3>
-            <p className="text-white/50 text-sm mb-6">For growing multi-outlet brands.</p>
-            <div className="flex items-baseline mb-8">
-              <span className="text-4xl font-black text-[#C3EB7A]">{getPricing('core').symbol}{getPricing('core').amount}</span>
-              <span className="text-lg text-white/50 font-normal ml-1">/mo</span>
-            </div>
-            <ul className="space-y-4 mb-8 flex-1">
-              {['Everything in Lite, plus:', 'AI Demand Forecasting', 'CRM & Loyalty Program', 'Staff Scheduling', 'Unlimited Registers'].map((feat, i) => (
-                <li key={i} className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-[#C3EB7A] shrink-0" /><span className="text-white/80">{feat}</span></li>
-              ))}
-            </ul>
-            <button className="w-full py-3 rounded-xl bg-[#C3EB7A] text-black font-bold hover:brightness-110 transition-all shadow-[0_0_20px_rgba(195,235,122,0.4)]">Get Started Now</button>
-          </motion.div>
-
-          {/* Max */}
-          <motion.div variants={fadeUpVariant} className="p-8 rounded-3xl bg-white/5 border border-white/10 flex flex-col">
-            <h3 className="text-2xl font-bold text-white mb-2">MochaMax</h3>
-            <p className="text-white/50 text-sm mb-6">For enterprise retail chains.</p>
-            <div className="flex items-baseline mb-8">
-              <span className="text-4xl font-black text-white">{getPricing('max').symbol}{getPricing('max').amount}</span>
-              <span className="text-lg text-white/50 font-normal ml-1">/mo</span>
-            </div>
-            <ul className="space-y-4 mb-8 flex-1">
-              {['Everything in Core, plus:', 'Custom API Access', 'Dedicated Account Manager', 'Advanced Franchise Controls', 'White-labeled App'].map((feat, i) => (
-                <li key={i} className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-gray-400 shrink-0" /><span className="text-white/80">{feat}</span></li>
-              ))}
-            </ul>
-            <button className="w-full py-3 rounded-xl border border-white/20 text-white font-bold hover:bg-white/10 transition-colors">Contact Sales</button>
-          </motion.div>
         </motion.div>
       </section>
 

@@ -7,42 +7,10 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import Chatbot from '@/components/Chatbot';
 
-// Placeholder Blog Data
-const FEATURED_POST = {
-    id: '1',
-    title: 'How AI is Rewriting the Future of Multi-Outlet Inventory Management',
-    excerpt: 'Discover how predictive forecasting is reducing stockouts by 40% and cutting perishables waste in half across Asian F&B chains.',
-    category: 'Product Updates',
-    readTime: '8 min read',
-    date: 'Oct 12, 2024',
-    author: 'Sarah Chen, Product Lead',
-    slug: '/blog/ai-future-inventory',
-    color: 'from-blue-500/20 to-[#4A90E2]/10',
-    blob: 'bg-[#4A90E2]/20'
-};
+import { BLOG_POSTS } from '@/data/blog';
 
-const BLOG_POSTS = [
-    {
-        id: '2', title: '5 Reasons Your Cafe Needs an Offline-First POS', excerpt: 'Internet drops shouldn’t mean pausing your business. Here is why an offline-first POS architecture is non-negotiable for high-volume cafes.',
-        category: 'Cafe Management', readTime: '5 min read', date: 'Oct 05, 2024', author: 'Rahul Gupta', color: 'from-orange-500/20 to-amber-500/10'
-    },
-    {
-        id: '3', title: 'Building a Loyalty Program That Actually Works', excerpt: 'Stop using physical stamp cards. Learn how to leverage digital CRM and automated WhatsApp campaigns to turn walk-ins into regulars.',
-        category: 'Retail Tips', readTime: '6 min read', date: 'Sep 28, 2024', author: 'Tina Agarwal', color: 'from-pink-500/20 to-rose-500/10'
-    },
-    {
-        id: '4', title: 'MochaEase 2.0: The Ecosystem Approach', excerpt: 'We rebuilt our core architecture to seamlessly sync iOS, Android, and Web backoffice in real-time. Here is a look under the hood.',
-        category: 'Product Updates', readTime: '10 min read', date: 'Sep 15, 2024', author: 'Vikram Singh, CTO', color: 'from-[#C3EB7A]/20 to-emerald-500/10'
-    },
-    {
-        id: '5', title: 'Managing Gen Z Staff in the QSR Industry', excerpt: 'Retention is the new recruitment. Practical frameworks for onboarding, scheduling, and retaining young talent in fast-paced environments.',
-        category: 'Retail Tips', readTime: '7 min read', date: 'Sep 02, 2024', author: 'Maya Patel', color: 'from-purple-500/20 to-indigo-500/10'
-    },
-    {
-        id: '6', title: 'Demystifying Franchise Royalty Reports', excerpt: 'Manual royalty calculations cause friction between HQ and franchisees. See how automated gross-sales reporting restores trust.',
-        category: 'Enterprise', readTime: '12 min read', date: 'Aug 20, 2024', author: 'Arjun Reddy', color: 'from-cyan-500/20 to-blue-500/10'
-    },
-];
+const FEATURED_POST = BLOG_POSTS[0];
+const REMAINING_POSTS = BLOG_POSTS.slice(1);
 
 const CATEGORIES = ['All', 'Product Updates', 'Cafe Management', 'Retail Tips', 'Enterprise'];
 
@@ -66,8 +34,8 @@ export default function Blog() {
     };
 
     const filteredPosts = activeCategory === 'All'
-        ? BLOG_POSTS
-        : BLOG_POSTS.filter((post) => post.category === activeCategory);
+        ? REMAINING_POSTS
+        : REMAINING_POSTS.filter((post) => post.category === activeCategory);
 
     const handleSubscribe = (e: React.FormEvent) => {
         e.preventDefault();
@@ -100,17 +68,15 @@ export default function Blog() {
 
                 {/* Featured Post Hero */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="w-full">
-                    <Link href={FEATURED_POST.slug} className="group block relative w-full rounded-[40px] p-[1px] bg-gradient-to-br from-white/20 to-transparent hover:from-white/40 transition-all duration-700 overflow-hidden">
+                    <Link href={`/blog/${FEATURED_POST.slug}`} className="group block relative w-full rounded-[40px] p-[1px] bg-gradient-to-br from-white/20 to-transparent hover:from-white/40 transition-all duration-700 overflow-hidden">
                         <div className="absolute inset-0 bg-[#0A0A0A] rounded-[40px] -z-10" />
-                        <div className={`absolute -top-32 -right-32 w-96 h-96 ${FEATURED_POST.blob} blur-[120px] rounded-full group-hover:scale-150 transition-transform duration-1000`} />
+                        <div className={`absolute -top-32 -right-32 w-96 h-96 bg-[#4A90E2]/20 blur-[120px] rounded-full group-hover:scale-150 transition-transform duration-1000`} />
 
                         <div className="relative p-8 md:p-16 flex flex-col md:flex-row gap-8 md:gap-16 items-center z-10">
-                            {/* Abstract Graphic representing the featured image */}
-                            <div className={`w-full md:w-1/2 aspect-[4/3] rounded-3xl bg-gradient-to-br ${FEATURED_POST.color} border border-white/10 overflow-hidden relative flex items-center justify-center group-hover:shadow-[0_0_50px_rgba(74,144,226,0.15)] transition-shadow duration-700`}>
-                                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-                                <div className="w-32 h-32 bg-white/10 backdrop-blur-md rounded-full border border-white/20 flex items-center justify-center relative overlow-hidden group-hover:scale-110 transition-transform duration-700">
-                                    <div className="absolute inset-2 bg-gradient-to-tr from-[#4A90E2] to-transparent rounded-full blur-[10px] opacity-50"></div>
-                                </div>
+                            {/* Graphic representing the featured image */}
+                            <div className={`w-full md:w-1/2 aspect-[4/3] rounded-3xl bg-gradient-to-br border border-white/10 overflow-hidden relative flex items-center justify-center group-hover:shadow-[0_0_50px_rgba(74,144,226,0.15)] transition-shadow duration-700`}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src="/blog_ai_inventory_1773002441722.png" alt={FEATURED_POST.title} className="w-full h-full object-cover rounded-3xl group-hover:scale-105 transition-transform duration-700" />
                             </div>
 
                             <div className="w-full md:w-1/2 flex flex-col justify-center">
@@ -178,12 +144,13 @@ export default function Blog() {
                                 key={post.id}
                                 className="group h-full"
                             >
-                                <Link href={`/blog/post-${post.id}`} className="block h-full p-[1px] rounded-3xl bg-gradient-to-b from-white/10 to-transparent hover:from-white/30 transition-all duration-500 overflow-hidden">
+                                <Link href={`/blog/${post.slug}`} className="block h-full p-[1px] rounded-3xl bg-gradient-to-b from-white/10 to-transparent hover:from-white/30 transition-all duration-500 overflow-hidden">
                                     <div className="h-full bg-[#0A0A0A] rounded-3xl flex flex-col relative z-10 overflow-hidden">
 
                                         {/* Abstract Cover Image Area */}
                                         <div className={`w-full h-48 bg-gradient-to-br ${post.color} relative overflow-hidden flex items-center justify-center border-b border-white/5 group-hover:brightness-110 transition-all duration-500`}>
-                                            <div className="w-16 h-16 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center group-hover:scale-150 transition-transform duration-700 opacity-50"></div>
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={post.coverImage.split('/').pop()} alt={post.title} className="w-full h-full object-cover mix-blend-overlay opacity-50 group-hover:opacity-100 group-hover:mix-blend-normal transition-all duration-700 group-hover:scale-110" />
                                         </div>
 
                                         <div className="p-6 md:p-8 flex flex-col flex-1">

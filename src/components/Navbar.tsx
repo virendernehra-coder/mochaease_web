@@ -1,9 +1,65 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Globe, Menu, X, ChevronRight, Zap, Coffee, ShoppingBag, Building, Info, MessageSquare, HelpCircle, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Globe, Menu, X, ChevronRight, ArrowRight, Zap, Coffee, ShoppingBag, Building, Info, MessageSquare, HelpCircle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+
+type MegaCategory = 'fnb' | 'retail' | 'enterprise';
+
+const BUSINESS_CATEGORIES = {
+    fnb: {
+        title: "Food & Beverage",
+        discover: [
+            { name: "Coffee Shops & Cafes", href: "/experience?role=cafe" },
+            { name: "Quick Service (QSR)", href: "/experience?role=qsr" },
+            { name: "Full Service Dining", href: "/experience?role=full-service" },
+            { name: "Bars & Breweries", href: "/experience?role=bars" },
+            { name: "Food Trucks & Pop-ups", href: "/experience?role=food-trucks" },
+            { name: "Bakeries & Patisseries", href: "/experience?role=bakeries" },
+        ],
+        capabilities: [
+            { name: "POS & Offline Payments", href: "#" },
+            { name: "Kitchen Display System", href: "#" },
+            { name: "Ingredient Tracking", href: "#" },
+            { name: "Loyalty & CRM", href: "#" },
+            { name: "Online Ordering Sync", href: "#" }
+        ]
+    },
+    retail: {
+        title: "Retail & Boutiques",
+        discover: [
+            { name: "Apparel & Fashion", href: "/experience?role=fashion" },
+            { name: "Health & Beauty", href: "/experience?role=beauty" },
+            { name: "Grocery & Convenience", href: "/experience?role=grocery" },
+            { name: "Home & Lifestyle", href: "/experience?role=home" },
+            { name: "Vape & Smoke Shops", href: "/experience?role=vape" },
+        ],
+        capabilities: [
+            { name: "Multi-Location Inventory", href: "#" },
+            { name: "Barcode Scanning", href: "#" },
+            { name: "Purchase Orders", href: "#" },
+            { name: "Staff Commissions", href: "#" },
+            { name: "E-commerce Integration", href: "#" }
+        ]
+    },
+    enterprise: {
+        title: "Enterprise Chains",
+        discover: [
+            { name: "Franchise Management", href: "/experience?role=enterprise" },
+            { name: "Multi-Brand Portfolios", href: "/experience?role=multi-brand" },
+            { name: "Stadiums & Large Venues", href: "/experience?role=stadiums" },
+            { name: "Airports & Travel Retail", href: "/experience?role=airports" },
+        ],
+        capabilities: [
+            { name: "Centralized Head Office", href: "#" },
+            { name: "Global Reporting API", href: "#" },
+            { name: "Custom Permissions", href: "#" },
+            { name: "White-labeled App", href: "#" },
+            { name: "Dedicated Account Rep", href: "#" }
+        ]
+    }
+};
 
 export default function Navbar() {
     const [mounted, setMounted] = useState(false);
@@ -12,29 +68,30 @@ export default function Navbar() {
     const navBackdropBlur = useTransform(scrollY, [0, 50], ["blur(0px)", "blur(12px)"]);
 
     // Dropdown states with delay
-    const [isUseCasesOpen, setIsUseCasesOpen] = useState(false);
+    const [isBusinessTypesOpen, setIsBusinessTypesOpen] = useState(false);
+    const [activeMegaCategory, setActiveMegaCategory] = useState<MegaCategory>('fnb');
     const [isResourcesOpen, setIsResourcesOpen] = useState(false);
 
     // Mobile menu state
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    let useCasesTimeout: NodeJS.Timeout;
-    let resourcesTimeout: NodeJS.Timeout;
+    const businessTypesTimeout = useRef<NodeJS.Timeout | null>(null);
+    const resourcesTimeout = useRef<NodeJS.Timeout | null>(null);
 
-    const handleUseCasesEnter = () => {
-        clearTimeout(useCasesTimeout);
-        setIsUseCasesOpen(true);
+    const handleBusinessTypesEnter = () => {
+        if (businessTypesTimeout.current) clearTimeout(businessTypesTimeout.current);
+        setIsBusinessTypesOpen(true);
     };
-    const handleUseCasesLeave = () => {
-        useCasesTimeout = setTimeout(() => setIsUseCasesOpen(false), 200); // 200ms delay
+    const handleBusinessTypesLeave = () => {
+        businessTypesTimeout.current = setTimeout(() => setIsBusinessTypesOpen(false), 200); // 200ms delay
     };
 
     const handleResourcesEnter = () => {
-        clearTimeout(resourcesTimeout);
+        if (resourcesTimeout.current) clearTimeout(resourcesTimeout.current);
         setIsResourcesOpen(true);
     };
     const handleResourcesLeave = () => {
-        resourcesTimeout = setTimeout(() => setIsResourcesOpen(false), 200);
+        resourcesTimeout.current = setTimeout(() => setIsResourcesOpen(false), 200);
     };
 
     // Prevent body scrolling when mobile menu is open
@@ -46,8 +103,8 @@ export default function Navbar() {
         }
         return () => {
             document.body.style.overflow = 'unset';
-            clearTimeout(useCasesTimeout);
-            clearTimeout(resourcesTimeout);
+            if (businessTypesTimeout.current) clearTimeout(businessTypesTimeout.current);
+            if (resourcesTimeout.current) clearTimeout(resourcesTimeout.current);
         };
     }, [isMobileMenuOpen]);
 
@@ -77,28 +134,81 @@ export default function Navbar() {
                     Experience
                 </Link>
 
-                {/* Use Cases Dropdown with Framer Motion */}
-                <div className="relative py-2" onMouseEnter={handleUseCasesEnter} onMouseLeave={handleUseCasesLeave}>
-                    <button className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors flex items-center gap-1 focus:outline-none">
-                        Use Cases
-                        <motion.svg animate={{ rotate: isUseCasesOpen ? 180 : 0 }} className="w-3 h-3 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></motion.svg>
+                {/* Business Types Mega Menu with Framer Motion */}
+                <div className="relative py-2" onMouseEnter={handleBusinessTypesEnter} onMouseLeave={handleBusinessTypesLeave}>
+                    <button className={`text-sm font-semibold transition-colors flex items-center gap-1 focus:outline-none ${isBusinessTypesOpen ? 'text-[#C3EB7A]' : 'text-white/70 hover:text-[#C3EB7A]'}`}>
+                        Business Types
+                        <motion.svg animate={{ rotate: isBusinessTypesOpen ? 180 : 0 }} className="w-3 h-3 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></motion.svg>
                     </button>
 
                     <AnimatePresence>
-                        {isUseCasesOpen && (
+                        {isBusinessTypesOpen && (
                             <motion.div
-                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                initial={{ opacity: 0, y: -10, scale: 0.98 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 10, scale: 0.95, transition: { duration: 0.2 } }}
+                                exit={{ opacity: 0, y: -10, scale: 0.98, transition: { duration: 0.2 } }}
                                 transition={{ duration: 0.2, ease: "easeOut" }}
-                                className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-56 z-[110]"
+                                className="fixed top-[80px] left-1/2 -translate-x-1/2 w-[900px] max-w-[95vw] z-[110]"
                             >
-                                <div className="bg-[#1A1A1A]/95 border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden p-2 backdrop-blur-xl hover:shadow-[0_0_20px_rgba(195,235,122,0.1)]">
-                                    <Link href="/use-cases/cafe" onClick={() => setIsUseCasesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Cafe & Coffee Shops</Link>
-                                    <Link href="/use-cases/qsr" onClick={() => setIsUseCasesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Quick Service (QSR)</Link>
-                                    <Link href="/use-cases/fashion" onClick={() => setIsUseCasesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Fashion & Boutique</Link>
-                                    <div className="border-t border-white/5 my-1"></div>
-                                    <Link href="/use-cases/enterprise" onClick={() => setIsUseCasesOpen(false)} className="block px-4 py-2.5 text-sm font-bold text-[#4A90E2] hover:bg-[#4A90E2]/10 rounded-xl transition-colors">Enterprise Chains</Link>
+                                <div className="bg-[#1A1A1A]/95 border border-white/10 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden flex backdrop-blur-2xl">
+                                    {/* Left Column: Categories */}
+                                    <div className="w-[30%] border-r border-white/5 p-6 flex flex-col gap-1 bg-black/20">
+                                        <div className="mb-6 px-4">
+                                            <h3 className="text-[#C3EB7A] text-xs font-black uppercase tracking-widest mb-1">Business Types</h3>
+                                            <p className="text-white/40 text-xs">Select your industry</p>
+                                        </div>
+                                        {Object.entries(BUSINESS_CATEGORIES).map(([key, data]) => (
+                                            <button
+                                                key={key}
+                                                onMouseEnter={() => setActiveMegaCategory(key as MegaCategory)}
+                                                className={`text-left px-4 py-3.5 rounded-2xl transition-all font-bold text-[15px] flex items-center justify-between group ${activeMegaCategory === key ? 'bg-white/10 text-white shadow-inner' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+                                            >
+                                                {data.title}
+                                                <ChevronRight className={`w-4 h-4 transition-transform ${activeMegaCategory === key ? 'opacity-100 translate-x-1' : 'opacity-0 -translate-x-2 group-hover:opacity-50 group-hover:translate-x-0'}`} />
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Middle Column: Discover */}
+                                    <div className="w-[35%] py-6 pl-8 pr-4 flex flex-col gap-2">
+                                        <h3 className="text-white/40 text-xs font-bold uppercase tracking-wider mb-4 px-3">Discover</h3>
+                                        <div className="flex flex-col">
+                                            {BUSINESS_CATEGORIES[activeMegaCategory].discover.map((item, idx) => (
+                                                <Link
+                                                    key={idx}
+                                                    href={item.href}
+                                                    onClick={() => setIsBusinessTypesOpen(false)}
+                                                    className="px-3 py-2.5 text-[15px] font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors flex items-center gap-3 group"
+                                                >
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#C3EB7A] transition-colors"></span>
+                                                    {item.name}
+                                                </Link>
+                                            ))}
+                                            <div className="mt-4 pt-4 border-t border-white/5 mx-3">
+                                                <Link href="/experience" onClick={() => setIsBusinessTypesOpen(false)} className="text-sm font-bold text-[#4A90E2] hover:text-[#6AB0FF] transition-colors flex items-center gap-1 group">
+                                                    View all sub-types <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Right Column: Capabilities */}
+                                    <div className="w-[35%] py-6 pr-8 pl-4 flex flex-col gap-2 bg-gradient-to-br from-transparent to-[#C3EB7A]/[0.03]">
+                                        <h3 className="text-white/40 text-xs font-bold uppercase tracking-wider mb-4 px-3">Capabilities</h3>
+                                        <div className="flex flex-col">
+                                            {BUSINESS_CATEGORIES[activeMegaCategory].capabilities.map((item, idx) => (
+                                                <Link
+                                                    key={idx}
+                                                    href={item.href}
+                                                    onClick={() => setIsBusinessTypesOpen(false)}
+                                                    className="px-3 py-2.5 text-[15px] font-medium text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-colors flex items-center gap-3 group"
+                                                >
+                                                    <Zap className="w-4 h-4 text-[#4A90E2]/60 group-hover:text-[#4A90E2] transition-colors shrink-0" />
+                                                    {item.name}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </motion.div>
                         )}
@@ -126,6 +236,7 @@ export default function Navbar() {
                                 <div className="bg-[#1A1A1A]/95 border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden p-2 backdrop-blur-xl hover:shadow-[0_0_20px_rgba(195,235,122,0.1)]">
                                     <Link href="/blog" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Blog</Link>
                                     <Link href="/guides" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Guides</Link>
+                                    <Link href="/resources/hardware" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Supported Hardware</Link>
                                     <Link href="/support" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Support Center</Link>
                                 </div>
                             </motion.div>
@@ -171,140 +282,140 @@ export default function Navbar() {
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0, transition: { duration: 0.2 } }}
-                        className="fixed inset-x-0 bottom-0 top-[72px] h-[calc(100dvh-72px)] bg-[#050505]/98 backdrop-blur-2xl z-[90] lg:hidden overflow-y-auto pb-32 overscroll-contain"
+                        initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                        animate={{ opacity: 1, backdropFilter: "blur(40px)" }}
+                        exit={{ opacity: 0, backdropFilter: "blur(0px)", transition: { duration: 0.3, ease: "easeInOut" } }}
+                        className="fixed inset-0 top-[72px] h-[calc(100dvh-72px)] bg-[#050505]/80 z-[90] lg:hidden overflow-y-auto overscroll-contain"
                     >
-                        {/* Background glowing orbs */}
-                        <div className="absolute top-10 right-0 w-72 h-72 bg-[#C3EB7A]/15 blur-[100px] rounded-full pointer-events-none" />
-                        <div className="absolute top-1/2 left-0 w-80 h-80 bg-[#4A90E2]/15 blur-[120px] rounded-full pointer-events-none" />
+                        {/* Dynamic Background Elements */}
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+                            className="absolute top-10 right-0 w-72 h-72 bg-[#C3EB7A]/15 blur-[100px] rounded-full pointer-events-none"
+                        />
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 0.5 }}
+                            className="absolute bottom-20 left-0 w-80 h-80 bg-[#4A90E2]/15 blur-[120px] rounded-full pointer-events-none"
+                        />
 
+                        {/* Staggered Orchestration Container */}
                         <motion.div
                             initial="hidden"
                             animate="show"
                             exit="hidden"
                             variants={{
                                 hidden: { opacity: 0 },
-                                show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+                                show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } }
                             }}
-                            className="flex flex-col p-6 gap-6 relative z-10"
+                            className="flex flex-col p-6 gap-8 relative z-10 min-h-full pb-32"
                         >
-                            <div className="flex flex-col gap-2 text-xl font-medium tracking-tight">
-                                {/* Features */}
-                                <motion.div variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0 } }}>
-                                    <Link href="/#features" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-4 border-b border-white/5 w-full group">
-                                        <div className="flex items-center gap-3"><Zap className="w-5 h-5 text-yellow-400 group-hover:scale-110 transition-transform" /> Features</div>
-                                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white transition-colors" />
+                            <div className="flex flex-col gap-2">
+                                {/* Primary Navigation Links - Editorial Scale */}
+                                <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }}>
+                                    <Link href="/#features" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-5 border-b border-white/10 w-full group">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-[#C3EB7A]/20 transition-colors">
+                                                <Zap className="w-6 h-6 text-[#C3EB7A]" />
+                                            </div>
+                                            <span className="text-3xl font-black tracking-tight">Features</span>
+                                        </div>
+                                        <ChevronRight className="w-6 h-6 text-white/20 group-hover:text-white transition-colors group-hover:translate-x-1" />
                                     </Link>
-                                    <Link href="/experience" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-transparent bg-clip-text bg-gradient-to-r from-[#C3EB7A] to-[#4A90E2] font-bold hover:opacity-80 transition-opacity py-4 border-b border-white/5 w-full group">
-                                        <div className="flex items-center gap-3"><Sparkles className="w-5 h-5 text-[#4A90E2] group-hover:scale-110 transition-transform" /> Experience</div>
-                                        <ChevronRight className="w-4 h-4 text-[#4A90E2]/50 group-hover:text-[#4A90E2] transition-colors" />
+                                </motion.div>
+
+                                <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }}>
+                                    <Link href="/experience" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-5 border-b border-white/10 w-full group">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-2xl bg-[#4A90E2]/10 flex items-center justify-center border border-[#4A90E2]/20 group-hover:bg-[#4A90E2]/30 transition-colors shadow-[0_0_20px_rgba(74,144,226,0.1)]">
+                                                <Sparkles className="w-6 h-6 text-[#4A90E2]" />
+                                            </div>
+                                            <span className="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 group-hover:from-[#4A90E2] group-hover:to-white transition-all">Experience</span>
+                                        </div>
+                                        <ChevronRight className="w-6 h-6 text-white/20 group-hover:text-[#4A90E2] transition-colors group-hover:translate-x-1" />
+                                    </Link>
+                                </motion.div>
+
+                                <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }}>
+                                    <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-5 border-b border-white/10 w-full group">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-[#C3EB7A]/20 transition-colors">
+                                                <span className="text-2xl">💳</span>
+                                            </div>
+                                            <span className="text-3xl font-black tracking-tight">Pricing</span>
+                                        </div>
+                                        <ChevronRight className="w-6 h-6 text-white/20 group-hover:text-white transition-colors group-hover:translate-x-1" />
                                     </Link>
                                 </motion.div>
 
                                 {/* Use Cases Segment */}
-                                <motion.div variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0 } }} className="py-4 border-b border-white/5">
-                                    <span className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-4 block">Use Cases</span>
-                                    <div className="flex flex-col gap-2">
-                                        <Link href="/use-cases/cafe" onClick={() => setIsMobileMenuOpen(false)} className="flex justify-between items-center text-white/80 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 transition-all p-3.5 rounded-2xl group">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20 group-hover:bg-orange-500/20 transition-colors">
-                                                    <Coffee className="w-5 h-5 text-orange-400" />
+                                <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }} className="py-6 border-b border-white/10">
+                                    <span className="text-[#C3EB7A] text-xs font-black uppercase tracking-[0.2em] mb-4 block ml-2">Solutions By Industry</span>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        {[
+                                            { href: "/use-cases/cafe", icon: Coffee, title: "Cafe & Coffee", desc: "For single shops", color: "orange" },
+                                            { href: "/use-cases/qsr", icon: Zap, title: "Quick Service", desc: "Fast-paced QSR", color: "red" },
+                                            { href: "/use-cases/fashion", icon: ShoppingBag, title: "Fashion", desc: "Retail & Boutique", color: "purple" }
+                                        ].map((item, idx) => (
+                                            <Link key={idx} href={item.href} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center p-4 bg-white/[0.03] hover:bg-white/[0.08] active:scale-95 border border-white/5 rounded-2xl transition-all group">
+                                                <div className={`w-10 h-10 rounded-xl bg-${item.color}-500/10 flex items-center justify-center mr-4 group-hover:bg-${item.color}-500/20 transition-colors`}>
+                                                    <item.icon className={`w-5 h-5 text-${item.color}-400`} />
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="font-bold text-base">Cafe & Coffee</span>
-                                                    <span className="text-xs text-white/40 font-normal">For single shops</span>
+                                                    <span className="font-bold text-white text-lg">{item.title}</span>
+                                                    <span className="text-sm text-white/40">{item.desc}</span>
                                                 </div>
-                                            </div>
-                                            <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white transition-colors" />
-                                        </Link>
+                                            </Link>
+                                        ))}
 
-                                        <Link href="/use-cases/qsr" onClick={() => setIsMobileMenuOpen(false)} className="flex justify-between items-center text-white/80 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 transition-all p-3.5 rounded-2xl group">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20 group-hover:bg-red-500/20 transition-colors">
-                                                    <Zap className="w-5 h-5 text-red-400" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="font-bold text-base">Quick Service</span>
-                                                    <span className="text-xs text-white/40 font-normal">Fast-paced QSR</span>
-                                                </div>
+                                        {/* Enterprise Highlight */}
+                                        <Link href="/use-cases/enterprise" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center p-4 bg-gradient-to-r from-[#4A90E2]/10 to-transparent hover:from-[#4A90E2]/20 active:scale-95 border border-[#4A90E2]/20 rounded-2xl transition-all group mt-2">
+                                            <div className="w-10 h-10 rounded-xl bg-[#4A90E2]/20 flex items-center justify-center mr-4 group-hover:bg-[#4A90E2]/30 transition-colors">
+                                                <Building className="w-5 h-5 text-[#4A90E2]" />
                                             </div>
-                                            <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white transition-colors" />
-                                        </Link>
-
-                                        <Link href="/use-cases/fashion" onClick={() => setIsMobileMenuOpen(false)} className="flex justify-between items-center text-white/80 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 transition-all p-3.5 rounded-2xl group">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20 group-hover:bg-purple-500/20 transition-colors">
-                                                    <ShoppingBag className="w-5 h-5 text-purple-400" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="font-bold text-base">Fashion</span>
-                                                    <span className="text-xs text-white/40 font-normal">Retail & Boutique</span>
-                                                </div>
+                                            <div className="flex flex-col">
+                                                <span className="font-black text-white text-lg">Enterprise</span>
+                                                <span className="text-sm text-[#4A90E2]/70">Multi-outlet chains</span>
                                             </div>
-                                            <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white transition-colors" />
-                                        </Link>
-
-                                        <Link href="/use-cases/enterprise" onClick={() => setIsMobileMenuOpen(false)} className="flex justify-between items-center text-[#4A90E2] hover:text-[#4A90E2] bg-[#4A90E2]/10 hover:bg-[#4A90E2]/20 border border-[#4A90E2]/20 transition-all p-3.5 rounded-2xl group mt-2 shadow-[0_0_15px_rgba(74,144,226,0.1)]">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-[#4A90E2]/20 flex items-center justify-center border border-[#4A90E2]/30 group-hover:bg-[#4A90E2]/30 transition-colors">
-                                                    <Building className="w-5 h-5 text-[#4A90E2]" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="font-black text-base">Enterprise</span>
-                                                    <span className="text-xs text-[#4A90E2]/70 font-normal">Multi-outlet chains</span>
-                                                </div>
-                                            </div>
-                                            <ChevronRight className="w-4 h-4 text-[#4A90E2]/50 group-hover:translate-x-1 transition-all" />
                                         </Link>
                                     </div>
                                 </motion.div>
 
-                                {/* Pricing */}
-                                <motion.div variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0 } }}>
-                                    <Link href="/#pricing" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-4 border-b border-white/5 w-full group">
-                                        <div className="flex items-center gap-3"><span className="text-xl">💳</span> Pricing</div>
-                                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white transition-colors" />
+                                {/* Corporate Info */}
+                                <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }} className="grid grid-cols-3 gap-2 py-6">
+                                    <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col items-center justify-center gap-2 p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors">
+                                        <Info className="w-6 h-6 text-white/60" />
+                                        <span className="text-xs font-bold text-white/80">About Us</span>
                                     </Link>
-                                </motion.div>
-
-                                {/* Info */}
-                                <motion.div variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0 } }} className="flex flex-col">
-                                    <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-4 border-b border-white/5 w-full group">
-                                        <div className="flex items-center gap-3"><Info className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform" /> About Us</div>
-                                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white transition-colors" />
+                                    <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col items-center justify-center gap-2 p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors">
+                                        <HelpCircle className="w-6 h-6 text-white/60" />
+                                        <span className="text-xs font-bold text-white/80">Support</span>
                                     </Link>
-                                    <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-4 border-b border-white/5 w-full group">
-                                        <div className="flex items-center gap-3"><HelpCircle className="w-5 h-5 text-[#4A90E2] group-hover:scale-110 transition-transform" /> Support Center</div>
-                                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white transition-colors" />
-                                    </Link>
-                                    <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-4 border-b border-white/5 w-full group">
-                                        <div className="flex items-center gap-3"><MessageSquare className="w-5 h-5 text-pink-400 group-hover:scale-110 transition-transform" /> Contact Us</div>
-                                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white transition-colors" />
+                                    <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col items-center justify-center gap-2 p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors">
+                                        <MessageSquare className="w-6 h-6 text-white/60" />
+                                        <span className="text-xs font-bold text-white/80">Contact</span>
                                     </Link>
                                 </motion.div>
                             </div>
 
-                            <motion.div variants={{ hidden: { opacity: 0, scale: 0.95 }, show: { opacity: 1, scale: 1 } }} className="flex flex-col gap-4 mt-8 relative z-10">
+                            {/* Massive CTA Buttons */}
+                            <motion.div variants={{ hidden: { opacity: 0, scale: 0.9 }, show: { opacity: 1, scale: 1, transition: { type: "spring", bounce: 0.5 } } }} className="flex flex-col gap-4 mt-auto">
                                 <Link
                                     href="/calculator"
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="text-center font-bold text-[#4A90E2] bg-[#4A90E2]/10 border border-[#4A90E2]/30 px-5 py-4 rounded-xl hover:bg-[#4A90E2]/20 active:scale-95 transition-all shadow-[0_0_20px_rgba(74,144,226,0.1)]"
+                                    className="text-center font-black text-white text-lg bg-gradient-to-r from-[#4A90E2] to-[#357ABD] py-5 rounded-2xl hover:brightness-110 active:scale-95 transition-all shadow-[0_10px_30px_rgba(74,144,226,0.3)]"
                                 >
                                     Savings Calculator
                                 </Link>
                                 <Link
                                     href="/login"
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="text-center font-bold text-white bg-white/10 border border-white/20 px-5 py-4 rounded-xl hover:bg-white/20 active:scale-95 transition-all sm:hidden backdrop-blur-md"
+                                    className="text-center font-bold text-white text-lg bg-white/5 border border-white/10 py-5 rounded-2xl hover:bg-white/10 active:scale-95 transition-all"
                                 >
-                                    Sign In
+                                    Sign In to Dashboard
                                 </Link>
-                                <div className="flex items-center justify-center gap-2 mt-4 text-white/50 bg-black/20 py-2 rounded-full border border-white/5 backdrop-blur-md w-max mx-auto px-4">
-                                    <Globe className="w-4 h-4" />
-                                    <span className="text-xs font-bold uppercase tracking-wider">English</span>
-                                </div>
                             </motion.div>
                         </motion.div>
                     </motion.div>

@@ -276,7 +276,7 @@ export default function FashionUseCasePage() {
 
             {/* Experience Section */}
             <section className="w-full relative z-20 border-t border-white/5 bg-black/50">
-                <ExperienceJourney role="Retail" hideBackButton />
+                <ExperienceJourney role="fashion" hideBackButton />
             </section>
 
         </main>

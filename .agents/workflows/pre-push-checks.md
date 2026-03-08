@@ -8,8 +8,9 @@ Before pushing code to the `main` branch to trigger a Vercel deployment, we must
 
 ## Required Steps
 
-1. Stop any currently running `npm run dev` servers to clear up the terminal.
-2. Run the production build command:
+1. **Batch Your Fixes First:** Do not run this workflow after every minor fix. Wait until all requested UI, bug, or feature fixes are complete before doing a production build.
+2. Stop any currently running `npm run dev` servers to clear up the terminal.
+3. Run the production build command:
 // turbo
 npm run build
 3. Wait for the build process to reach the "Compiled successfully" and "Running TypeScript" stages.
@@ -19,11 +20,11 @@ npm run build
    - **Missing Assets:** Ensure all Image `src` paths are correctly relative to the `/public` dir.
 
 5. **If the build succeeds:**
-   - **CRITICAL: Ask the user for explicit confirmation before pushing code to production.** Do not proceed without their approval.
+   - **CRITICAL: Ask the user for explicit confirmation before pushing code to production.** Ensure they are completely satisfied with the batched fixes.
 // turbo
 git add .
 // turbo
-git commit -m "feat/fix: descriptive message"
+git commit -m "feat/fix: descriptive message covering all batched changes"
 
 6. **Wait for user approval.** Once approved, push the code:
 git push

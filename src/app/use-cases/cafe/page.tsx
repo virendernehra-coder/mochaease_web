@@ -285,7 +285,7 @@ export default function CafeUseCasePage() {
 
             {/* Experience Section */}
             <section className="w-full relative z-20 border-t border-white/5 bg-black/50">
-                <ExperienceJourney role="Cafe" hideBackButton />
+                <ExperienceJourney role="cafe" hideBackButton />
             </section>
 
         </main>

@@ -96,6 +96,7 @@ export default function Footer() {
                     <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
                         <Link href="/privacy" className="text-white/30 hover:text-white/70 text-sm font-medium transition-colors">Privacy Policy</Link>
                         <Link href="/terms" className="text-white/30 hover:text-white/70 text-sm font-medium transition-colors">Terms of Service</Link>
+                        <Link href="/cookie-policy" className="text-white/30 hover:text-white/70 text-sm font-medium transition-colors whitespace-nowrap">Cookie Policy</Link>
                         <Link href="/cancellation-and-refund" className="text-white/30 hover:text-white/70 text-sm font-medium transition-colors whitespace-nowrap">Cancellation & Refund</Link>
                         <Link href="/shipping-and-delivery" className="text-white/30 hover:text-white/70 text-sm font-medium transition-colors whitespace-nowrap">Shipping & Delivery</Link>
                         <div className="flex items-center gap-1 text-white/30 hover:text-white/70 transition-colors cursor-pointer group ml-2">

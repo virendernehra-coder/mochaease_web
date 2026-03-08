@@ -9,10 +9,11 @@ import {
     CheckCircle2, Cpu, Clock, BrainCircuit, Activity, ChevronRight
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import { COUNTRIES } from '@/lib/countries';
 
 // Type definitions based on Flutter code
 type BusinessType = 'Retail' | 'Fashion' | 'F&B / Restaurant';
-type Country = 'USA' | 'India' | 'Indonesia' | 'Other';
+type Country = string;
 
 const COLORS = {
     inventory: '#C3EB7A', // Neon Green
@@ -31,13 +32,30 @@ export default function CalculatorPage() {
     const [monthlyInventoryCost, setMonthlyInventoryCost] = useState<number>(15000);
     const [staffCost, setStaffCost] = useState<number>(10000);
     const [monthlyOnlineSales, setMonthlyOnlineSales] = useState<number>(8000);
-    const [softwareCost, setSoftwareCost] = useState<number>(299);
-
     const [country, setCountry] = useState<Country>('USA');
     const [businessType, setBusinessType] = useState<BusinessType>('F&B / Restaurant');
 
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
     const [showResults, setShowResults] = useState<boolean>(false);
+
+    const getScaler = (c: string) => {
+        if (c === 'India') return 80;
+        if (c === 'Indonesia') return 15000;
+        return 1;
+    };
+
+    const handleCountryChange = (newCountry: string) => {
+        const oldScaler = getScaler(country);
+        const newScaler = getScaler(newCountry);
+        const conversionRate = newScaler / oldScaler;
+
+        setMonthlyRevenue(Math.round(monthlyRevenue * conversionRate));
+        setMonthlyInventoryCost(Math.round(monthlyInventoryCost * conversionRate));
+        setStaffCost(Math.round(staffCost * conversionRate));
+        setMonthlyOnlineSales(Math.round(monthlyOnlineSales * conversionRate));
+
+        setCountry(newCountry);
+    };
 
     const [lossSinceLoad, setLossSinceLoad] = useState<number>(0);
     const [activeSlice, setActiveSlice] = useState<number | null>(null);
@@ -51,6 +69,11 @@ export default function CalculatorPage() {
 
     const formatMoney = (amount: number) => {
         const symbol = getSymbol();
+        if (country === 'India') {
+            if (amount >= 10000000) return `${symbol}${(amount / 10000000).toFixed(2)} Cr`;
+            if (amount >= 100000) return `${symbol}${(amount / 100000).toFixed(2)} L`;
+            return `${symbol}${amount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+        }
         if (amount >= 1000000000) return `${symbol}${(amount / 1000000000).toFixed(1)}B`;
         if (amount >= 1000000) return `${symbol}${(amount / 1000000).toFixed(1)}M`;
         return `${symbol}${amount.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
@@ -102,7 +125,9 @@ export default function CalculatorPage() {
         setTimeout(() => {
             setIsCalculating(false);
             setShowResults(true);
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            setTimeout(() => {
+                document.getElementById('results-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }, 1500);
     };
 
@@ -163,14 +188,17 @@ export default function CalculatorPage() {
                                     <div className="flex flex-col gap-2">
                                         <label className="text-xs font-bold text-white/50 uppercase tracking-wider">Region</label>
                                         <select
-                                            className="bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#4A90E2]"
+                                            className="bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#4A90E2] max-h-48"
                                             value={country}
-                                            onChange={(e) => setCountry(e.target.value as Country)}
+                                            onChange={(e) => handleCountryChange(e.target.value)}
                                         >
-                                            <option>USA</option>
-                                            <option>India</option>
-                                            <option>Indonesia</option>
-                                            <option>Other</option>
+                                            <option value="United States">United States</option>
+                                            <option value="India">India</option>
+                                            <option value="Indonesia">Indonesia</option>
+                                            <option disabled>──────────</option>
+                                            {COUNTRIES.map(c => (
+                                                <option key={c} value={c}>{c}</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
@@ -182,7 +210,7 @@ export default function CalculatorPage() {
                                         <span className="text-[#C3EB7A]">{formatMoney(monthlyRevenue)}</span>
                                     </label>
                                     <input
-                                        type="range" min="5000" max="500000" step="1000"
+                                        type="range" min={5000 * getScaler(country)} max={500000 * getScaler(country)} step={1000 * getScaler(country)}
                                         value={monthlyRevenue} onChange={(e) => setMonthlyRevenue(Number(e.target.value))}
                                         className="w-full accent-[#C3EB7A]"
                                     />
@@ -194,7 +222,7 @@ export default function CalculatorPage() {
                                         <span className="text-[#FF9500]">{formatMoney(monthlyInventoryCost)}</span>
                                     </label>
                                     <input
-                                        type="range" min="1000" max="250000" step="500"
+                                        type="range" min={1000 * getScaler(country)} max={250000 * getScaler(country)} step={500 * getScaler(country)}
                                         value={monthlyInventoryCost} onChange={(e) => setMonthlyInventoryCost(Number(e.target.value))}
                                         className="w-full accent-[#FF9500]"
                                     />
@@ -206,7 +234,7 @@ export default function CalculatorPage() {
                                         <span className="text-[#4A90E2]">{formatMoney(staffCost)}</span>
                                     </label>
                                     <input
-                                        type="range" min="2000" max="150000" step="500"
+                                        type="range" min={2000 * getScaler(country)} max={150000 * getScaler(country)} step={500 * getScaler(country)}
                                         value={staffCost} onChange={(e) => setStaffCost(Number(e.target.value))}
                                         className="w-full accent-[#4A90E2]"
                                     />
@@ -218,7 +246,7 @@ export default function CalculatorPage() {
                                         <span className="text-[#E040FB]">{formatMoney(monthlyOnlineSales)}</span>
                                     </label>
                                     <input
-                                        type="range" min="0" max="100000" step="500"
+                                        type="range" min={0} max={100000 * getScaler(country)} step={500 * getScaler(country)}
                                         value={monthlyOnlineSales} onChange={(e) => setMonthlyOnlineSales(Number(e.target.value))}
                                         className="w-full accent-[#E040FB]"
                                     />
@@ -252,8 +280,10 @@ export default function CalculatorPage() {
                                 </motion.div>
                             ) : (
                                 <motion.div
+                                    id="results-section"
                                     initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
                                     className="flex flex-col gap-6"
+                                    style={{ scrollMarginTop: '100px' }}
                                 >
                                     {/* Annual Profit Headline */}
                                     <div className="bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] border border-white/10 rounded-3xl p-8 relative overflow-hidden shadow-2xl">
@@ -344,28 +374,23 @@ export default function CalculatorPage() {
                                     </div>
 
                                     {/* Actionable Insights */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="bg-[#1A1A1A] border border-[#C3EB7A]/20 rounded-3xl p-6">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <Bolt className="w-5 h-5 text-[#C3EB7A]" />
-                                                <h3 className="text-sm font-bold text-white">Pays for itself in</h3>
+                                    <div className="grid grid-cols-1 gap-6">
+                                        <div className="bg-[#1A1A1A] border border-[#C3EB7A]/20 rounded-3xl p-6 md:p-8 flex flex-col justify-center items-center text-center">
+                                            <div className="flex flex-col items-center gap-2 mb-6">
+                                                <div className="w-16 h-16 rounded-full bg-[#C3EB7A]/10 flex items-center justify-center mb-2">
+                                                    <Bolt className="w-8 h-8 text-[#C3EB7A]" />
+                                                </div>
+                                                <h3 className="text-sm font-bold text-[#C3EB7A] uppercase tracking-widest">Return on Investment</h3>
+                                                <h4 className="text-2xl md:text-3xl font-bold text-white">MochaEase Pays For Itself In</h4>
                                             </div>
-                                            <div className="flex items-baseline gap-2">
-                                                <span className="text-4xl font-black text-[#C3EB7A]">
-                                                    {Math.max(1, Math.ceil(softwareCost / (results.annualTotal / 365)))}
+                                            <div className="flex items-baseline gap-3 mb-4">
+                                                <span className="text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#C3EB7A] to-emerald-400 drop-shadow-[0_0_30px_rgba(195,235,122,0.3)]">
+                                                    {Math.max(1, Math.ceil((299 * getScaler(country)) / (results.annualTotal / 365)))}
                                                 </span>
-                                                <span className="text-lg font-bold text-white/50">Days</span>
+                                                <span className="text-2xl font-bold text-white/50">Days</span>
                                             </div>
-                                            <p className="text-xs text-white/40 mt-2">After this, the software generates 100% pure profit.</p>
-                                        </div>
-
-                                        <div className="bg-[#1A1A1A] border border-[#4A90E2]/20 rounded-3xl p-6 flex flex-col justify-center">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <Store className="w-5 h-5 text-[#4A90E2]" />
-                                                <h3 className="text-sm font-bold text-white">What this funds</h3>
-                                            </div>
-                                            <p className="text-lg font-semibold text-white/90 leading-tight">
-                                                {results.annualTotal > 100000 ? "A brand new outlet location or 6 months of complete inventory coverage." : "2 New Staff Salaries OR Full Marketing Budget"}
+                                            <p className="text-sm md:text-base text-white/60 max-w-lg mx-auto leading-relaxed">
+                                                After this initial break-even period, the software acts as a pure profit generator, adding 100% of the calculated savings directly to your bottom line.
                                             </p>
                                         </div>
                                     </div>

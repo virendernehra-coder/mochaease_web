@@ -285,7 +285,7 @@ export default function QsrUseCasePage() {
 
             {/* Experience Section */}
             <section className="w-full relative z-20 border-t border-white/5 bg-black/50">
-                <ExperienceJourney role="QSR" hideBackButton />
+                <ExperienceJourney role="qsr" hideBackButton />
             </section>
 
         </main>
