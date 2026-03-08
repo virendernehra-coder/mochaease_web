@@ -3,6 +3,7 @@
 import React from 'react';
 import { Coffee, Store, Users, Clock, CheckCircle2, ArrowRight, TerminalSquare, Calculator, Package, Cpu, LineChart, AlertOctagon, EyeOff, Wallet, Smartphone, TrendingDown } from 'lucide-react';
 import Link from 'next/link';
+import ExperienceJourney from '@/components/ExperienceJourney';
 import { motion } from 'framer-motion';
 
 // Metadata is removed here because this is a client component.
@@ -280,6 +281,11 @@ export default function CafeUseCasePage() {
                     <div className="font-bold text-white text-lg">Anjali</div>
                     <div className="text-[#C3EB7A] text-sm font-bold">Owner, Brew & Co.</div>
                 </div>
+            </section>
+
+            {/* Experience Section */}
+            <section className="w-full relative z-20 border-t border-white/5 bg-black/50">
+                <ExperienceJourney role="Cafe" hideBackButton />
             </section>
 
         </main>

@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ArrowRight, Globe, Building2, Network, Database, ShieldCheck, MapPin, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
+import ExperienceJourney from '@/components/ExperienceJourney';
 
 export default function EnterpriseUseCasePage() {
     return (
@@ -280,6 +281,11 @@ export default function EnterpriseUseCasePage() {
                     <div className="font-bold text-white text-lg">David Chen</div>
                     <div className="text-[#4A90E2] text-sm font-bold">CTO, Global Bite Group</div>
                 </div>
+            </section>
+
+            {/* Experience Section */}
+            <section className="w-full relative z-20 border-t border-white/5 bg-black/50">
+                <ExperienceJourney role="Enterprise" hideBackButton />
             </section>
 
         </main>

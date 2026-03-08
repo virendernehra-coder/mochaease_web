@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ArrowRight, Tags, ShoppingBag, Shirt, Gift, UserCheck, Smartphone, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import ExperienceJourney from '@/components/ExperienceJourney';
 
 export default function FashionUseCasePage() {
     return (
@@ -271,6 +272,11 @@ export default function FashionUseCasePage() {
                     <div className="font-bold text-white text-lg">Sarah J.</div>
                     <div className="text-pink-400 text-sm font-bold">Owner, The Velvet Hanger</div>
                 </div>
+            </section>
+
+            {/* Experience Section */}
+            <section className="w-full relative z-20 border-t border-white/5 bg-black/50">
+                <ExperienceJourney role="Retail" hideBackButton />
             </section>
 
         </main>

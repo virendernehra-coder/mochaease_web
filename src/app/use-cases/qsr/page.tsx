@@ -4,6 +4,7 @@ import React from 'react';
 import { Coffee, Store, Users, Clock, CheckCircle2, ArrowRight, TerminalSquare, Calculator, Package, Cpu, LineChart, AlertOctagon, EyeOff, Wallet, Smartphone, TrendingDown } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import ExperienceJourney from '@/components/ExperienceJourney';
 
 // Metadata is removed here because this is a client component.
 
@@ -280,6 +281,11 @@ export default function QsrUseCasePage() {
                     <div className="font-bold text-white text-lg">Mark L.</div>
                     <div className="text-[#C3EB7A] text-sm font-bold">Operations Director, SmashBurger</div>
                 </div>
+            </section>
+
+            {/* Experience Section */}
+            <section className="w-full relative z-20 border-t border-white/5 bg-black/50">
+                <ExperienceJourney role="QSR" hideBackButton />
             </section>
 
         </main>

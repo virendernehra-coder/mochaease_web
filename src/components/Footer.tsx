@@ -89,14 +89,16 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-white/30 text-sm font-medium">
+                <div className="pt-8 border-t border-white/10 flex flex-col xl:flex-row justify-between items-center gap-6">
+                    <p className="text-white/30 text-sm font-medium text-center xl:text-left">
                         &copy; {new Date().getFullYear()} MochaEase Tech Private Limited. All rights reserved.
                     </p>
-                    <div className="flex items-center gap-6">
+                    <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
                         <Link href="/privacy" className="text-white/30 hover:text-white/70 text-sm font-medium transition-colors">Privacy Policy</Link>
                         <Link href="/terms" className="text-white/30 hover:text-white/70 text-sm font-medium transition-colors">Terms of Service</Link>
-                        <div className="flex items-center gap-1 text-white/30 hover:text-white/70 transition-colors cursor-pointer group">
+                        <Link href="/cancellation-and-refund" className="text-white/30 hover:text-white/70 text-sm font-medium transition-colors whitespace-nowrap">Cancellation & Refund</Link>
+                        <Link href="/shipping-and-delivery" className="text-white/30 hover:text-white/70 text-sm font-medium transition-colors whitespace-nowrap">Shipping & Delivery</Link>
+                        <div className="flex items-center gap-1 text-white/30 hover:text-white/70 transition-colors cursor-pointer group ml-2">
                             <Globe className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
                             <span className="text-xs font-bold">English (US)</span>
                         </div>
