@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
     if (pathname === '/') {
         // Vercel automatically populates 'x-vercel-ip-country'
         // Localhost will fall back to 'US' if not testing specifically
-        const country = request.geo?.country || request.headers.get('x-vercel-ip-country') || 'US';
+        const country = request.headers.get('x-vercel-ip-country') || 'US';
 
         if (country === 'IN') {
             request.nextUrl.pathname = '/in';

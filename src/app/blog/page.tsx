@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import NetworkBackground from '@/components/NetworkBackground';
 import { Clock, ArrowRight, User, Calendar, BookOpen, Send, Mail } from 'lucide-react';
 import Link from 'next/link';
@@ -55,12 +55,12 @@ export default function Blog() {
     useEffect(() => { setMounted(true); }, []);
     if (!mounted) return null;
 
-    const fadeUpVariant = {
+    const fadeUpVariant: Variants = {
         hidden: { opacity: 0, y: 30 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } }
     };
 
-    const staggerContainer = {
+    const staggerContainer: Variants = {
         hidden: { opacity: 0 },
         visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
     };
