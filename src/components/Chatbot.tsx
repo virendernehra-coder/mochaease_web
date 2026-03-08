@@ -34,7 +34,7 @@ export default function Chatbot() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 20, scale: 0.9 }}
                     transition={{ type: "spring", bounce: 0.3 }}
-                    className="fixed bottom-6 right-6 z-50 w-[380px] h-[550px] bg-gradient-to-b from-[#1A1A1A] to-[#050505] rounded-3xl border border-white/10 shadow-[0_20px_80px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden"
+                    className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[380px] h-[calc(100svh-5rem)] sm:h-[550px] max-h-[600px] bg-gradient-to-b from-[#1A1A1A] to-[#050505] rounded-3xl border border-white/10 shadow-[0_20px_80px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden"
                 >
                     {/* Header */}
                     <div className="bg-white/5 border-b border-white/10 p-4 flex items-center justify-between backdrop-blur-md relative overflow-hidden">
@@ -99,7 +99,7 @@ export default function Chatbot() {
             ) : (
                 <motion.div
                     initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ delay: 1.5, type: "spring", bounce: 0.5 }}
-                    className="fixed bottom-6 right-6 z-50 flex items-center gap-3 cursor-pointer group"
+                    className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-3 cursor-pointer group"
                     onClick={() => setIsChatOpen(true)}
                 >
                     <div className="bg-white text-black text-sm font-bold px-5 py-3 rounded-2xl shadow-2xl hidden md:block relative group-hover:-translate-y-1 transition-transform">

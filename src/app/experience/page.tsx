@@ -67,30 +67,30 @@ function ExperiencePageContent() {
 
                         <div className="w-full max-w-6xl flex flex-col gap-16 mt-8">
                             {/* Food & Beverage */}
-                            <div className="flex flex-col gap-8">
+                            <div className="flex flex-col gap-6">
                                 <h2 className="text-3xl font-black text-white border-b border-white/10 pb-4 tracking-tight flex items-center gap-3">
-                                    <span className="w-8 h-8 rounded-full bg-[#C3EB7A]/20 flex items-center justify-center text-[#C3EB7A] text-sm">1</span>
+                                    <span className="w-8 h-8 rounded-full bg-[#C3EB7A]/20 flex items-center justify-center text-[#C3EB7A] text-sm font-bold">1</span>
                                     Food & Beverage
                                 </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {ROLES.filter(r => ['cafe', 'qsr', 'full-service', 'bars', 'food-trucks', 'bakeries'].includes(r.id!)).map((r) => (
                                         <motion.button
                                             key={r.id}
                                             whileHover={{ scale: 1.05, y: -5 }}
                                             whileTap={{ scale: 0.95 }}
                                             onClick={() => setRole(r.id as Role)}
-                                            className="group relative p-[1px] rounded-3xl bg-gradient-to-br from-white/10 to-transparent hover:from-white/30 transition-all duration-300 text-left overflow-hidden h-full flex flex-col"
+                                            className="group relative p-[1px] rounded-3xl bg-gradient-to-br from-white/10 to-transparent hover:from-white/30 transition-all duration-300 text-left overflow-hidden h-[240px] flex flex-col w-full"
                                         >
-                                            <div className="absolute inset-0 bg-[#0A0A0A] rounded-3xl -z-10" />
-                                            <div className={`absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br ${r.color} blur-[30px] rounded-full group-hover:scale-150 transition-transform duration-500`} />
+                                            <div className="absolute inset-0 bg-[#111111] rounded-3xl -z-10" />
+                                            <div className={`absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br ${r.color} blur-[40px] rounded-full group-hover:scale-150 transition-transform duration-500`} />
 
-                                            <div className="p-8 flex flex-col items-start gap-4 h-full relative z-10 w-full">
-                                                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner group-hover:bg-white/10 transition-colors">
+                                            <div className="p-8 flex flex-col items-start h-full relative z-10 w-full">
+                                                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner group-hover:bg-white/10 transition-colors mb-auto">
                                                     <r.icon className="w-7 h-7 text-white/80 group-hover:text-white transition-colors" />
                                                 </div>
-                                                <div className="flex flex-col h-full justify-between w-full">
-                                                    <h3 className="text-xl font-bold text-white mb-2">{r.label}</h3>
-                                                    <p className="text-sm text-white/40 group-hover:text-white/60 transition-colors font-medium mt-auto relative z-20">See my experience &rarr;</p>
+                                                <div className="flex flex-col mt-4 w-full">
+                                                    <h3 className="text-xl font-bold text-white mb-1.5">{r.label}</h3>
+                                                    <p className="text-sm text-white/40 group-hover:text-[#C3EB7A] transition-colors font-semibold">See my experience &rarr;</p>
                                                 </div>
                                             </div>
                                         </motion.button>
@@ -99,30 +99,30 @@ function ExperiencePageContent() {
                             </div>
 
                             {/* Retail & Boutiques */}
-                            <div className="flex flex-col gap-8">
+                            <div className="flex flex-col gap-6">
                                 <h2 className="text-3xl font-black text-white border-b border-white/10 pb-4 tracking-tight flex items-center gap-3">
-                                    <span className="w-8 h-8 rounded-full bg-[#4A90E2]/20 flex items-center justify-center text-[#4A90E2] text-sm">2</span>
+                                    <span className="w-8 h-8 rounded-full bg-[#4A90E2]/20 flex items-center justify-center text-[#4A90E2] text-sm font-bold">2</span>
                                     Retail & Boutiques
                                 </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {ROLES.filter(r => ['fashion', 'beauty', 'grocery', 'home', 'vape'].includes(r.id!)).map((r) => (
                                         <motion.button
                                             key={r.id}
                                             whileHover={{ scale: 1.05, y: -5 }}
                                             whileTap={{ scale: 0.95 }}
                                             onClick={() => setRole(r.id as Role)}
-                                            className="group relative p-[1px] rounded-3xl bg-gradient-to-br from-white/10 to-transparent hover:from-white/30 transition-all duration-300 text-left overflow-hidden h-full flex flex-col"
+                                            className="group relative p-[1px] rounded-3xl bg-gradient-to-br from-white/10 to-transparent hover:from-white/30 transition-all duration-300 text-left overflow-hidden h-[240px] flex flex-col w-full"
                                         >
-                                            <div className="absolute inset-0 bg-[#0A0A0A] rounded-3xl -z-10" />
-                                            <div className={`absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br ${r.color} blur-[30px] rounded-full group-hover:scale-150 transition-transform duration-500`} />
+                                            <div className="absolute inset-0 bg-[#111111] rounded-3xl -z-10" />
+                                            <div className={`absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br ${r.color} blur-[40px] rounded-full group-hover:scale-150 transition-transform duration-500`} />
 
-                                            <div className="p-8 flex flex-col items-start gap-4 h-full relative z-10 w-full">
-                                                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner group-hover:bg-white/10 transition-colors">
+                                            <div className="p-8 flex flex-col items-start h-full relative z-10 w-full">
+                                                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner group-hover:bg-white/10 transition-colors mb-auto">
                                                     <r.icon className="w-7 h-7 text-white/80 group-hover:text-white transition-colors" />
                                                 </div>
-                                                <div className="flex flex-col h-full w-full justify-end flex-grow">
-                                                    <h3 className="text-lg font-bold text-white mb-2 leading-tight">{r.label}</h3>
-                                                    <p className="text-xs text-white/40 group-hover:text-white/60 transition-colors font-medium">Explore &rarr;</p>
+                                                <div className="flex flex-col mt-4 w-full">
+                                                    <h3 className="text-xl font-bold text-white mb-1.5">{r.label}</h3>
+                                                    <p className="text-sm text-[#4A90E2]/60 group-hover:text-[#4A90E2] transition-colors font-semibold">Explore &rarr;</p>
                                                 </div>
                                             </div>
                                         </motion.button>
@@ -131,30 +131,30 @@ function ExperiencePageContent() {
                             </div>
 
                             {/* Enterprise & Venues */}
-                            <div className="flex flex-col gap-8">
+                            <div className="flex flex-col gap-6">
                                 <h2 className="text-3xl font-black text-white border-b border-white/10 pb-4 tracking-tight flex items-center gap-3">
-                                    <span className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-sm">3</span>
+                                    <span className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-sm font-bold">3</span>
                                     Enterprise & Venues
                                 </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                     {ROLES.filter(r => ['enterprise', 'multi-brand', 'stadiums', 'airports'].includes(r.id!)).map((r) => (
                                         <motion.button
                                             key={r.id}
                                             whileHover={{ scale: 1.05, y: -5 }}
                                             whileTap={{ scale: 0.95 }}
                                             onClick={() => setRole(r.id as Role)}
-                                            className="group relative p-[1px] rounded-3xl bg-gradient-to-br from-white/10 to-transparent hover:from-white/30 transition-all duration-300 text-left overflow-hidden h-full flex flex-col text-center items-center"
+                                            className="group relative p-[1px] rounded-3xl bg-gradient-to-br from-white/10 to-transparent hover:from-white/30 transition-all duration-300 text-left overflow-hidden h-[240px] flex flex-col items-center text-center w-full"
                                         >
-                                            <div className="absolute inset-0 bg-[#0A0A0A] rounded-3xl -z-10" />
-                                            <div className={`absolute left-1/2 -translate-x-1/2 -top-10 w-32 h-32 bg-gradient-to-br ${r.color} blur-[30px] rounded-full group-hover:scale-150 transition-transform duration-500`} />
+                                            <div className="absolute inset-0 bg-[#111111] rounded-3xl -z-10" />
+                                            <div className={`absolute left-1/2 -translate-x-1/2 -top-10 w-32 h-32 bg-gradient-to-br ${r.color} blur-[40px] rounded-full group-hover:scale-150 transition-transform duration-500`} />
 
-                                            <div className="p-8 flex flex-col items-center gap-4 h-full relative z-10 w-full justify-center">
-                                                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner group-hover:bg-white/10 transition-colors">
+                                            <div className="p-8 flex flex-col items-center h-full relative z-10 w-full">
+                                                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner group-hover:bg-white/10 transition-colors mb-auto">
                                                     <r.icon className="w-8 h-8 text-white/80 group-hover:text-white transition-colors" />
                                                 </div>
-                                                <div>
-                                                    <h3 className="text-xl font-bold text-white mb-2">{r.label}</h3>
-                                                    <p className="text-sm text-white/40 group-hover:text-white/60 transition-colors font-medium">View Systems &rarr;</p>
+                                                <div className="flex flex-col mt-4 w-full">
+                                                    <h3 className="text-xl font-bold text-white mb-1.5">{r.label}</h3>
+                                                    <p className="text-sm text-purple-400/60 group-hover:text-purple-400 transition-colors font-semibold">View Systems &rarr;</p>
                                                 </div>
                                             </div>
                                         </motion.button>

@@ -326,61 +326,17 @@ export default function Navbar() {
                                     </Link>
                                 </motion.div>
 
+
                                 <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }}>
                                     <Link href="/experience" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-5 border-b border-white/10 w-full group">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-2xl bg-[#4A90E2]/10 flex items-center justify-center border border-[#4A90E2]/20 group-hover:bg-[#4A90E2]/30 transition-colors shadow-[0_0_20px_rgba(74,144,226,0.1)]">
-                                                <Sparkles className="w-6 h-6 text-[#4A90E2]" />
-                                            </div>
-                                            <span className="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 group-hover:from-[#4A90E2] group-hover:to-white transition-all">Experience</span>
-                                        </div>
-                                        <ChevronRight className="w-6 h-6 text-white/20 group-hover:text-[#4A90E2] transition-colors group-hover:translate-x-1" />
-                                    </Link>
-                                </motion.div>
-
-                                <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }}>
-                                    <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-5 border-b border-white/10 w-full group">
-                                        <div className="flex items-center gap-4">
                                             <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-[#C3EB7A]/20 transition-colors">
-                                                <span className="text-2xl">💳</span>
+                                                <Building className="w-6 h-6 text-[#C3EB7A]" />
                                             </div>
-                                            <span className="text-3xl font-black tracking-tight">Pricing</span>
+                                            <span className="text-3xl font-black tracking-tight">Business Types</span>
                                         </div>
-                                        <ChevronRight className="w-6 h-6 text-white/20 group-hover:text-white transition-colors group-hover:translate-x-1" />
+                                        <ChevronRight className="w-6 h-6 text-white/20 group-hover:text-[#C3EB7A] transition-colors group-hover:translate-x-1" />
                                     </Link>
-                                </motion.div>
-
-                                {/* Use Cases Segment */}
-                                <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }} className="py-6 border-b border-white/10">
-                                    <span className="text-[#C3EB7A] text-xs font-black uppercase tracking-[0.2em] mb-4 block ml-2">Solutions By Industry</span>
-                                    <div className="grid grid-cols-1 gap-3">
-                                        {[
-                                            { href: "/use-cases/cafe", icon: Coffee, title: "Cafe & Coffee", desc: "For single shops", color: "orange" },
-                                            { href: "/use-cases/qsr", icon: Zap, title: "Quick Service", desc: "Fast-paced QSR", color: "red" },
-                                            { href: "/use-cases/fashion", icon: ShoppingBag, title: "Fashion", desc: "Retail & Boutique", color: "purple" }
-                                        ].map((item, idx) => (
-                                            <Link key={idx} href={item.href} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center p-4 bg-white/[0.03] hover:bg-white/[0.08] active:scale-95 border border-white/5 rounded-2xl transition-all group">
-                                                <div className={`w-10 h-10 rounded-xl bg-${item.color}-500/10 flex items-center justify-center mr-4 group-hover:bg-${item.color}-500/20 transition-colors`}>
-                                                    <item.icon className={`w-5 h-5 text-${item.color}-400`} />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="font-bold text-white text-lg">{item.title}</span>
-                                                    <span className="text-sm text-white/40">{item.desc}</span>
-                                                </div>
-                                            </Link>
-                                        ))}
-
-                                        {/* Enterprise Highlight */}
-                                        <Link href="/use-cases/enterprise" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center p-4 bg-gradient-to-r from-[#4A90E2]/10 to-transparent hover:from-[#4A90E2]/20 active:scale-95 border border-[#4A90E2]/20 rounded-2xl transition-all group mt-2">
-                                            <div className="w-10 h-10 rounded-xl bg-[#4A90E2]/20 flex items-center justify-center mr-4 group-hover:bg-[#4A90E2]/30 transition-colors">
-                                                <Building className="w-5 h-5 text-[#4A90E2]" />
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="font-black text-white text-lg">Enterprise</span>
-                                                <span className="text-sm text-[#4A90E2]/70">Multi-outlet chains</span>
-                                            </div>
-                                        </Link>
-                                    </div>
                                 </motion.div>
 
                                 {/* Corporate Info */}
