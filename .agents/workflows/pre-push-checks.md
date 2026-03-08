@@ -19,11 +19,13 @@ npm run build
    - **Missing Assets:** Ensure all Image `src` paths are correctly relative to the `/public` dir.
 
 5. **If the build succeeds:**
+   - **CRITICAL: Ask the user for explicit confirmation before pushing code to production.** Do not proceed without their approval.
 // turbo
 git add .
 // turbo
 git commit -m "feat/fix: descriptive message"
-// turbo
+
+6. **Wait for user approval.** Once approved, push the code:
 git push
 
 By following this workflow, we ensure our Vercel deployments will never fail due to static typing errors!

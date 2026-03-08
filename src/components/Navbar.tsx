@@ -171,10 +171,10 @@ export default function Navbar() {
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-                        animate={{ opacity: 1, backdropFilter: "blur(32px)" }}
-                        exit={{ opacity: 0, backdropFilter: "blur(0px)", transition: { duration: 0.3, delay: 0.2 } }}
-                        className="fixed inset-x-0 bottom-0 top-[72px] h-[calc(100dvh-72px)] bg-[#050505]/95 z-[90] lg:hidden overflow-y-auto pb-32 overscroll-contain"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                        className="fixed inset-x-0 bottom-0 top-[72px] h-[calc(100dvh-72px)] bg-[#050505]/98 backdrop-blur-2xl z-[90] lg:hidden overflow-y-auto pb-32 overscroll-contain"
                     >
                         {/* Background glowing orbs */}
                         <div className="absolute top-10 right-0 w-72 h-72 bg-[#C3EB7A]/15 blur-[100px] rounded-full pointer-events-none" />

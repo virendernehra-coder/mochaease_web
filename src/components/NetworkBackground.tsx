@@ -8,6 +8,11 @@ export default function NetworkBackground() {
     const [init, setInit] = useState(false);
 
     useEffect(() => {
+        // Disable particles on mobile devices to dramatically improve performance
+        if (typeof window !== 'undefined' && window.innerWidth < 768) {
+            return;
+        }
+
         initParticlesEngine(async (engine: Engine) => {
             // load slim version to optimize bundle size
             await loadSlim(engine);
@@ -48,12 +53,12 @@ export default function NetworkBackground() {
                             },
                             modes: {
                                 push: {
-                                    quantity: 4,
+                                    quantity: 2,
                                 },
                                 grab: {
-                                    distance: 140,
+                                    distance: 120,
                                     links: {
-                                        opacity: 0.5
+                                        opacity: 0.4
                                     }
                                 },
                             },
@@ -64,9 +69,9 @@ export default function NetworkBackground() {
                             },
                             links: {
                                 color: "#334155", // slate-700
-                                distance: 150,
+                                distance: 100,
                                 enable: true,
-                                opacity: 0.3,
+                                opacity: 0.2,
                                 width: 1,
                             },
                             collisions: {
@@ -85,15 +90,15 @@ export default function NetworkBackground() {
                             number: {
                                 density: {
                                     enable: true,
-                                    width: 800,
+                                    width: 1000,
                                 },
-                                value: 60,
+                                value: 40,
                             },
                             opacity: {
-                                value: { min: 0.1, max: 0.6 },
+                                value: { min: 0.1, max: 0.4 },
                                 animation: {
                                     enable: true,
-                                    speed: 1,
+                                    speed: 0.5,
                                     sync: false
                                 }
                             },
