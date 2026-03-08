@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Globe, Twitter, Linkedin, Instagram, Github } from 'lucide-react';
+import { ArrowRight, Globe, Linkedin, Instagram, Youtube } from 'lucide-react';
 
 export default function Footer() {
     return (
@@ -38,17 +38,14 @@ export default function Footer() {
                             The all-in-one, AI-powered POS platform built for modern businesses across every vertical. Stop guessing. Start dominating.
                         </p>
                         <div className="flex items-center gap-4">
-                            <a href="https://twitter.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-[#C3EB7A] hover:bg-white/10 hover:border-[#C3EB7A]/30 transition-all">
-                                <Twitter className="w-4 h-4" />
+                            <a href="https://www.youtube.com/@MochaEase" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-[#C3EB7A] hover:bg-white/10 hover:border-[#C3EB7A]/30 transition-all">
+                                <Youtube className="w-4 h-4" />
                             </a>
-                            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-[#C3EB7A] hover:bg-white/10 hover:border-[#C3EB7A]/30 transition-all">
-                                <Linkedin className="w-4 h-4" />
-                            </a>
-                            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-[#C3EB7A] hover:bg-white/10 hover:border-[#C3EB7A]/30 transition-all">
+                            <a href="https://www.instagram.com/mochaeasetech" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-[#C3EB7A] hover:bg-white/10 hover:border-[#C3EB7A]/30 transition-all">
                                 <Instagram className="w-4 h-4" />
                             </a>
-                            <a href="https://github.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-[#C3EB7A] hover:bg-white/10 hover:border-[#C3EB7A]/30 transition-all">
-                                <Github className="w-4 h-4" />
+                            <a href="https://www.linkedin.com/company/mochaease/" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-[#C3EB7A] hover:bg-white/10 hover:border-[#C3EB7A]/30 transition-all">
+                                <Linkedin className="w-4 h-4" />
                             </a>
                         </div>
                     </div>
