@@ -197,11 +197,109 @@ export default async function BlogPostPage({ params }: Props) {
                     </div>
                 )}
 
-                {/* Article Body — render the raw HTML from Supabase safely */}
+
+                {/* Premium Article Body */}
+                <style>{`
+                  .article-body {
+                    font-size: 1.125rem;
+                    line-height: 1.85;
+                    color: rgba(255,255,255,0.72);
+                    font-weight: 400;
+                  }
+                  .article-body h2 {
+                    font-size: 1.875rem;
+                    font-weight: 800;
+                    color: #ffffff;
+                    margin-top: 3.5rem;
+                    margin-bottom: 1.25rem;
+                    padding-bottom: 0.75rem;
+                    border-bottom: 1px solid rgba(255,255,255,0.08);
+                    letter-spacing: -0.02em;
+                    line-height: 1.2;
+                  }
+                  .article-body h3 {
+                    font-size: 1.375rem;
+                    font-weight: 700;
+                    color: rgba(255,255,255,0.9);
+                    margin-top: 2.5rem;
+                    margin-bottom: 0.875rem;
+                    padding-left: 1rem;
+                    border-left: 3px solid #C3EB7A;
+                    line-height: 1.3;
+                  }
+                  .article-body p {
+                    margin-bottom: 1.625rem;
+                    color: rgba(255,255,255,0.68);
+                    font-size: 1.125rem;
+                    line-height: 1.85;
+                  }
+                  .article-body ul {
+                    margin: 1.75rem 0 2rem 0;
+                    padding: 0;
+                    list-style: none;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.875rem;
+                  }
+                  .article-body li {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 0.875rem;
+                    background: rgba(255,255,255,0.03);
+                    border: 1px solid rgba(255,255,255,0.06);
+                    border-radius: 0.875rem;
+                    padding: 1rem 1.25rem;
+                    font-size: 1.0625rem;
+                    color: rgba(255,255,255,0.7);
+                    line-height: 1.65;
+                  }
+                  .article-body li::before {
+                    content: "→";
+                    color: #C3EB7A;
+                    font-weight: 800;
+                    font-size: 1rem;
+                    flex-shrink: 0;
+                    margin-top: 0.05rem;
+                  }
+                  .article-body strong {
+                    color: #ffffff;
+                    font-weight: 700;
+                  }
+                  .article-body em {
+                    color: rgba(255,255,255,0.85);
+                    font-style: italic;
+                  }
+                  .article-body a {
+                    color: #4A90E2;
+                    text-decoration: underline;
+                    text-underline-offset: 3px;
+                    transition: color 0.2s;
+                  }
+                  .article-body a:hover { color: #6AB0FF; }
+                  .article-body blockquote {
+                    margin: 2.5rem 0;
+                    padding: 1.5rem 2rem;
+                    background: rgba(195,235,122,0.05);
+                    border-left: 4px solid #C3EB7A;
+                    border-radius: 0 1rem 1rem 0;
+                    font-size: 1.2rem;
+                    font-style: italic;
+                    color: rgba(255,255,255,0.8);
+                  }
+                  .article-body code {
+                    background: rgba(255,255,255,0.08);
+                    padding: 0.15rem 0.45rem;
+                    border-radius: 0.35rem;
+                    font-size: 0.9em;
+                    color: #C3EB7A;
+                    font-family: monospace;
+                  }
+                `}</style>
                 <div
-                    className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-a:text-[#4A90E2] hover:prose-a:text-[#6AB0FF] prose-strong:text-white prose-p:text-white/75"
+                    className="article-body max-w-none"
                     dangerouslySetInnerHTML={{ __html: post.content_html }}
                 />
+
 
                 {/* Share & Engage Footer */}
                 <div className="mt-20 pt-10 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
