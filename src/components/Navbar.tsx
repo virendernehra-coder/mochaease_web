@@ -311,21 +311,7 @@ export default function Navbar() {
                             }}
                             className="flex flex-col p-6 gap-8 relative z-10 min-h-full pb-32"
                         >
-                            <div className="flex flex-col gap-6">
-                                {/* Header / Close Button Area */}
-                                <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                                    <div className="flex items-center gap-1 group">
-                                        <div className="text-[#C3EB7A] font-extrabold text-2xl tracking-tighter shrink-0 m-0 leading-none">m</div>
-                                        <div className="text-white font-extrabold text-2xl tracking-tighter shrink-0 m-0 leading-none">E.</div>
-                                    </div>
-                                    <button
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                        className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors text-white"
-                                    >
-                                        <X className="w-6 h-6" />
-                                    </button>
-                                </div>
-
+                            <div className="flex flex-col gap-6 mt-4">
                                 {/* Primary Navigation Grid - 2x2 */}
                                 <motion.div variants={{ hidden: { opacity: 0, scale: 0.95 }, show: { opacity: 1, scale: 1, transition: { type: "spring", bounce: 0.3 } } }} className="grid grid-cols-2 gap-3">
                                     <Link href="/#features" onClick={() => setIsMobileMenuOpen(false)} className="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group">
