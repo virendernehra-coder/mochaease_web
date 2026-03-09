@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getBlogPostBySlug, BLOG_POSTS } from '@/data/blog';
+import { createClient } from '@/utils/supabase/server';
+import { getBlogPostBySlug } from '@/data/blog';
 import NetworkBackground from '@/components/NetworkBackground';
-import { Clock, Calendar, ArrowLeft, ArrowRight, BookOpen } from 'lucide-react';
+import { Clock, Calendar, ArrowLeft, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 interface Props {
@@ -11,50 +12,118 @@ interface Props {
     }>;
 }
 
-// Generate static parameters for all known blog posts at build time
-export function generateStaticParams() {
-    return BLOG_POSTS.map((post) => ({
-        slug: post.slug,
-    }));
+async function getPost(slug: string) {
+    // Try Supabase first
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from('blog_translations')
+            .select(`
+                id,
+                slug_localized,
+                title,
+                excerpt,
+                content_html,
+                seo_description,
+                seo_keywords,
+                published_at,
+                blogs!inner (
+                    id,
+                    featured_image,
+                    author,
+                    tags
+                )
+            `)
+            .eq('slug_localized', slug)
+            .eq('language_code', 'en')
+            .eq('is_published', true)
+            .single();
+
+        if (!error && data) {
+            const blog = Array.isArray(data.blogs) ? data.blogs[0] : data.blogs;
+            const tags = (blog as { tags?: string[] })?.tags ?? [];
+            return {
+                title: data.title,
+                excerpt: data.excerpt ?? '',
+                content_html: data.content_html ?? '',
+                seo_description: data.seo_description ?? data.excerpt ?? '',
+                seo_keywords: data.seo_keywords ?? tags,
+                featured_image: (blog as { featured_image?: string })?.featured_image ?? null,
+                category: tags[0] ?? 'Product Updates',
+                read_time: '5 min read',
+                published_at: data.published_at ?? new Date().toISOString(),
+                author: (blog as { author?: string })?.author ?? 'MochaEase Team',
+                slug: data.slug_localized,
+            };
+        }
+    } catch (err) {
+        console.warn('Supabase article fetch failed, using static fallback:', err);
+    }
+
+    // Fall back to static data
+    const staticPost = getBlogPostBySlug(slug);
+    if (!staticPost) return null;
+
+    // Convert markdown-style content to simple HTML paragraphs
+    const content_html = staticPost.content
+        .split('\n')
+        .map((line) => {
+            const t = line.trim();
+            if (!t) return '';
+            if (t.startsWith('## ')) return `<h2>${t.slice(3)}</h2>`;
+            if (t.startsWith('### ')) return `<h3>${t.slice(4)}</h3>`;
+            if (t.startsWith('* ') || t.startsWith('- ')) return `<li>${t.slice(2)}</li>`;
+            return `<p>${t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>')}</p>`;
+        })
+        .join('\n');
+
+    return {
+        title: staticPost.title,
+        excerpt: staticPost.excerpt,
+        content_html,
+        seo_description: staticPost.excerpt,
+        seo_keywords: staticPost.keywords,
+        featured_image: staticPost.coverImage,
+        category: staticPost.category,
+        read_time: staticPost.readTime,
+        published_at: new Date(staticPost.date).toISOString(),
+        author: staticPost.author,
+        slug: staticPost.slug,
+    };
 }
 
 // Dynamically generate SEO Metadata specific to this article
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
-    const post = getBlogPostBySlug(slug);
+    const post = await getPost(slug);
 
     if (!post) {
         return { title: 'Post Not Found | MochaEase' };
     }
 
-    const imageUrl = `https://mochaease.com${post.coverImage}`;
+    const imageUrl = post.featured_image
+        ? (post.featured_image.startsWith('http') ? post.featured_image : `https://mochaease.com${post.featured_image}`)
+        : 'https://mochaease.com/blog/blog_ai_inventory_1773002441722.png';
 
     return {
         title: post.title,
-        description: post.excerpt,
-        keywords: post.keywords,
+        description: post.seo_description,
+        keywords: post.seo_keywords,
         authors: [{ name: post.author }],
         openGraph: {
             title: post.title,
-            description: post.excerpt,
+            description: post.seo_description,
             url: `https://mochaease.com/blog/${post.slug}`,
             siteName: 'MochaEase',
-            images: [
-                {
-                    url: imageUrl,
-                    width: 1200,
-                    height: 630,
-                    alt: post.title,
-                },
-            ],
+            images: [{ url: imageUrl, width: 1200, height: 630, alt: post.title }],
             type: 'article',
-            publishedTime: new Date(post.date).toISOString(),
-            authors: [post.author]
+            publishedTime: new Date(post.published_at).toISOString(),
+            authors: [post.author],
         },
         twitter: {
             card: 'summary_large_image',
             title: post.title,
-            description: post.excerpt,
+            description: post.seo_description,
             images: [imageUrl],
         },
     };
@@ -62,65 +131,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
     const { slug } = await params;
-    const post = getBlogPostBySlug(slug);
+    const post = await getPost(slug);
 
     if (!post) {
         notFound();
     }
 
-    // Split markdown-style string into paragraphs or headers for rendering
-    const renderContent = (contentString: string) => {
-        return contentString.split('\n').map((line, index) => {
-            const trimmedLine = line.trim();
-            if (!trimmedLine) return null;
-
-            if (trimmedLine.startsWith('## ')) {
-                return <h2 key={index} className="text-3xl font-bold text-white mt-12 mb-6">{trimmedLine.replace('## ', '')}</h2>;
-            }
-            if (trimmedLine.startsWith('### ')) {
-                return <h3 key={index} className="text-2xl font-bold text-white/90 mt-10 mb-4">{trimmedLine.replace('### ', '')}</h3>;
-            }
-            if (trimmedLine.startsWith('*   ') || trimmedLine.startsWith('-   ') || /^\d+\.\s/.test(trimmedLine)) {
-                // Render list items with slight formatting
-                const text = trimmedLine.replace(/^(\*   |-   |\d+\.\s)/, '');
-
-                const parts = text.split(/(\*\*.*?\*\*)/).map((part, i) => {
-                    if (part.startsWith('**') && part.endsWith('**')) {
-                        return <strong key={i} className="text-white font-bold">{part.replace(/\*\*/g, '')}</strong>;
-                    }
-                    return part;
-                });
-
-                return (
-                    <div key={index} className="flex gap-4 mb-4">
-                        <span className="text-[#C3EB7A]">●</span>
-                        <p className="text-lg text-white/70 leading-relaxed font-medium">{parts}</p>
-                    </div>
-                );
-            }
-
-            // Render emphasized text (e.g., italics)
-            if (trimmedLine.startsWith('*') && trimmedLine.endsWith('*')) {
-                return <p key={index} className="text-xl text-white/60 italic my-8 border-l-2 border-[#4A90E2] pl-6 py-2">{trimmedLine.replace(/\*/g, '')}</p>
-            }
-
-            // Render bold text formatting
-            const parts = trimmedLine.split(/(\*\*.*?\*\*)/).map((part, i) => {
-                if (part.startsWith('**') && part.endsWith('**')) {
-                    return <strong key={i} className="text-white font-bold">{part.replace(/\*\*/g, '')}</strong>;
-                }
-                return part;
-            });
-
-            return <p key={index} className="text-xl text-white/70 leading-relaxed mb-6 font-medium">{parts}</p>;
+    const formatDate = (dateString: string) =>
+        new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
         });
-    };
 
     return (
         <main className="flex min-h-screen flex-col items-center overflow-x-hidden relative bg-[#050505] selection:bg-[#C3EB7A]/30">
             <NetworkBackground />
-
-            {/* Dark wash to read text clearly */}
             <div className="absolute inset-0 bg-black/40 xl:bg-black/60 z-0 pointer-events-none" />
 
             <article className="relative w-full max-w-4xl mx-auto px-4 sm:px-6 pt-32 pb-24 flex flex-col z-10">
@@ -137,7 +163,7 @@ export default async function BlogPostPage({ params }: Props) {
                     <div className="flex flex-wrap items-center gap-4 mb-8">
                         <span className="px-4 py-1.5 rounded-full bg-white/10 text-white text-sm font-bold border border-white/10 uppercase tracking-widest">{post.category}</span>
                         <div className="flex items-center gap-2 text-[#C3EB7A] text-sm font-bold bg-[#C3EB7A]/10 px-4 py-1.5 rounded-full border border-[#C3EB7A]/20">
-                            <Clock className="w-4 h-4" /> {post.readTime}
+                            <Clock className="w-4 h-4" /> {post.read_time}
                         </div>
                     </div>
 
@@ -156,23 +182,26 @@ export default async function BlogPostPage({ params }: Props) {
                         <div className="flex flex-col">
                             <span className="text-white font-bold">{post.author}</span>
                             <div className="flex items-center gap-1 text-white/40 text-sm">
-                                <Calendar className="w-3 h-3" /> Published on {post.date}
+                                <Calendar className="w-3 h-3" /> Published on {formatDate(post.published_at)}
                             </div>
                         </div>
                     </div>
                 </header>
 
                 {/* Immersive Cover Image */}
-                <div className="w-full aspect-[21/9] rounded-[2rem] overflow-hidden mb-16 relative border border-white/10 shadow-2xl">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                </div>
+                {post.featured_image && (
+                    <div className="w-full aspect-[21/9] rounded-[2rem] overflow-hidden mb-16 relative border border-white/10 shadow-2xl">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={post.featured_image} alt={post.title} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    </div>
+                )}
 
-                {/* Article Body */}
-                <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-a:text-[#4A90E2] hover:prose-a:text-[#6AB0FF] prose-strong:text-white prose-p:text-white/75">
-                    {renderContent(post.content)}
-                </div>
+                {/* Article Body — render the raw HTML from Supabase safely */}
+                <div
+                    className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-a:text-[#4A90E2] hover:prose-a:text-[#6AB0FF] prose-strong:text-white prose-p:text-white/75"
+                    dangerouslySetInnerHTML={{ __html: post.content_html }}
+                />
 
                 {/* Share & Engage Footer */}
                 <div className="mt-20 pt-10 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -188,7 +217,6 @@ export default async function BlogPostPage({ params }: Props) {
                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12.031 0C5.394 0 0 5.394 0 12.031c0 2.113.551 4.183 1.597 6.004L0 24l6.126-1.564A11.97 11.97 0 0012.031 24c6.634 0 12.028-5.394 12.028-12.031S18.665 0 12.031 0zM12.03 22.016c-1.768 0-3.504-.452-5.045-1.306l-.361-.202-3.754.958.988-3.662-.222-.353a9.982 9.982 0 01-1.524-5.32c0-5.526 4.496-10.021 10.022-10.021s10.021 4.495 10.021 10.021-4.495 10.021-10.021 10.021zm5.548-7.55c-.304-.152-1.796-.887-2.074-.988-.278-.102-.482-.152-.685.152-.203.304-.786.988-.963 1.19-.178.203-.356.228-.66.076-1.503-.733-2.618-1.464-3.628-3.197-.209-.356.205-.331.642-1.201.076-.152.038-.28-.019-.431-.057-.152-.686-1.65-.94-2.261-.247-.594-.497-.514-.686-.523-.178-.009-.38-.012-.584-.012-.203 0-.533.076-.812.381-.279.305-1.066 1.041-1.066 2.539 0 1.498 1.091 2.946 1.243 3.149.153.203 2.148 3.28 5.204 4.598 2.053.882 2.842.94 3.961.788 1.258-.171 3.515-1.436 4.008-2.823.493-1.388.493-2.576.341-2.823-.153-.247-.559-.395-.863-.547z" clipRule="evenodd"></path></svg>
                         </a>
                     </div>
-
                     <Link href="/blog" className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 text-white font-bold hover:bg-white/20 transition-colors border border-white/10">
                         <BookOpen className="w-4 h-4" />
                         Explore More Articles
