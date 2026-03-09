@@ -294,6 +294,70 @@ export default async function BlogPostPage({ params }: Props) {
                     color: #C3EB7A;
                     font-family: monospace;
                   }
+
+                  /* ── Inline images ── */
+                  .article-body img {
+                    width: 100%;
+                    border-radius: 1.25rem;
+                    border: 1px solid rgba(255,255,255,0.08);
+                    margin: 2rem 0;
+                    object-fit: cover;
+                    max-height: 520px;
+                    display: block;
+                  }
+
+                  /* ── Figure with caption ── */
+                  .article-body figure {
+                    margin: 2.5rem 0;
+                  }
+                  .article-body figure img {
+                    margin: 0 0 0.75rem 0;
+                  }
+                  .article-body figcaption {
+                    text-align: center;
+                    font-size: 0.875rem;
+                    color: rgba(255,255,255,0.38);
+                    font-style: italic;
+                    letter-spacing: 0.01em;
+                  }
+
+                  /* ── Responsive YouTube / video embed ── */
+                  .article-body .video-wrapper {
+                    position: relative;
+                    padding-bottom: 56.25%;
+                    height: 0;
+                    overflow: hidden;
+                    border-radius: 1.25rem;
+                    border: 1px solid rgba(255,255,255,0.08);
+                    margin: 2.5rem 0;
+                    background: #000;
+                  }
+                  .article-body .video-wrapper iframe,
+                  .article-body .video-wrapper video {
+                    position: absolute;
+                    top: 0; left: 0;
+                    width: 100%;
+                    height: 100%;
+                    border: none;
+                    border-radius: 1.25rem;
+                  }
+
+                  /* ── Stat / callout highlight box ── */
+                  .article-body .callout {
+                    background: linear-gradient(135deg, rgba(195,235,122,0.07), rgba(74,144,226,0.07));
+                    border: 1px solid rgba(195,235,122,0.2);
+                    border-radius: 1rem;
+                    padding: 1.5rem 2rem;
+                    margin: 2.25rem 0;
+                    font-size: 1.1rem;
+                    color: rgba(255,255,255,0.8);
+                  }
+                  .article-body .callout strong {
+                    color: #C3EB7A;
+                    font-size: 1.5rem;
+                    display: block;
+                    margin-bottom: 0.25rem;
+                  }
                 `}</style>
                 <div
                     className="article-body max-w-none"
