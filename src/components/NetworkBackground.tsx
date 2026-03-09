@@ -6,24 +6,32 @@ import { loadSlim } from "@tsparticles/slim";
 
 export default function NetworkBackground() {
     const [init, setInit] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        // Disable particles on mobile devices to dramatically improve performance
-        if (typeof window !== 'undefined' && window.innerWidth < 768) {
-            return;
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
+        // Skip particles entirely on mobile — saves ~100KB JS + GPU load
+        if (window.innerWidth < 768) {
+            return () => window.removeEventListener('resize', checkMobile);
         }
 
         initParticlesEngine(async (engine: Engine) => {
-            // load slim version to optimize bundle size
             await loadSlim(engine);
         }).then(() => {
             setInit(true);
         });
+
+        return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
     const particlesLoaded = async (container?: Container): Promise<void> => {
         // console.log(container);
     };
+
+    if (isMobile) return null;
 
     if (init) {
         return (

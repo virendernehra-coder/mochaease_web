@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
+import { getOrganizationSchema, getSoftwareApplicationSchema } from "@/data/structured-data";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,6 +62,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground selection:bg-[#C3EB7A]/30`}
       >
+        {/* JSON-LD Structured Data for Google Rich Snippets */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(getOrganizationSchema()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(getSoftwareApplicationSchema()) }}
+        />
         <div className="relative flex min-h-screen flex-col">
           <Navbar />
           <PageTransition>{children}</PageTransition>
