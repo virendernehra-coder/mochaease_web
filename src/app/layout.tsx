@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-
 import Footer from "@/components/Footer";
+import PageTransition from "@/components/PageTransition";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     description: "The intelligent operating system for multi-outlet retail and F&B. Predict demand, manage staff, and process offline transactions natively.",
     siteName: "MochaEase",
     images: [{
-      url: "/blog/blog_ai_inventory_1773002441722.png", // Using the sleek AI inventory image as the main global social card
+      url: "/blog/blog_ai_inventory_1773002441722.png",
       width: 1200,
       height: 630,
       alt: "MochaEase Smart POS Ecosystem",
@@ -63,7 +63,7 @@ export default function RootLayout({
       >
         <div className="relative flex min-h-screen flex-col">
           <Navbar />
-          {children}
+          <PageTransition>{children}</PageTransition>
           <Footer />
         </div>
       </body>

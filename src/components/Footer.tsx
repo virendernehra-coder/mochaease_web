@@ -1,6 +1,105 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Globe, Linkedin, Instagram, Youtube } from 'lucide-react';
+import { ArrowRight, Globe, Linkedin, Instagram, Youtube, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const FOOTER_BUSINESS_TYPES = [
+    {
+        title: 'Food & Beverage',
+        color: '#C3EB7A',
+        links: [
+            { name: 'Coffee Shops & Cafes', href: '/experience?role=cafe' },
+            { name: 'Quick Service (QSR)', href: '/experience?role=qsr' },
+            { name: 'Full Service Dining', href: '/experience?role=full-service' },
+            { name: 'Bars & Breweries', href: '/experience?role=bars' },
+            { name: 'Food Trucks & Pop-ups', href: '/experience?role=food-trucks' },
+            { name: 'Bakeries & Patisseries', href: '/experience?role=bakeries' },
+        ],
+    },
+    {
+        title: 'Retail & Boutiques',
+        color: '#C3EB7A',
+        links: [
+            { name: 'Apparel & Fashion', href: '/experience?role=fashion' },
+            { name: 'Health & Beauty', href: '/experience?role=beauty' },
+            { name: 'Grocery & Convenience', href: '/experience?role=grocery' },
+            { name: 'Home & Lifestyle', href: '/experience?role=home' },
+            { name: 'Vape & Smoke Shops', href: '/experience?role=vape' },
+        ],
+    },
+    {
+        title: 'Enterprise Chains',
+        color: '#4A90E2',
+        links: [
+            { name: 'Franchise Management', href: '/experience?role=enterprise' },
+            { name: 'Multi-Brand Portfolios', href: '/experience?role=multi-brand' },
+            { name: 'Stadiums & Large Venues', href: '/experience?role=stadiums' },
+            { name: 'Airports & Travel Retail', href: '/experience?role=airports' },
+        ],
+    },
+];
+
+function FooterAccordion({ category }: { category: typeof FOOTER_BUSINESS_TYPES[number] }) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div className="border-b border-white/5 last:border-none">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full flex items-center justify-between py-3 group cursor-pointer"
+            >
+                <span
+                    className="text-xs font-bold uppercase tracking-wider transition-colors"
+                    style={{ color: isOpen ? category.color : 'rgba(255,255,255,0.4)' }}
+                >
+                    {category.title}
+                </span>
+                <motion.div
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                >
+                    <ChevronDown
+                        className="w-3.5 h-3.5 transition-colors"
+                        style={{ color: isOpen ? category.color : 'rgba(255,255,255,0.25)' }}
+                    />
+                </motion.div>
+            </button>
+            <AnimatePresence initial={false}>
+                {isOpen && (
+                    <motion.ul
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                        className="overflow-hidden space-y-1 pb-3"
+                    >
+                        {category.links.map((link, idx) => (
+                            <motion.li
+                                key={link.href}
+                                initial={{ opacity: 0, x: -8 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: idx * 0.04, duration: 0.2 }}
+                            >
+                                <Link
+                                    href={link.href}
+                                    className="text-sm font-medium text-white/50 hover:text-white transition-colors flex items-center gap-2 py-1.5 pl-2 rounded-lg hover:bg-white/5 group/link"
+                                >
+                                    <span
+                                        className="w-1 h-1 rounded-full transition-colors"
+                                        style={{ backgroundColor: category.color + '60' }}
+                                    />
+                                    {link.name}
+                                </Link>
+                            </motion.li>
+                        ))}
+                    </motion.ul>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
 
 export default function Footer() {
     return (
@@ -55,21 +154,20 @@ export default function Footer() {
                         <h4 className="text-white font-bold mb-6">Product</h4>
                         <ul className="space-y-4">
                             <li><Link href="/#features" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Features</Link></li>
-                            <li><Link href="/#pricing" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Pricing</Link></li>
+                            <li><Link href="/pricing" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Pricing</Link></li>
                             <li><Link href="/demo" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Book a Demo</Link></li>
                             <li><Link href="/calculator" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Savings Calculator</Link></li>
                         </ul>
                     </div>
 
-                    {/* Use Cases */}
+                    {/* Business Types — Expandable Accordion */}
                     <div>
-                        <h4 className="text-white font-bold mb-6">Use Cases</h4>
-                        <ul className="space-y-4">
-                            <li><Link href="/use-cases/cafe" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Cafe & Coffee Shops</Link></li>
-                            <li><Link href="/use-cases/qsr" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Quick Service (QSR)</Link></li>
-                            <li><Link href="/use-cases/fashion" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Fashion & Boutique</Link></li>
-                            <li><Link href="/use-cases/enterprise" className="text-white/50 hover:text-[#4A90E2] text-sm font-bold transition-colors">Enterprise Chains</Link></li>
-                        </ul>
+                        <h4 className="text-white font-bold mb-4">Business Types</h4>
+                        <div className="space-y-0">
+                            {FOOTER_BUSINESS_TYPES.map((cat) => (
+                                <FooterAccordion key={cat.title} category={cat} />
+                            ))}
+                        </div>
                     </div>
 
                     {/* Company */}

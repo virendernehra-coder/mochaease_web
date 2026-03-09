@@ -215,7 +215,7 @@ export default function Navbar() {
                     </AnimatePresence>
                 </div>
 
-                <Link href="/#pricing" className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors">Pricing</Link>
+                <Link href="/pricing" className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors">Pricing</Link>
 
                 {/* Resources Dropdown with Framer Motion */}
                 <div className="relative py-2" onMouseEnter={handleResourcesEnter} onMouseLeave={handleResourcesLeave}>
@@ -244,8 +244,8 @@ export default function Navbar() {
                     </AnimatePresence>
                 </div>
 
-                <Link href="/about" className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors">About Us</Link>
-                <Link href="/contact" className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors">Contact Us</Link>
+                <Link href="/about" className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors hidden xl:block">About Us</Link>
+                <Link href="/contact" className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors hidden xl:block">Contact Us</Link>
             </div>
 
             <div className="flex items-center gap-4">

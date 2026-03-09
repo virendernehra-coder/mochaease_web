@@ -13,6 +13,18 @@ export default function PricingPage() {
 
     useEffect(() => {
         setMounted(true);
+
+        // Auto-detect user's country for default pricing currency
+        fetch('/api/geo')
+            .then(res => res.json())
+            .then(data => {
+                if (data.currency) {
+                    setCountry(data.currency);
+                }
+            })
+            .catch(() => {
+                // Silent fallback — keeps default 'us'
+            });
     }, []);
 
     const getPricing = (tier: 'lite' | 'core' | 'max') => {
