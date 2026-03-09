@@ -6,6 +6,8 @@ import NetworkBackground from '@/components/NetworkBackground';
 import { Clock, Calendar, ArrowLeft, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
+export const revalidate = 0; // Always fetch fresh article content from Supabase
+
 interface Props {
     params: Promise<{
         slug: string;

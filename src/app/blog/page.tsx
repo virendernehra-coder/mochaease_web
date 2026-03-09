@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import BlogClient, { BlogPostSummary } from './BlogClient';
 import { BLOG_POSTS } from '@/data/blog';
 
-export const revalidate = 60; // Revalidate page data every 60 seconds
+export const revalidate = 0; // Always fetch fresh data from Supabase on every request
 
 // Map static blog data to the same shape as Supabase data
 const STATIC_POSTS: BlogPostSummary[] = BLOG_POSTS.map((p) => ({
