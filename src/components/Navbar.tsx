@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Globe, Menu, X, ChevronRight, ArrowRight, Zap, Coffee, ShoppingBag, Building, Info, MessageSquare, HelpCircle, Sparkles } from 'lucide-react';
+import { Globe, Menu, X, ChevronRight, ArrowRight, Zap, Coffee, ShoppingBag, Building, Info, MessageSquare, HelpCircle, Sparkles, CreditCard, BookOpen, Calculator, FileText, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 
@@ -311,66 +311,91 @@ export default function Navbar() {
                             }}
                             className="flex flex-col p-6 gap-8 relative z-10 min-h-full pb-32"
                         >
-                            <div className="flex flex-col gap-2">
-                                {/* Primary Navigation Links - Editorial Scale */}
-                                <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }}>
-                                    <Link href="/#features" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-5 border-b border-white/10 w-full group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-[#C3EB7A]/20 transition-colors">
-                                                <Zap className="w-6 h-6 text-[#C3EB7A]" />
-                                            </div>
-                                            <span className="text-3xl font-black tracking-tight">Features</span>
+                            <div className="flex flex-col gap-6">
+                                {/* Header / Close Button Area */}
+                                <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                                    <div className="flex items-center gap-1 group">
+                                        <div className="text-[#C3EB7A] font-extrabold text-2xl tracking-tighter shrink-0 m-0 leading-none">m</div>
+                                        <div className="text-white font-extrabold text-2xl tracking-tighter shrink-0 m-0 leading-none">E.</div>
+                                    </div>
+                                    <button
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors text-white"
+                                    >
+                                        <X className="w-6 h-6" />
+                                    </button>
+                                </div>
+
+                                {/* Primary Navigation Grid - 2x2 */}
+                                <motion.div variants={{ hidden: { opacity: 0, scale: 0.95 }, show: { opacity: 1, scale: 1, transition: { type: "spring", bounce: 0.3 } } }} className="grid grid-cols-2 gap-3">
+                                    <Link href="/#features" onClick={() => setIsMobileMenuOpen(false)} className="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group">
+                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#C3EB7A]/20 to-transparent flex items-center justify-center">
+                                            <Zap className="w-5 h-5 text-[#C3EB7A]" />
                                         </div>
-                                        <ChevronRight className="w-6 h-6 text-white/20 group-hover:text-white transition-colors group-hover:translate-x-1" />
+                                        <span className="text-lg font-bold text-white tracking-tight">Features</span>
+                                    </Link>
+                                    <Link href="/experience" onClick={() => setIsMobileMenuOpen(false)} className="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group">
+                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#4A90E2]/20 to-transparent flex items-center justify-center">
+                                            <Building className="w-5 h-5 text-[#4A90E2]" />
+                                        </div>
+                                        <span className="text-lg font-bold text-white tracking-tight">Business Types</span>
+                                    </Link>
+                                    <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group">
+                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500/20 to-transparent flex items-center justify-center">
+                                            <CreditCard className="w-5 h-5 text-purple-400" />
+                                        </div>
+                                        <span className="text-lg font-bold text-white tracking-tight">Pricing</span>
+                                    </Link>
+                                    <Link href="/blog" onClick={() => setIsMobileMenuOpen(false)} className="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group">
+                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500/20 to-transparent flex items-center justify-center">
+                                            <BookOpen className="w-5 h-5 text-orange-400" />
+                                        </div>
+                                        <span className="text-lg font-bold text-white tracking-tight">Resources</span>
                                     </Link>
                                 </motion.div>
 
-
-                                <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }}>
-                                    <Link href="/experience" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between text-white hover:text-[#C3EB7A] transition-colors py-5 border-b border-white/10 w-full group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-[#C3EB7A]/20 transition-colors">
-                                                <Building className="w-6 h-6 text-[#C3EB7A]" />
-                                            </div>
-                                            <span className="text-3xl font-black tracking-tight">Business Types</span>
-                                        </div>
-                                        <ChevronRight className="w-6 h-6 text-white/20 group-hover:text-[#C3EB7A] transition-colors group-hover:translate-x-1" />
-                                    </Link>
-                                </motion.div>
-
-                                {/* Corporate Info */}
-                                <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }} className="grid grid-cols-3 gap-2 py-6">
-                                    <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col items-center justify-center gap-2 p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors">
-                                        <Info className="w-6 h-6 text-white/60" />
-                                        <span className="text-xs font-bold text-white/80">About Us</span>
-                                    </Link>
-                                    <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col items-center justify-center gap-2 p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors">
-                                        <HelpCircle className="w-6 h-6 text-white/60" />
-                                        <span className="text-xs font-bold text-white/80">Support</span>
-                                    </Link>
-                                    <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col items-center justify-center gap-2 p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors">
-                                        <MessageSquare className="w-6 h-6 text-white/60" />
-                                        <span className="text-xs font-bold text-white/80">Contact</span>
-                                    </Link>
+                                {/* Secondary Links - Horizontal Scroll Pills */}
+                                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }} className="py-2">
+                                    <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-3 px-1">More</h3>
+                                    <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide -mx-2 px-2">
+                                        <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 rounded-full whitespace-nowrap transition-colors border border-white/5">
+                                            <Info className="w-4 h-4 text-white/60" />
+                                            <span className="text-sm font-semibold text-white/80">About Us</span>
+                                        </Link>
+                                        <Link href="/guides" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 rounded-full whitespace-nowrap transition-colors border border-white/5">
+                                            <FileText className="w-4 h-4 text-white/60" />
+                                            <span className="text-sm font-semibold text-white/80">Guides</span>
+                                        </Link>
+                                        <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 rounded-full whitespace-nowrap transition-colors border border-white/5">
+                                            <HelpCircle className="w-4 h-4 text-white/60" />
+                                            <span className="text-sm font-semibold text-white/80">Support</span>
+                                        </Link>
+                                        <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 rounded-full whitespace-nowrap transition-colors border border-white/5">
+                                            <MessageSquare className="w-4 h-4 text-white/60" />
+                                            <span className="text-sm font-semibold text-white/80">Contact</span>
+                                        </Link>
+                                    </div>
                                 </motion.div>
                             </div>
 
-                            {/* Massive CTA Buttons */}
-                            <motion.div variants={{ hidden: { opacity: 0, scale: 0.9 }, show: { opacity: 1, scale: 1, transition: { type: "spring", bounce: 0.5 } } }} className="flex flex-col gap-4 mt-auto">
+                            {/* Sticky Bottom Actions */}
+                            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.5 } } }} className="mt-auto flex flex-col gap-3 sticky bottom-6 z-20">
                                 <Link
                                     href="/calculator"
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="text-center font-black text-white text-lg bg-gradient-to-r from-[#4A90E2] to-[#357ABD] py-5 rounded-2xl hover:brightness-110 active:scale-95 transition-all shadow-[0_10px_30px_rgba(74,144,226,0.3)]"
+                                    className="w-full flex items-center justify-center gap-2 text-center font-bold text-white text-[15px] bg-[#4A90E2]/20 border border-[#4A90E2]/30 py-4 rounded-2xl hover:bg-[#4A90E2]/30 active:scale-[0.98] transition-all backdrop-blur-md"
                                 >
-                                    Savings Calculator
+                                    <Calculator className="w-5 h-5" />
+                                    Calculate Savings
                                 </Link>
                                 <a
                                     href="https://backoffice.mochaease.com"
                                     target="_blank"
                                     rel="noreferrer"
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="text-center font-bold text-white text-lg bg-white/5 border border-white/10 py-5 rounded-2xl hover:bg-white/10 active:scale-95 transition-all"
+                                    className="w-full flex items-center justify-center gap-2 text-center font-bold text-black text-[15px] bg-[#C3EB7A] py-4 rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(195,235,122,0.3)]"
                                 >
+                                    <LogIn className="w-5 h-5" />
                                     Sign In to Dashboard
                                 </a>
                             </motion.div>
