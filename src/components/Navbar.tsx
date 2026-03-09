@@ -49,7 +49,6 @@ const BUSINESS_CATEGORIES = {
             { name: "Franchise Management", href: "/experience?role=enterprise" },
             { name: "Multi-Brand Portfolios", href: "/experience?role=multi-brand" },
             { name: "Stadiums & Large Venues", href: "/experience?role=stadiums" },
-            { name: "Airports & Travel Retail", href: "/experience?role=airports" },
         ],
         capabilities: [
             { name: "Centralized Head Office", href: "#" },
@@ -261,9 +260,9 @@ export default function Navbar() {
                 >
                     Get Started
                 </Link>
-                <Link href="/login" className="text-xs font-bold text-white hover:text-[#C3EB7A] transition-colors hidden sm:block ml-2">
+                <a href="https://backoffice.mochaease.com" target="_blank" rel="noreferrer" className="text-xs font-bold text-white hover:text-[#C3EB7A] transition-colors hidden sm:block ml-2">
                     Sign In
-                </Link>
+                </a>
                 <div className="hidden md:flex items-center gap-1 ml-2 text-white/50 hover:text-white transition-colors cursor-pointer group">
                     <Globe className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
                     <span className="text-xs font-bold">EN</span>
@@ -365,13 +364,15 @@ export default function Navbar() {
                                 >
                                     Savings Calculator
                                 </Link>
-                                <Link
-                                    href="/login"
+                                <a
+                                    href="https://backoffice.mochaease.com"
+                                    target="_blank"
+                                    rel="noreferrer"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className="text-center font-bold text-white text-lg bg-white/5 border border-white/10 py-5 rounded-2xl hover:bg-white/10 active:scale-95 transition-all"
                                 >
                                     Sign In to Dashboard
-                                </Link>
+                                </a>
                             </motion.div>
                         </motion.div>
                     </motion.div>

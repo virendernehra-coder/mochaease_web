@@ -124,7 +124,6 @@ All plans come with a FREE TRIAL. No hidden fees, cancel anytime.
 - Franchise Management (multi-brand, multi-outlet)
 - Multi-Brand Portfolios
 - Stadiums & Large Venues
-- Airports & Travel Retail
 
 ## Quick Setup
 - Get running in under 24 hours

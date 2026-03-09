@@ -137,7 +137,7 @@ function ExperiencePageContent() {
                                     Enterprise & Venues
                                 </h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                    {ROLES.filter(r => ['enterprise', 'multi-brand', 'stadiums', 'airports'].includes(r.id!)).map((r) => (
+                                    {ROLES.filter(r => ['enterprise', 'multi-brand', 'stadiums'].includes(r.id!)).map((r) => (
                                         <motion.button
                                             key={r.id}
                                             whileHover={{ scale: 1.05, y: -5 }}

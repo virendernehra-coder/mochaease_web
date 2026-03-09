@@ -234,7 +234,7 @@ export default function DemoForm() {
                                                 <option value="franchise">Franchise Management</option>
                                                 <option value="multi-brand">Multi-Brand Portfolios</option>
                                                 <option value="stadiums">Stadiums & Large Venues</option>
-                                                <option value="airports">Airports & Travel Retail</option>
+
                                             </optgroup>
                                             <option value="other">Other</option>
                                         </select>

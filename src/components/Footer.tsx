@@ -36,7 +36,6 @@ const FOOTER_BUSINESS_TYPES = [
             { name: 'Franchise Management', href: '/experience?role=enterprise' },
             { name: 'Multi-Brand Portfolios', href: '/experience?role=multi-brand' },
             { name: 'Stadiums & Large Venues', href: '/experience?role=stadiums' },
-            { name: 'Airports & Travel Retail', href: '/experience?role=airports' },
         ],
     },
 ];

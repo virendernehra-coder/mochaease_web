@@ -29,7 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const businessTypes = [
         'cafe', 'qsr', 'full-service', 'bars', 'food-trucks', 'bakeries',
         'fashion', 'beauty', 'grocery', 'home', 'vape',
-        'enterprise', 'multi-brand', 'stadiums', 'airports',
+        'enterprise', 'multi-brand', 'stadiums',
     ];
 
     const staticEntries: MetadataRoute.Sitemap = staticPages.map((path) => ({

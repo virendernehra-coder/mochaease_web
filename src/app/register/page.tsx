@@ -167,7 +167,7 @@ export default function RegisterPage() {
                     </motion.div>
 
                     <motion.p variants={fadeUpVariant} className="text-center text-sm text-white/50">
-                        Already have an account? <Link href="/login" className="text-[#C3EB7A] font-bold hover:underline underline-offset-4 decoration-2">Sign in instead</Link>
+                        Already have an account? <a href="https://backoffice.mochaease.com" target="_blank" rel="noreferrer" className="text-[#C3EB7A] font-bold hover:underline underline-offset-4 decoration-2">Sign in instead</a>
                     </motion.p>
                 </motion.div>
             </div>
