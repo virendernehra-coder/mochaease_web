@@ -93,12 +93,19 @@ export default function Navbar() {
         resourcesTimeout.current = setTimeout(() => setIsResourcesOpen(false), 200);
     };
 
+    // Mobile menu expanding states
+    const [isMobileBusinessExpanded, setIsMobileBusinessExpanded] = useState(false);
+    const [isMobileResourcesExpanded, setIsMobileResourcesExpanded] = useState(false);
+
     // Prevent body scrolling when mobile menu is open
     useEffect(() => {
         if (isMobileMenuOpen) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'unset';
+            // Reset mobile accordions when closing the menu
+            setIsMobileBusinessExpanded(false);
+            setIsMobileResourcesExpanded(false);
         }
         return () => {
             document.body.style.overflow = 'unset';
@@ -320,25 +327,94 @@ export default function Navbar() {
                                         </div>
                                         <span className="text-lg font-bold text-white tracking-tight">Features</span>
                                     </Link>
-                                    <Link href="/experience" onClick={() => setIsMobileMenuOpen(false)} className="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group">
+
+                                    {/* Business Types Expandable */}
+                                    <button
+                                        onClick={() => setIsMobileBusinessExpanded(!isMobileBusinessExpanded)}
+                                        className={`bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group text-left ${isMobileBusinessExpanded ? 'ring-1 ring-[#4A90E2]/50 bg-white/10' : ''}`}
+                                    >
                                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#4A90E2]/20 to-transparent flex items-center justify-center">
                                             <Building className="w-5 h-5 text-[#4A90E2]" />
                                         </div>
-                                        <span className="text-lg font-bold text-white tracking-tight">Business Types</span>
-                                    </Link>
+                                        <div className="flex items-center justify-between w-full">
+                                            <span className="text-lg font-bold text-white tracking-tight">Business Types</span>
+                                            <ChevronRight className={`w-4 h-4 text-white/50 transition-transform ${isMobileBusinessExpanded ? 'rotate-90' : ''}`} />
+                                        </div>
+                                    </button>
+
                                     <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group">
                                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500/20 to-transparent flex items-center justify-center">
                                             <CreditCard className="w-5 h-5 text-purple-400" />
                                         </div>
                                         <span className="text-lg font-bold text-white tracking-tight">Pricing</span>
                                     </Link>
-                                    <Link href="/blog" onClick={() => setIsMobileMenuOpen(false)} className="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group">
+
+                                    {/* Resources Expandable */}
+                                    <button
+                                        onClick={() => setIsMobileResourcesExpanded(!isMobileResourcesExpanded)}
+                                        className={`bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group text-left ${isMobileResourcesExpanded ? 'ring-1 ring-orange-500/50 bg-white/10' : ''}`}
+                                    >
                                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500/20 to-transparent flex items-center justify-center">
                                             <BookOpen className="w-5 h-5 text-orange-400" />
                                         </div>
-                                        <span className="text-lg font-bold text-white tracking-tight">Resources</span>
-                                    </Link>
+                                        <div className="flex items-center justify-between w-full">
+                                            <span className="text-lg font-bold text-white tracking-tight">Resources</span>
+                                            <ChevronRight className={`w-4 h-4 text-white/50 transition-transform ${isMobileResourcesExpanded ? 'rotate-90' : ''}`} />
+                                        </div>
+                                    </button>
                                 </motion.div>
+
+                                {/* Expandable Sub-menus */}
+                                <AnimatePresence>
+                                    {isMobileBusinessExpanded && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="overflow-hidden bg-[#111] rounded-3xl border border-white/5 -mt-3"
+                                        >
+                                            <div className="p-2 flex flex-col gap-1">
+                                                <div className="px-4 py-2 text-xs font-bold text-white/30 uppercase tracking-widest">Select Category</div>
+                                                <Link href="/experience" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    All Business Types <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#4A90E2]" />
+                                                </Link>
+                                                <Link href="/experience?role=cafe" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center gap-3">
+                                                    <span className="w-2 h-2 rounded-full bg-[#4A90E2]/50"></span> Food & Beverage
+                                                </Link>
+                                                <Link href="/experience?role=fashion" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center gap-3">
+                                                    <span className="w-2 h-2 rounded-full bg-purple-500/50"></span> Retail & Boutiques
+                                                </Link>
+                                                <Link href="/experience?role=enterprise" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center gap-3">
+                                                    <span className="w-2 h-2 rounded-full bg-[#C3EB7A]/50"></span> Enterprise Chains
+                                                </Link>
+                                            </div>
+                                        </motion.div>
+                                    )}
+
+                                    {isMobileResourcesExpanded && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="overflow-hidden bg-[#111] rounded-3xl border border-white/5 -mt-3"
+                                        >
+                                            <div className="p-2 flex flex-col gap-1">
+                                                <Link href="/blog" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    Blog <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-orange-400" />
+                                                </Link>
+                                                <Link href="/guides" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    Guides <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-orange-400" />
+                                                </Link>
+                                                <Link href="/resources/hardware" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    Supported Hardware <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-orange-400" />
+                                                </Link>
+                                                <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    Support Center <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-orange-400" />
+                                                </Link>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
 
                                 {/* Secondary Links - Horizontal Scroll Pills */}
                                 <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }} className="py-2">

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { MOZA_SYSTEM_PROMPT } from '@/data/moza-knowledge';
+import { getPricingPlans } from '@/utils/supabase/queries';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,10 +25,39 @@ export async function POST(request: Request) {
             );
         }
 
+        // Fetch dynamic pricing
+        const plans = await getPricingPlans();
+
+        // Format pricing for the AI
+        let pricingContextString = '';
+        if (plans && plans.length > 0) {
+            // Group by tier
+            const tiers = ['MochaLite', 'MochaCore', 'MochaMax'];
+            tiers.forEach(tier => {
+                pricingContextString += `\n### ${tier}\n`;
+                const tierPlans = plans.filter(p => p.plan_name === tier);
+
+                // Group by currency (USD, INR, IDR)
+                const currencies = ['USD', 'INR', 'IDR'];
+                currencies.forEach(currency => {
+                    const monthly = tierPlans.find(p => p.currency === currency && p.billing_cycle === 'monthly');
+                    const yearly = tierPlans.find(p => p.currency === currency && p.billing_cycle === 'yearly');
+
+                    if (monthly && yearly) {
+                        pricingContextString += `- ${currency}: ${monthly.price}/mo (Monthly plan) OR ${yearly.price}/mo (Annual plan)\n`;
+                    }
+                });
+            });
+        } else {
+            pricingContextString = '*Pricing data is currently unavailable. Please ask the user to check mochaease.com/pricing for Live Prices.*';
+        }
+
+        const injectedPrompt = MOZA_SYSTEM_PROMPT.replace('[DYNAMIC_PRICING_INJECTED_HERE]', pricingContextString);
+
         const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({
             model: 'gemini-2.0-flash',
-            systemInstruction: MOZA_SYSTEM_PROMPT,
+            systemInstruction: injectedPrompt,
         });
 
         // Build history from previous messages (exclude the last user message)

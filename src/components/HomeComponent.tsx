@@ -1,12 +1,13 @@
 'use client';
 
-import { BarChart3, Clock, Rocket, Shield, Settings2, FileText, Smartphone, Coffee, Store, Users, Zap, CheckCircle2, Globe, ChevronRight } from 'lucide-react';
+import { BarChart3, Clock, Rocket, Shield, Settings2, FileText, Smartphone, Coffee, Store, Users, Zap, CheckCircle2, Globe, ChevronRight, Sparkles, WifiOff } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import NetworkBackground from '@/components/NetworkBackground';
 import Chatbot from '@/components/Chatbot';
+import CustomVideoPlayer from '@/components/CustomVideoPlayer';
 
 export default function HomeComponent({ country = 'us' }: { country?: string }) {
   const [mounted, setMounted] = useState(false);
@@ -77,9 +78,9 @@ export default function HomeComponent({ country = 'us' }: { country?: string }) 
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-center">
           {/* Left Column: Text */}
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="space-y-12">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="space-y-12 lg:col-span-2">
 
             <motion.div variants={fadeUpVariant} className="relative p-8 rounded-2xl bg-gradient-to-br from-red-500/10 to-transparent border border-red-500/20 group hover:border-red-500/50 hover:bg-red-500/20 transition-all duration-500">
               <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/20 blur-[50px] -z-10 rounded-full group-hover:bg-red-500/40 transition-colors duration-500" />
@@ -112,18 +113,15 @@ export default function HomeComponent({ country = 'us' }: { country?: string }) 
             </motion.div>
           </motion.div>
 
-          {/* Right Column: YouTube Video */}
+          {/* Right Column: Custom Video Player */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, rotateX: 10, y: 50 }} whileInView={{ opacity: 1, scale: 1, rotateX: 0, y: 0 }} viewport={{ once: true }} transition={{ duration: 1, type: "spring", bounce: 0.4 }}
-            className="relative w-full aspect-video rounded-3xl bg-black border border-white/10 flex items-center justify-center overflow-hidden shadow-[0_0_80px_rgba(74,144,226,0.15)] hover:shadow-[0_0_120px_rgba(195,235,122,0.3)] transition-shadow duration-700"
+            className="relative w-full flex items-center justify-center z-20 perspective-1000 lg:col-span-3 pt-8 lg:pt-0"
           >
-            <iframe
-              className="absolute inset-0 w-full h-full z-20"
-              src="https://www.youtube.com/embed/ZQ9y0LJpnxc?si=Wq56VJBxMGKjmM8u&rel=0"
-              title="MochaEase Business Management System"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
+            <CustomVideoPlayer
+              src="https://xvjgvffbpbipdqdqlpwo.supabase.co/storage/v1/object/sign/website_videos/MochaEase%20Business%20Management%20System%20Introduction.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9kMTJhOThhZC1iYjdjLTQ3Y2YtODE2MS1jNDRjM2M4YzMwNWUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ3ZWJzaXRlX3ZpZGVvcy9Nb2NoYUVhc2UgQnVzaW5lc3MgTWFuYWdlbWVudCBTeXN0ZW0gSW50cm9kdWN0aW9uLm1wNCIsImlhdCI6MTc3MzA4MjE1NiwiZXhwIjoxODY3NjkwMTU2fQ.vjedNvSh80gTAAWRAyO-qnqBDUpCXBWJpr703qsTsAs"
+              poster="/video_poster.png"
+            />
           </motion.div>
         </div>
       </section>
@@ -182,65 +180,255 @@ export default function HomeComponent({ country = 'us' }: { country?: string }) 
         </motion.div>
       </section>
 
-      {/* Feature Grid / Core Value Prop - Animated & Vibrant */}
       <section id="features" className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-32 z-10 relative">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUpVariant} className="text-center mb-24 relative">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUpVariant} className="text-center mb-16 md:mb-24 relative">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#C3EB7A]/5 blur-[100px] -z-10 rounded-full" />
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-6 text-white">Built for the <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C3EB7A] to-[#4A90E2]">Modern Business</span></h2>
-          <p className="text-xl text-white/50 max-w-2xl mx-auto font-medium">Everything you need to run, manage, and scale your operations from a single, intelligent dashboard.</p>
+          <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-6 text-white">The Complete Suite for the <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C3EB7A] to-[#4A90E2]">Modern Era</span></h2>
+          <p className="text-xl text-white/50 max-w-2xl mx-auto font-medium">Stop patching together 5 different tools. MochaEase is an intelligent, unified ecosystem built to run your entire operation.</p>
         </motion.div>
 
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            { title: "SmartPOS", desc: "Lightning fast checkout with offline capabilities.", icon: <Store className="w-7 h-7 text-[#C3EB7A]" />, color: "from-[#C3EB7A]/20" },
-            { title: "Inventory Automation", desc: "AI-driven stock alerts so you never run dry.", icon: <Zap className="w-7 h-7 text-yellow-400" />, color: "from-yellow-400/20" },
-            { title: "Staff Scheduling", desc: "Manage shifts, payroll, and team performance.", icon: <Clock className="w-7 h-7 text-[#4A90E2]" />, color: "from-[#4A90E2]/20" },
-            { title: "AI Analytics", desc: "Predictive insights that steer your business.", icon: <BarChart3 className="w-7 h-7 text-purple-400" />, color: "from-purple-400/20" },
-            { title: "Customer Loyalty", desc: "Build habits with automated CRM campaigns.", icon: <Users className="w-7 h-7 text-pink-400" />, color: "from-pink-400/20" },
-            { title: "Digital Menus", desc: "Instant updates via QR and mobile ordering.", icon: <Smartphone className="w-7 h-7 text-emerald-400" />, color: "from-emerald-400/20" },
-          ].map((feature, i) => (
-            <motion.div key={i} variants={fadeUpVariant} className="relative p-[1px] rounded-3xl bg-gradient-to-b from-white/10 to-white/0 overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black to-[#0A0A0A] -z-10 rounded-3xl" />
-              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${feature.color} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-[40px] -z-10 rounded-full`} />
+        {/* Bento Grid 2.0 - Animated */}
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6">
 
-              <div className="p-8 h-full flex flex-col">
-                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center mb-8 shadow-inner group-hover:bg-white/10 transition-colors">
-                  {feature.icon}
+          {/* HERO CARD: Moza AI Data Analyst (Span 4) */}
+          <motion.div variants={fadeUpVariant} className="col-span-1 md:col-span-4 lg:col-span-4 h-full">
+            <motion.div animate={{ y: [0, -15, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0 }} className="relative p-[1px] rounded-[32px] bg-gradient-to-br from-[#4A90E2]/40 via-white/5 to-white/5 overflow-hidden group h-full">
+              <div className="absolute inset-0 bg-[#0A0A0A] -z-10 rounded-[32px]" />
+              <div className="absolute top-0 right-0 w-96 h-96 bg-[#4A90E2]/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-[#4A90E2]/20 transition-colors duration-700 pointer-events-none" />
+
+              <div className="p-8 md:p-12 h-full flex flex-col md:flex-row gap-8 items-center md:items-start justify-between">
+                <div className="flex-1 flex flex-col items-start z-10">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4A90E2]/10 border border-[#4A90E2]/20 text-[#4A90E2] text-xs font-bold uppercase tracking-wider mb-6">
+                    <Sparkles className="w-3 h-3 group-hover:rotate-12 transition-transform" /> AI Assistant
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">Moza AI Data Analyst</h3>
+                  <p className="text-white/60 text-lg leading-relaxed mb-8 max-w-sm">
+                    Stop downloading CSVs. Just ask Moza questions like <span className="text-white/90 italic">"What were our top 3 most profitable items last Tuesday?"</span> and get instant, actionable insights.
+                  </p>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">{feature.title}</h3>
-                <p className="text-white/50 text-base leading-relaxed">{feature.desc}</p>
+
+                {/* Mini Chat Illustration */}
+                <div className="w-full md:w-[320px] shrink-0 bg-[#111] border border-white/10 rounded-2xl p-4 shadow-2xl relative z-10 hidden sm:block group-hover:-translate-y-4 group-hover:scale-105 transition-all duration-500">
+                  <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-4">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#C3EB7A] to-[#4A90E2] flex items-center justify-center text-black font-black text-sm">M</div>
+                    <span className="text-white font-bold text-sm">Moza</span>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <div className="self-end bg-[#4A90E2]/20 border border-[#4A90E2]/30 text-white/90 text-xs p-3 rounded-2xl rounded-tr-sm max-w-[85%]">
+                      Can you calculate the food cost variance for August?
+                    </div>
+                    <div className="self-start bg-white/5 border border-white/5 text-white/80 text-xs p-3 rounded-2xl rounded-tl-sm max-w-[90%]">
+                      <p className="mb-2">Your theoretical food cost was 28.5%, but actual was 32.1%.</p>
+                      <p className="font-bold text-[#C3EB7A]">Major leak found: Dairy products (Cheese, Butter).</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </motion.div>
-          ))}
+          </motion.div>
+
+          {/* SECONDARY CARD: Invoice Scanning (Span 2) */}
+          <motion.div variants={fadeUpVariant} className="col-span-1 md:col-span-2 lg:col-span-2 h-full">
+            <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1.2 }} className="relative p-[1px] rounded-[32px] bg-gradient-to-bl from-yellow-400/40 via-white/5 to-white/5 overflow-hidden group h-full">
+              <div className="absolute inset-0 bg-[#0A0A0A] -z-10 rounded-[32px]" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-400/10 blur-[60px] rounded-full group-hover:bg-yellow-400/20 transition-colors duration-700 pointer-events-none" />
+
+              <div className="p-8 h-full flex flex-col z-10 relative">
+                <div className="w-12 h-12 rounded-xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500">
+                  <FileText className="w-6 h-6 text-yellow-500" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">AI Invoice Sync</h3>
+                <p className="text-white/60 text-base leading-relaxed">
+                  Snap a photo or upload a vendor invoice. Our AI automatically reads line items, updates inventory quantities, and logs expenses instantly.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* MIDDLE ROW */}
+          {/* Predictive Procurement (Span 2) */}
+          <motion.div variants={fadeUpVariant} className="col-span-1 md:col-span-2 lg:col-span-2 h-full">
+            <motion.div animate={{ y: [0, -14, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.8 }} className="relative p-[1px] rounded-[32px] bg-gradient-to-br from-cyan-500/20 to-white/0 overflow-hidden group h-full">
+              <div className="absolute inset-0 bg-[#0A0A0A] -z-10 rounded-[32px]" />
+              <div className="p-8 flex flex-col h-full bg-[#111]/50 group-hover:bg-[#111]/80 transition-colors rounded-[31px]">
+                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500">
+                  <Rocket className="w-6 h-6 text-cyan-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">Predictive Purchasing</h3>
+                <p className="text-white/50 text-base leading-relaxed mb-4">
+                  MochaEase predicts when you'll run out of high-velocity stock and auto-generates supplier POs right before the weekend rush.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Franchise Control (Span 2) */}
+          <motion.div variants={fadeUpVariant} className="col-span-1 md:col-span-2 lg:col-span-2 h-full">
+            <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2.5 }} className="relative p-[1px] rounded-[32px] bg-gradient-to-b from-[#C3EB7A]/30 to-white/0 overflow-hidden group h-full">
+              <div className="absolute inset-0 bg-[#0A0A0A] -z-10 rounded-[32px]" />
+              <div className="absolute inset-0 bg-[#C3EB7A]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl pointer-events-none" />
+              <div className="p-8 flex flex-col h-full bg-[#111]/50 group-hover:bg-transparent transition-colors rounded-[31px]">
+                <div className="w-12 h-12 rounded-xl bg-[#C3EB7A]/10 border border-[#C3EB7A]/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500">
+                  <Globe className="w-6 h-6 text-[#C3EB7A]" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">Franchise Mastery</h3>
+                <p className="text-white/50 text-base leading-relaxed mb-4">
+                  Push menu updates to 100 outlets in one click. Centralized permission controls and aggregated live reporting.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Performance Scoring (Span 2) */}
+          <motion.div variants={fadeUpVariant} className="col-span-1 md:col-span-2 lg:col-span-2 h-full">
+            <motion.div animate={{ y: [0, -16, 0] }} transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.4 }} className="relative p-[1px] rounded-[32px] bg-gradient-to-bl from-pink-500/20 to-white/0 overflow-hidden group h-full">
+              <div className="absolute inset-0 bg-[#0A0A0A] -z-10 rounded-[32px]" />
+              <div className="p-8 flex flex-col h-full bg-[#111]/50 group-hover:bg-[#111]/80 transition-colors rounded-[31px]">
+                <div className="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500">
+                  <Shield className="w-6 h-6 text-pink-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">Staff Scoring</h3>
+                <p className="text-white/50 text-base leading-relaxed mb-4">
+                  Gamify your team's performance. Auto-calculate metrics like items-sold-per-hour, upselling success, and void rates.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* ROW 3 */}
+          {/* Payroll & HR (Span 3) */}
+          <motion.div variants={fadeUpVariant} className="col-span-1 md:col-span-3 lg:col-span-3 h-full">
+            <motion.div animate={{ y: [0, -11, 0] }} transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut", delay: 1.8 }} className="relative p-[1px] rounded-[32px] bg-gradient-to-br from-purple-500/20 to-white/0 overflow-hidden group h-full">
+              <div className="absolute inset-0 bg-[#0A0A0A] -z-10 rounded-[32px]" />
+              <div className="p-8 md:p-10 flex flex-col h-full bg-[#111]/50 group-hover:bg-[#111]/80 transition-colors rounded-[31px]">
+                <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500">
+                  <Users className="w-6 h-6 text-purple-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">Biometric HR & Payroll</h3>
+                <p className="text-white/50 text-base leading-relaxed mb-4 max-w-sm">
+                  Run daily shift roasters and enforce biometric clock-ins via tablet. Automatically track overtime and generate accurate payroll files in one click.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* 100% Offline (Span 3) */}
+          <motion.div variants={fadeUpVariant} className="col-span-1 md:col-span-3 lg:col-span-3 h-full">
+            <motion.div animate={{ y: [0, -13, 0] }} transition={{ duration: 5.2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }} className="relative p-[1px] rounded-[32px] bg-gradient-to-l from-red-500/20 to-white/5 overflow-hidden group h-full">
+              <div className="absolute inset-0 bg-[#0A0A0A] -z-10 rounded-[32px]" />
+              <div className="p-8 md:p-10 flex flex-col h-full z-10 relative">
+                <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500">
+                  <WifiOff className="w-6 h-6 text-red-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">100% Offline Resiliency</h3>
+                <p className="text-white/50 text-base leading-relaxed max-w-sm">
+                  Never lose a sale to bad Wi-Fi. Our EdgePOS continues working completely locally without internet, and silently auto-syncs the split-second the network returns.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* ROW 4 */}
+          {/* B2B & Expense (Span 3) */}
+          <motion.div variants={fadeUpVariant} className="col-span-1 md:col-span-3 lg:col-span-3 h-full">
+            <motion.div animate={{ y: [0, -14, 0] }} transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 2.1 }} className="relative p-[1px] rounded-[32px] bg-gradient-to-r from-emerald-500/20 to-white/5 overflow-hidden group h-full">
+              <div className="absolute inset-0 bg-[#0A0A0A] -z-10 rounded-[32px]" />
+              <div className="p-8 md:p-10 flex flex-col h-full z-10 relative">
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500">
+                  <Store className="w-6 h-6 text-emerald-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">B2B Lifecycle & Expenses</h3>
+                <p className="text-white/50 text-base leading-relaxed max-w-sm">
+                  Track every penny. From raising professional POs and generating invoices to managing vendor payouts from 'pending' to 'paid' via digital ledger matching.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Omnichannel Delivery (Span 3) */}
+          <motion.div variants={fadeUpVariant} className="col-span-1 md:col-span-3 lg:col-span-3 h-full">
+            <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 5.6, repeat: Infinity, ease: "easeInOut", delay: 0.9 }} className="relative p-[1px] rounded-[32px] bg-gradient-to-l from-orange-500/20 to-white/5 overflow-hidden group h-full">
+              <div className="absolute inset-0 bg-[#0A0A0A] -z-10 rounded-[32px]" />
+              <div className="p-8 md:p-10 flex flex-col h-full z-10 relative">
+                <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500">
+                  <Settings2 className="w-6 h-6 text-orange-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">Omnichannel Delivery KDS</h3>
+                <p className="text-white/50 text-base leading-relaxed max-w-sm">
+                  Funnel your Swiggy, Zomato, UberEats, wholesale, and direct web orders into one centralized Kitchen Display System. No more tablet juggling.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
         </motion.div>
       </section>
 
-      {/* Testimonials / Business Types */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-32 z-10 relative">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant} className="text-center mb-16">
+      {/* Testimonials Marquee */}
+      <section className="w-full py-20 md:py-32 z-10 relative overflow-hidden bg-white/5 border-y border-white/5">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant} className="text-center mb-16 px-4">
           <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Trusted by businesses <span className="text-[#C3EB7A]">just like yours.</span></h2>
         </motion.div>
 
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {[
-            { type: "Cafe & Coffee Shops", name: "Anjali, Cafe Owner", quote: "Before MochaEase, inventory was a nightmare. Now AI tells me exactly when to order beans. Worth every penny." },
-            { type: "Fashion & Beauty", name: "Tina, Boutique Manager", quote: "The CRM feature alone increased our return customer rate by 40%. It's so easy to use." },
-            { type: "Quick Service (QSR)", name: "Rahul, QSR Operator", quote: "During lunch rush, the POS speed is incredible. We process orders 2x faster than our old system." },
-            { type: "Enterprise Chains", name: "Sarah, COO", quote: "Managing 15 outlets used to take 5 tools. Now I see everything in one dashboard. Pure magic." }
-          ].map((test, i) => (
-            <motion.div whileHover={{ scale: 1.02 }} key={i} variants={fadeUpVariant} className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors relative overflow-hidden group hover:border-[#4A90E2]/50 hover:shadow-[0_0_40px_rgba(74,144,226,0.15)] cursor-default">
-              <div className="absolute -right-10 -top-10 text-[120px] text-white/5 font-serif leading-none group-hover:text-white/10 group-hover:-rotate-12 transition-all duration-500">"</div>
-              <div className="inline-block px-3 py-1 rounded-full bg-white/10 text-white/70 text-xs font-bold mb-6 group-hover:bg-[#4A90E2]/20 group-hover:text-[#4A90E2] transition-colors">{test.type}</div>
-              <p className="text-lg text-white mb-6 font-medium relative z-10">"{test.quote}"</p>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4A90E2] to-purple-500 flex items-center justify-center shadow-lg">
-                  <Users className="w-5 h-5 text-white" />
+        <div className="relative w-full flex items-center">
+          {/* Edge Fade Gradients */}
+          <div className="absolute top-0 left-0 w-24 md:w-48 h-full bg-gradient-to-r from-[#050505] to-transparent z-20 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-24 md:w-48 h-full bg-gradient-to-l from-[#050505] to-transparent z-20 pointer-events-none" />
+
+          {/* Marquee Track container - Doubled for seamless loop */}
+          <div className="flex w-max shrink-0 gap-6 md:gap-8 hover:[&>div]:[animation-play-state:paused] px-4">
+            <motion.div
+              animate={{ x: ["0%", "-100%"] }}
+              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+              className="flex w-max shrink-0 gap-6 md:gap-8"
+            >
+              {[
+                { type: "Cafe & Coffee Shops", name: "Anjali, Cafe Owner", quote: "Before MochaEase, inventory was a nightmare. Now AI tells me exactly when to order beans. Worth every penny." },
+                { type: "Fashion & Beauty", name: "Tina, Boutique Manager", quote: "The CRM feature alone increased our return customer rate by 40%. It's so easy to use." },
+                { type: "Quick Service (QSR)", name: "Rahul, QSR Operator", quote: "During lunch rush, the POS speed is incredible. We process orders 2x faster than our old system." },
+                { type: "Enterprise Chains", name: "Sarah, COO", quote: "Managing 15 outlets used to take 5 tools. Now I see everything in one dashboard. Pure magic." },
+              ].map((test, i) => (
+                <div key={`set1-${i}`} className="w-[320px] md:w-[450px] shrink-0 p-8 rounded-3xl bg-black/40 border border-white/10 hover:bg-white/10 transition-colors relative overflow-hidden group hover:border-[#4A90E2]/50 hover:shadow-[0_0_40px_rgba(74,144,226,0.15)] cursor-default backdrop-blur-md">
+                  <div className="absolute -right-10 -top-10 text-[120px] text-white/5 font-serif leading-none group-hover:text-white/10 group-hover:-rotate-12 transition-all duration-500">"</div>
+                  <div className="inline-block px-3 py-1 rounded-full bg-white/10 text-white/70 text-xs font-bold mb-6 group-hover:bg-[#4A90E2]/20 group-hover:text-[#4A90E2] transition-colors">{test.type}</div>
+                  <p className="text-lg text-white mb-6 font-medium relative z-10">"{test.quote}"</p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4A90E2] to-purple-500 flex items-center justify-center shadow-lg shrink-0">
+                      <Users className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="font-bold text-white/90">{test.name}</div>
+                  </div>
                 </div>
-                <div className="font-bold text-white/90">{test.name}</div>
-              </div>
+              ))}
             </motion.div>
-          ))}
-        </motion.div>
+
+            <motion.div
+              animate={{ x: ["0%", "-100%"] }}
+              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+              className="flex w-max shrink-0 gap-6 md:gap-8"
+              aria-hidden="true"
+            >
+              {[
+                { type: "Cafe & Coffee Shops", name: "Anjali, Cafe Owner", quote: "Before MochaEase, inventory was a nightmare. Now AI tells me exactly when to order beans. Worth every penny." },
+                { type: "Fashion & Beauty", name: "Tina, Boutique Manager", quote: "The CRM feature alone increased our return customer rate by 40%. It's so easy to use." },
+                { type: "Quick Service (QSR)", name: "Rahul, QSR Operator", quote: "During lunch rush, the POS speed is incredible. We process orders 2x faster than our old system." },
+                { type: "Enterprise Chains", name: "Sarah, COO", quote: "Managing 15 outlets used to take 5 tools. Now I see everything in one dashboard. Pure magic." },
+              ].map((test, i) => (
+                <div key={`set2-${i}`} className="w-[320px] md:w-[450px] shrink-0 p-8 rounded-3xl bg-black/40 border border-white/10 hover:bg-white/10 transition-colors relative overflow-hidden group hover:border-[#4A90E2]/50 hover:shadow-[0_0_40px_rgba(74,144,226,0.15)] cursor-default backdrop-blur-md">
+                  <div className="absolute -right-10 -top-10 text-[120px] text-white/5 font-serif leading-none group-hover:text-white/10 group-hover:-rotate-12 transition-all duration-500">"</div>
+                  <div className="inline-block px-3 py-1 rounded-full bg-white/10 text-white/70 text-xs font-bold mb-6 group-hover:bg-[#4A90E2]/20 group-hover:text-[#4A90E2] transition-colors">{test.type}</div>
+                  <p className="text-lg text-white mb-6 font-medium relative z-10">"{test.quote}"</p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4A90E2] to-purple-500 flex items-center justify-center shadow-lg shrink-0">
+                      <Users className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="font-bold text-white/90">{test.name}</div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
       </section>
 
       {/* Efficiency / How it Works Section */}

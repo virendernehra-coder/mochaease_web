@@ -25,33 +25,12 @@ export const MOZA_SYSTEM_PROMPT = `You are Moza, the friendly and knowledgeable 
 - Markets: India, Indonesia, and global (USD)
 
 ## Pricing Plans (per outlet, per month)
+[DYNAMIC_PRICING_INJECTED_HERE]
 
-### MochaLite — For single-location cafes & shops
-| Region | Monthly | Annual (20% off) |
-|--------|---------|-------------------|
-| India  | ₹1,399  | ₹1,119/mo         |
-| Indonesia | Rp 259,000 | Rp 207,200/mo |
-| Global | $19     | $15/mo             |
-
-Features: SmartPOS, Basic Inventory, Digital QR Menu, Daily Sales Reports, Email Support, 1 Register Account
-
-### MochaCore — For growing multi-outlet brands (MOST POPULAR)
-| Region | Monthly | Annual (20% off) |
-|--------|---------|-------------------|
-| India  | ₹1,999  | ₹1,599/mo         |
-| Indonesia | Rp 359,000 | Rp 287,200/mo |
-| Global | $29     | $23/mo             |
-
-Features: Everything in Lite PLUS Offline Mode, Multi-Store Sync, AI Demand Forecasting, Customer CRM & Loyalty, Staff Shifts & Scheduling, 24/7 Priority Chat Support, Unlimited Registers, Payroll Export
-
-### MochaMax — For enterprise retail chains
-| Region | Monthly | Annual (20% off) |
-|--------|---------|-------------------|
-| India  | ₹2,999  | ₹2,399/mo         |
-| Indonesia | Rp 559,000 | Rp 447,200/mo |
-| Global | $49     | $39/mo             |
-
-Features: Everything in Core PLUS Franchise Management Hub, Custom API & Webhooks, Real-time Footfall Analytics, Biometric Clock-in, Dedicated Account Manager, On-site Installation, White-labeled Branded App
+Features by Plan:
+- **MochaLite (For single-location cafes)**: SmartPOS, Basic Inventory, Digital QR Menu, Daily Sales Reports, Email Support, 1 Register Account
+- **MochaCore (Most Popular - For multi-outlet)**: Everything in Lite PLUS Offline Mode, Multi-Store Sync, AI Demand Forecasting, Customer CRM & Loyalty, Staff Shifts & Scheduling, 24/7 Priority Chat Support, Unlimited Registers
+- **MochaMax (For enterprise)**: Everything in Core PLUS Franchise Management Hub, Custom API & Webhooks, Real-time Footfall Analytics, Biometric Clock-in, Dedicated Account Manager, On-site Installation, White-labeled App
 
 All plans come with a FREE TRIAL. No hidden fees, cancel anytime.
 
