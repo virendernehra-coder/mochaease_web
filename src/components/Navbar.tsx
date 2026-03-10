@@ -70,12 +70,14 @@ export default function Navbar() {
     const [isBusinessTypesOpen, setIsBusinessTypesOpen] = useState(false);
     const [activeMegaCategory, setActiveMegaCategory] = useState<MegaCategory>('fnb');
     const [isResourcesOpen, setIsResourcesOpen] = useState(false);
+    const [isAboutOpen, setIsAboutOpen] = useState(false);
 
     // Mobile menu state
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const businessTypesTimeout = useRef<NodeJS.Timeout | null>(null);
     const resourcesTimeout = useRef<NodeJS.Timeout | null>(null);
+    const aboutTimeout = useRef<NodeJS.Timeout | null>(null);
 
     const handleBusinessTypesEnter = () => {
         if (businessTypesTimeout.current) clearTimeout(businessTypesTimeout.current);
@@ -91,6 +93,14 @@ export default function Navbar() {
     };
     const handleResourcesLeave = () => {
         resourcesTimeout.current = setTimeout(() => setIsResourcesOpen(false), 200);
+    };
+
+    const handleAboutEnter = () => {
+        if (aboutTimeout.current) clearTimeout(aboutTimeout.current);
+        setIsAboutOpen(true);
+    };
+    const handleAboutLeave = () => {
+        aboutTimeout.current = setTimeout(() => setIsAboutOpen(false), 200);
     };
 
     // Mobile menu expanding states
@@ -111,6 +121,7 @@ export default function Navbar() {
             document.body.style.overflow = 'unset';
             if (businessTypesTimeout.current) clearTimeout(businessTypesTimeout.current);
             if (resourcesTimeout.current) clearTimeout(resourcesTimeout.current);
+            if (aboutTimeout.current) clearTimeout(aboutTimeout.current);
         };
     }, [isMobileMenuOpen]);
 
@@ -240,6 +251,8 @@ export default function Navbar() {
                                 className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-48 z-[110]"
                             >
                                 <div className="bg-[#1A1A1A]/95 border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden p-2 backdrop-blur-xl hover:shadow-[0_0_20px_rgba(195,235,122,0.1)]">
+                                    <Link href="/advantage" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">The Advantage</Link>
+                                    <Link href="/developers" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Developers & Partners</Link>
                                     <Link href="/blog" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Blog</Link>
                                     <Link href="/guides" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Guides</Link>
                                     <Link href="/resources/hardware" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Supported Hardware</Link>
@@ -251,8 +264,35 @@ export default function Navbar() {
                     </AnimatePresence>
                 </div>
 
-                <Link href="/about" className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors hidden xl:block">About Us</Link>
-                <Link href="/contact" className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors hidden xl:block">Contact Us</Link>
+                {/* About Us Dropdown with Framer Motion (New) */}
+                <div className="relative py-2" onMouseEnter={handleAboutEnter} onMouseLeave={handleAboutLeave}>
+                    <button className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors flex items-center gap-1 focus:outline-none">
+                        About Us
+                        <motion.svg animate={{ rotate: isAboutOpen ? 180 : 0 }} className="w-3 h-3 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></motion.svg>
+                    </button>
+
+                    <AnimatePresence>
+                        {isAboutOpen && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 10, scale: 0.95, transition: { duration: 0.2 } }}
+                                transition={{ duration: 0.2, ease: "easeOut" }}
+                                className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-48 z-[110]"
+                            >
+                                <div className="bg-[#1A1A1A]/95 border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden p-2 backdrop-blur-xl hover:shadow-[0_0_20px_rgba(195,235,122,0.1)]">
+                                    <Link href="/about" onClick={() => setIsAboutOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Our Story</Link>
+                                    <Link href="/careers" onClick={() => setIsAboutOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Careers</Link>
+                                    <Link href="/contact" onClick={() => setIsAboutOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Contact Us</Link>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Removed direct About Us and Contact Us links as they are now in the dropdown */}
+                {/* <Link href="/about" className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors hidden xl:block">About Us</Link>
+                <Link href="/contact" className="text-sm font-semibold text-white/70 hover:text-[#C3EB7A] transition-colors hidden xl:block">Contact Us</Link> */}
             </div>
 
             <div className="flex items-center gap-4">
@@ -400,6 +440,12 @@ export default function Navbar() {
                                             className="overflow-hidden bg-[#111] rounded-3xl border border-white/5 -mt-3"
                                         >
                                             <div className="p-2 flex flex-col gap-1">
+                                                <Link href="/advantage" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    The Advantage <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-orange-400" />
+                                                </Link>
+                                                <Link href="/developers" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    Developers & Partners <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-orange-400" />
+                                                </Link>
                                                 <Link href="/blog" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
                                                     Blog <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-orange-400" />
                                                 </Link>
