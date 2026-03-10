@@ -244,6 +244,7 @@ export default function Navbar() {
                                     <Link href="/guides" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Guides</Link>
                                     <Link href="/resources/hardware" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Supported Hardware</Link>
                                     <Link href="/support" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Support Center</Link>
+                                    <Link href="/resources/downloads" onClick={() => setIsResourcesOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:text-[#C3EB7A] hover:bg-white/5 rounded-xl transition-colors">Download Apps</Link>
                                 </div>
                             </motion.div>
                         )}
@@ -410,6 +411,9 @@ export default function Navbar() {
                                                 </Link>
                                                 <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
                                                     Support Center <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-orange-400" />
+                                                </Link>
+                                                <Link href="/resources/downloads" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    Download Apps <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-orange-400" />
                                                 </Link>
                                             </div>
                                         </motion.div>

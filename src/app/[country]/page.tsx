@@ -1,6 +1,6 @@
 import HomeComponent from "@/components/HomeComponent";
 
-export const dynamicParams = true; // allow other countries to be passed if needed
+export const dynamicParams = false; // only match statically generated country codes (in, id)
 
 // Static paths for IN and ID
 export function generateStaticParams() {

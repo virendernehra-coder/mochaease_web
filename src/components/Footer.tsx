@@ -156,6 +156,7 @@ export default function Footer() {
                             <li><Link href="/pricing" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Pricing</Link></li>
                             <li><Link href="/demo" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Book a Demo</Link></li>
                             <li><Link href="/calculator" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Savings Calculator</Link></li>
+                            <li><Link href="/resources/downloads" className="text-white/50 hover:text-[#C3EB7A] text-sm font-medium transition-colors">Download Apps</Link></li>
                         </ul>
                     </div>
 
