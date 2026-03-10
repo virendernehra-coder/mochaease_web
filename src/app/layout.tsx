@@ -60,10 +60,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark scroll-smooth">
+      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || 'GTM-WMK43WDR'} />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground selection:bg-[#C3EB7A]/30`}
       >
-        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || 'GTM-WMK43WDR'} />
         {/* JSON-LD Structured Data for Google Rich Snippets */}
         <script
           type="application/ld+json"
