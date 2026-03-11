@@ -11,12 +11,12 @@ const BUSINESS_CATEGORIES = {
     fnb: {
         title: "Food & Beverage",
         discover: [
-            { name: "Coffee Shops & Cafes", href: "/experience?role=cafe" },
-            { name: "Quick Service (QSR)", href: "/experience?role=qsr" },
-            { name: "Full Service Dining", href: "/experience?role=full-service" },
-            { name: "Bars & Breweries", href: "/experience?role=bars" },
-            { name: "Food Trucks & Pop-ups", href: "/experience?role=food-trucks" },
-            { name: "Bakeries & Patisseries", href: "/experience?role=bakeries" },
+            { name: "Coffee Shops & Cafes", href: "/solutions/cafe-pos" },
+            { name: "Quick Service (QSR)", href: "/solutions/qsr-pos" },
+            { name: "Full Service Dining", href: "/solutions/restaurant-pos" },
+            { name: "Bars & Breweries", href: "/solutions/bar-pos" },
+            { name: "Food Trucks & Pop-ups", href: "/solutions/food-truck-pos" },
+            { name: "Bakeries & Patisseries", href: "/solutions/bakery-pos" },
         ],
         capabilities: [
             { name: "POS & Offline Payments", href: "#" },
@@ -29,11 +29,11 @@ const BUSINESS_CATEGORIES = {
     retail: {
         title: "Retail & Boutiques",
         discover: [
-            { name: "Apparel & Fashion", href: "/experience?role=fashion" },
-            { name: "Health & Beauty", href: "/experience?role=beauty" },
-            { name: "Grocery & Convenience", href: "/experience?role=grocery" },
-            { name: "Home & Lifestyle", href: "/experience?role=home" },
-            { name: "Vape & Smoke Shops", href: "/experience?role=vape" },
+            { name: "Apparel & Fashion", href: "/solutions/fashion-pos" },
+            { name: "Health & Beauty", href: "/solutions/beauty-pos" },
+            { name: "Grocery & Convenience", href: "/solutions/grocery-pos" },
+            { name: "Home & Lifestyle", href: "/solutions/home-lifestyle-pos" },
+            { name: "Vape & Smoke Shops", href: "/solutions/vape-shop-pos" },
         ],
         capabilities: [
             { name: "Multi-Location Inventory", href: "#" },
@@ -46,9 +46,9 @@ const BUSINESS_CATEGORIES = {
     enterprise: {
         title: "Enterprise Chains",
         discover: [
-            { name: "Franchise Management", href: "/experience?role=enterprise" },
-            { name: "Multi-Brand Portfolios", href: "/experience?role=multi-brand" },
-            { name: "Stadiums & Large Venues", href: "/experience?role=stadiums" },
+            { name: "Franchise Management", href: "/solutions/enterprise-pos" },
+            { name: "Multi-Brand Portfolios", href: "/solutions/multi-brand-pos" },
+            { name: "Stadiums & Large Venues", href: "/solutions/stadium-venue-pos" },
         ],
         capabilities: [
             { name: "Centralized Head Office", href: "#" },
@@ -105,7 +105,9 @@ export default function Navbar() {
 
     // Mobile menu expanding states
     const [isMobileBusinessExpanded, setIsMobileBusinessExpanded] = useState(false);
+    const [activeMobileMegaCategory, setActiveMobileMegaCategory] = useState<MegaCategory | null>(null);
     const [isMobileResourcesExpanded, setIsMobileResourcesExpanded] = useState(false);
+    const [isMobileAboutExpanded, setIsMobileAboutExpanded] = useState(false);
 
     // Prevent body scrolling when mobile menu is open
     useEffect(() => {
@@ -115,7 +117,9 @@ export default function Navbar() {
             document.body.style.overflow = 'unset';
             // Reset mobile accordions when closing the menu
             setIsMobileBusinessExpanded(false);
+            setActiveMobileMegaCategory(null);
             setIsMobileResourcesExpanded(false);
+            setIsMobileAboutExpanded(false);
         }
         return () => {
             document.body.style.overflow = 'unset';
@@ -332,7 +336,7 @@ export default function Navbar() {
                         initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
                         animate={{ opacity: 1, backdropFilter: "blur(40px)" }}
                         exit={{ opacity: 0, backdropFilter: "blur(0px)", transition: { duration: 0.3, ease: "easeInOut" } }}
-                        className="fixed inset-0 top-[72px] h-[calc(100dvh-72px)] bg-[#050505]/80 z-[90] lg:hidden overflow-y-auto overscroll-contain"
+                        className="fixed inset-0 top-[72px] h-[calc(100dvh-72px)] bg-[#050505]/95 z-[90] lg:hidden overflow-y-auto overscroll-contain"
                     >
                         {/* Dynamic Background Elements */}
                         <motion.div
@@ -409,6 +413,7 @@ export default function Navbar() {
                                 <AnimatePresence>
                                     {isMobileBusinessExpanded && (
                                         <motion.div
+                                            key="mobile-business-expanded"
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: "auto", opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
@@ -416,24 +421,60 @@ export default function Navbar() {
                                         >
                                             <div className="p-2 flex flex-col gap-1">
                                                 <div className="px-4 py-2 text-xs font-bold text-white/30 uppercase tracking-widest">Select Category</div>
-                                                <Link href="/experience" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                <Link href="/solutions" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
                                                     All Business Types <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#4A90E2]" />
                                                 </Link>
-                                                <Link href="/experience?role=cafe" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center gap-3">
-                                                    <span className="w-2 h-2 rounded-full bg-[#4A90E2]/50"></span> Food & Beverage
-                                                </Link>
-                                                <Link href="/experience?role=fashion" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center gap-3">
-                                                    <span className="w-2 h-2 rounded-full bg-purple-500/50"></span> Retail & Boutiques
-                                                </Link>
-                                                <Link href="/experience?role=enterprise" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center gap-3">
-                                                    <span className="w-2 h-2 rounded-full bg-[#C3EB7A]/50"></span> Enterprise Chains
-                                                </Link>
+                                                
+                                                {Object.entries(BUSINESS_CATEGORIES).map(([key, data]) => (
+                                                    <div key={key} className="flex flex-col">
+                                                        <button 
+                                                            onClick={() => setActiveMobileMegaCategory(activeMobileMegaCategory === key ? null : key as MegaCategory)}
+                                                            className={`px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group transition-colors ${activeMobileMegaCategory === key ? 'text-[#C3EB7A]' : ''}`}
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <span className={`w-2 h-2 rounded-full transition-colors ${
+                                                                    key === 'fnb' ? 'bg-[#4A90E2]/50' : 
+                                                                    key === 'retail' ? 'bg-purple-500/50' : 
+                                                                    'bg-[#C3EB7A]/50'
+                                                                } ${activeMobileMegaCategory === key ? 'ring-4 ring-white/10' : ''}`}></span>
+                                                                {data.title}
+                                                            </div>
+                                                            <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${activeMobileMegaCategory === key ? 'rotate-90 text-[#C3EB7A]' : 'opacity-40'}`} />
+                                                        </button>
+
+                                                        <AnimatePresence>
+                                                            {activeMobileMegaCategory === key && (
+                                                                <motion.div
+                                                                    key={`mobile-sub-category-${key}`}
+                                                                    initial={{ height: 0, opacity: 0 }}
+                                                                    animate={{ height: "auto", opacity: 1 }}
+                                                                    exit={{ height: 0, opacity: 0 }}
+                                                                    className="overflow-hidden"
+                                                                >
+                                                                    <div className="pl-9 pr-4 py-2 flex flex-col gap-1 border-l-2 border-white/5 ml-5 mb-2">
+                                                                        {data.discover.map((item, idx) => (
+                                                                            <Link 
+                                                                                key={idx} 
+                                                                                href={item.href} 
+                                                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                                                className="py-2.5 text-[15px] font-medium text-white/40 hover:text-white transition-colors"
+                                                                            >
+                                                                                {item.name}
+                                                                            </Link>
+                                                                        ))}
+                                                                    </div>
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </motion.div>
                                     )}
 
                                     {isMobileResourcesExpanded && (
                                         <motion.div
+                                            key="mobile-resources-expanded"
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: "auto", opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
@@ -464,34 +505,62 @@ export default function Navbar() {
                                             </div>
                                         </motion.div>
                                     )}
+
                                 </AnimatePresence>
 
-                                {/* Secondary Links - Horizontal Scroll Pills */}
-                                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }} className="py-2">
-                                    <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-3 px-1">More</h3>
-                                    <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide -mx-2 px-2">
-                                        <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 rounded-full whitespace-nowrap transition-colors border border-white/5">
-                                            <Info className="w-4 h-4 text-white/60" />
-                                            <span className="text-sm font-semibold text-white/80">About Us</span>
-                                        </Link>
-                                        <Link href="/guides" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 rounded-full whitespace-nowrap transition-colors border border-white/5">
-                                            <FileText className="w-4 h-4 text-white/60" />
-                                            <span className="text-sm font-semibold text-white/80">Guides</span>
-                                        </Link>
-                                        <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 rounded-full whitespace-nowrap transition-colors border border-white/5">
-                                            <HelpCircle className="w-4 h-4 text-white/60" />
-                                            <span className="text-sm font-semibold text-white/80">Support</span>
-                                        </Link>
-                                        <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 rounded-full whitespace-nowrap transition-colors border border-white/5">
-                                            <MessageSquare className="w-4 h-4 text-white/60" />
-                                            <span className="text-sm font-semibold text-white/80">Contact</span>
-                                        </Link>
-                                    </div>
+                                {/* Secondary Links Layer - Replacing horizontal pills with grid for better accessibility */}
+                                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } } }} className="grid grid-cols-2 gap-3 pb-2">
+                                    <button
+                                        onClick={() => setIsMobileAboutExpanded(!isMobileAboutExpanded)}
+                                        className={`bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group text-left ${isMobileAboutExpanded ? 'ring-1 ring-[#C3EB7A]/50 bg-white/10' : ''}`}
+                                    >
+                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#C3EB7A]/20 to-transparent flex items-center justify-center">
+                                            <Info className="w-5 h-5 text-[#C3EB7A]" />
+                                        </div>
+                                        <div className="flex items-center justify-between w-full">
+                                            <span className="text-lg font-bold text-white tracking-tight">Company</span>
+                                            <ChevronRight className={`w-4 h-4 text-white/50 transition-transform ${isMobileAboutExpanded ? 'rotate-90' : ''}`} />
+                                        </div>
+                                    </button>
+                                    
+                                    <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-5 rounded-3xl flex flex-col gap-3 group">
+                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#4A90E2]/20 to-transparent flex items-center justify-center">
+                                            <MessageSquare className="w-5 h-5 text-[#4A90E2]" />
+                                        </div>
+                                        <span className="text-lg font-bold text-white tracking-tight">Support</span>
+                                    </Link>
                                 </motion.div>
+
+                                <AnimatePresence mode="wait">
+                                    {isMobileAboutExpanded && (
+                                        <motion.div
+                                            key="mobile-about-expanded-v2"
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="overflow-hidden bg-[#111] rounded-3xl border border-white/5 mt-2"
+                                        >
+                                            <div className="p-2 flex flex-col gap-1">
+                                                <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    Our Story <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#C3EB7A]" />
+                                                </Link>
+                                                <Link href="/solutions" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    All Solutions <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#C3EB7A]" />
+                                                </Link>
+                                                <Link href="/careers" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    Careers & Culture <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#C3EB7A]" />
+                                                </Link>
+                                                <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl hover:bg-white/5 text-white/80 font-medium flex items-center justify-between group">
+                                                    Contact Us <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#C3EB7A]" />
+                                                </Link>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
-                            {/* Sticky Bottom Actions */}
-                            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.5 } } }} className="mt-auto flex flex-col gap-3 sticky bottom-6 z-20">
+                            {/* Bottom Actions - Now statically positioned to move with content */}
+                            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.5 } } }} className="mt-auto flex flex-col gap-3 z-20">
                                 <Link
                                     href="/calculator"
                                     onClick={() => setIsMobileMenuOpen(false)}

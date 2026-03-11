@@ -34,38 +34,38 @@ export default function ExperienceJourney({ role, onBack, hideBackButton = false
             transition={{ duration: 0.8 }}
             className="w-full relative z-10"
         >
-            {/* Intro Header for the selected role */}
-            <div className="w-full min-h-[60vh] flex flex-col items-center justify-center pt-32 pb-20 px-4 text-center">
-                {!hideBackButton && onBack && (
-                    <motion.button
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-                        onClick={onBack}
-                        className="mb-8 px-4 py-2 rounded-full bg-white/5 text-white/50 text-sm font-bold hover:text-white hover:bg-white/10 transition-colors border border-white/10"
-                    >
-                        &larr; Change Business Type
-                    </motion.button>
-                )}
 
-                <motion.div
-                    initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2, duration: 0.6 }}
-                    className="max-w-4xl mx-auto flex flex-col gap-6"
-                >
-                    <h2 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 leading-tight">
-                        {CONTENT[role].headline}
-                    </h2>
-                    <p className="text-xl md:text-2xl text-white/50 leading-relaxed max-w-2xl mx-auto">
-                        {CONTENT[role].subheadline}
-                    </p>
-                    <div className="flex flex-col items-center justify-center gap-2 mt-8 animate-bounce opacity-50">
-                        <span className="text-xs uppercase tracking-[0.2em] font-bold text-white">Scroll to explore</span>
-                        <ChevronDown className="w-5 h-5 text-[#C3EB7A]" />
-                    </div>
-                </motion.div>
-            </div>
 
             {/* ScrollyTelling Container */}
             <div ref={containerRef} className="relative h-[1100vh] w-full">
-                <div className="sticky top-0 h-screen w-full flex items-center overflow-hidden">
+                {/* Horizontal Progress Bar */}
+                <div className="sticky top-[80px] z-[60] w-full px-6 pointer-events-none">
+                    <div className="max-w-7xl mx-auto h-1.5 bg-white/5 rounded-full overflow-hidden backdrop-blur-sm">
+                        <motion.div 
+                            className="h-full bg-gradient-to-r from-[#C3EB7A] to-[#4A90E2] shadow-[0_0_15px_rgba(195,235,122,0.6)]"
+                            style={{ scaleX: scrollYProgress, transformOrigin: "0%" }}
+                        />
+                    </div>
+                </div>
+
+                <div className="sticky top-[80px] h-[calc(100vh-80px)] w-full flex items-center overflow-hidden z-20">
+                    {/* Vertical Step Indicators */}
+                    <div className="absolute left-10 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-4 z-40">
+                        {CONTENT[role].steps.map((_, i) => (
+                            <motion.div
+                                key={i}
+                                className="w-1.5 h-8 rounded-full bg-white/10"
+                                style={{
+                                    backgroundColor: useTransform(
+                                        scrollYProgress,
+                                        [i * 0.1, (i + 1) * 0.1],
+                                        ["rgba(255,255,255,0.1)", "#C3EB7A"]
+                                    )
+                                }}
+                            />
+                        ))}
+                    </div>
+
                     <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
 
                         {/* Left Side: Dynamic Text mapped to Scroll % */}
@@ -129,8 +129,8 @@ export default function ExperienceJourney({ role, onBack, hideBackButton = false
 function StepContent({ step, index, progress, start, end }: any) {
     // Reveal text between start and midpoint, hide after midpoint
     const midpoint = start + (end - start) / 2;
-    const opacity = useTransform(progress, [start, start + 0.05, midpoint, end - 0.05, end], [0, 1, 1, 0, 0]);
-    const y = useTransform(progress, [start, start + 0.05, midpoint, end - 0.05, end], [50, 0, 0, -50, -50]);
+    const opacity = useTransform(progress, [start, start + 0.01, end - 0.01, end], [0, 1, 1, 0]);
+    const y = useTransform(progress, [start, start + 0.01, end - 0.01, end], [30, 0, 0, -30]);
     const pointerEvents = useTransform(progress, (v: number) => (v >= start && v < end) ? "auto" : "none");
 
     return (
@@ -156,8 +156,8 @@ function StepContent({ step, index, progress, start, end }: any) {
 
 function StepVisual({ step, index, progress, start, end }: any) {
     const midpoint = start + (end - start) / 2;
-    const opacity = useTransform(progress, [start, start + 0.05, midpoint, end - 0.05, end], [0, 1, 1, 0, 0]);
-    const scale = useTransform(progress, [start, start + 0.05, midpoint, end - 0.05, end], [0.8, 1, 1, 1.2, 1.2]);
+    const opacity = useTransform(progress, [start, start + 0.01, end - 0.01, end], [0, 1, 1, 0]);
+    const scale = useTransform(progress, [start, start + 0.01, end - 0.01, end], [0.95, 1, 1, 1.05]);
     const rotateX = useTransform(progress, [start, midpoint, end], [20, 0, -20]);
 
     return (
