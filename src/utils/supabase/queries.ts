@@ -26,3 +26,31 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
 
     return data as PricingPlan[];
 }
+
+export async function getUserProfile(userId: string) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 is 'no rows found'
+        console.error('Error fetching user profile:', error);
+    }
+    return data;
+}
+
+export async function getEmployeeProfile(userId: string) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+        .from('employee_details')
+        .select('*')
+        .eq('employee_id', userId)
+        .single();
+
+    if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching employee profile:', error);
+    }
+    return data;
+}

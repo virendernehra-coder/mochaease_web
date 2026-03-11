@@ -4,8 +4,11 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
+import ConditionalLayout from "@/components/ConditionalLayout";
 import { GoogleTagManager } from '@next/third-parties/google';
 import { getOrganizationSchema, getSoftwareApplicationSchema } from "@/data/structured-data";
+import AuthInitializer from "@/components/auth/AuthInitializer";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -74,9 +77,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(getSoftwareApplicationSchema()) }}
         />
         <div className="relative flex min-h-screen flex-col">
-          <Navbar />
-          <PageTransition>{children}</PageTransition>
-          <Footer />
+          <AuthInitializer>
+            <AuthGuard>
+              <ConditionalLayout>{children}</ConditionalLayout>
+            </AuthGuard>
+          </AuthInitializer>
         </div>
       </body>
     </html>

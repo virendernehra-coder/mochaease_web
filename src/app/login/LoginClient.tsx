@@ -37,9 +37,7 @@ export default function LoginClient() {
 
             if (authError) throw authError;
 
-            // Redirect to dashboard or home
-            router.push('/');
-            router.refresh();
+            // Redirection is handled by AuthInitializer globally to ensure role-based routing
         } catch (err: any) {
             setError(err.message || 'Invalid login credentials.');
         } finally {
