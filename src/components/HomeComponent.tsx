@@ -5,9 +5,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import NetworkBackground from '@/components/NetworkBackground';
-import Chatbot from '@/components/Chatbot';
-import CustomVideoPlayer from '@/components/CustomVideoPlayer';
+import dynamic from 'next/dynamic';
+
+const NetworkBackground = dynamic(() => import('@/components/NetworkBackground'), { ssr: false });
+const CustomVideoPlayer = dynamic(() => import('@/components/CustomVideoPlayer'), { ssr: false });
+const Chatbot = dynamic(() => import('@/components/Chatbot'), { ssr: false });
 
 export default function HomeComponent({ country = 'us' }: { country?: string }) {
   const [mounted, setMounted] = useState(false);
@@ -120,7 +122,7 @@ export default function HomeComponent({ country = 'us' }: { country?: string }) 
           >
             <CustomVideoPlayer
               src="https://xvjgvffbpbipdqdqlpwo.supabase.co/storage/v1/object/sign/website_videos/MochaEase%20Business%20Management%20System%20Introduction.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9kMTJhOThhZC1iYjdjLTQ3Y2YtODE2MS1jNDRjM2M4YzMwNWUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ3ZWJzaXRlX3ZpZGVvcy9Nb2NoYUVhc2UgQnVzaW5lc3MgTWFuYWdlbWVudCBTeXN0ZW0gSW50cm9kdWN0aW9uLm1wNCIsImlhdCI6MTc3MzA4MjE1NiwiZXhwIjoxODY3NjkwMTU2fQ.vjedNvSh80gTAAWRAyO-qnqBDUpCXBWJpr703qsTsAs"
-              poster="/video_poster.png"
+              poster="/video_poster.jpg"
             />
           </motion.div>
         </div>
