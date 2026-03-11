@@ -21,7 +21,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/register',
         '/resources/hardware',
         '/solutions',
-        '/experience',
         '/privacy',
         '/terms',
         '/cookie-policy',
@@ -29,25 +28,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/shipping-and-delivery',
     ];
 
-    // Business type experience pages
-    const businessTypes = [
-        'cafe', 'qsr', 'full-service', 'bars', 'food-trucks', 'bakeries',
-        'fashion', 'beauty', 'grocery', 'home', 'vape',
-        'enterprise', 'multi-brand', 'stadiums',
-    ];
-
     const staticEntries: MetadataRoute.Sitemap = staticPages.map((path) => ({
         url: `${baseUrl}${path}`,
         lastModified: new Date(),
         changeFrequency: path === '/blog' ? 'daily' : 'weekly',
         priority: path === '' ? 1.0 : path === '/pricing' ? 0.9 : 0.7,
-    }));
-
-    const businessEntries: MetadataRoute.Sitemap = businessTypes.map((type) => ({
-        url: `${baseUrl}/experience?role=${type}`,
-        lastModified: new Date(),
-        changeFrequency: 'monthly' as const,
-        priority: 0.4, // Reduced priority in favor of dedicated solution pages
     }));
 
     // Dedicated Solution Pages
@@ -93,5 +78,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }));
     }
 
-    return [...staticEntries, ...businessEntries, ...solutionEntries, ...blogEntries];
+    return [...staticEntries, ...solutionEntries, ...blogEntries];
 }
