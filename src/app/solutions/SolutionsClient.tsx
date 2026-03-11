@@ -121,7 +121,7 @@ export default function SolutionsHub() {
                                 {/* Industry Solutions Grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {solutions.map((solution, i) => {
-                                        const IndIcon = ICON_MAP[solution.id] || Zap;
+                                        const IndIcon = (solution.id && ICON_MAP[solution.id]) || Zap;
                                         return (
                                             <Link 
                                                 key={solution.slug} 

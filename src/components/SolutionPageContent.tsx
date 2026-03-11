@@ -252,7 +252,7 @@ export default function SolutionPageContent({
                     <h2 className="text-4xl md:text-6xl font-black text-white mb-4">The MochaEase Experience</h2>
                     <p className="text-white/40 text-lg font-medium">Take a guided tour through your industry-specific workflow.</p>
                 </div>
-                <ExperienceJourney role={solution.id} hideBackButton />
+                <ExperienceJourney role={solution.id!} hideBackButton />
             </section>
 
             {/* Testimonial Section */}
