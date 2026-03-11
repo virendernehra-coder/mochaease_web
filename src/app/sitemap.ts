@@ -28,12 +28,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/shipping-and-delivery',
     ];
 
-    const staticEntries: MetadataRoute.Sitemap = staticPages.map((path) => ({
-        url: `${baseUrl}${path}`,
-        lastModified: new Date(),
-        changeFrequency: path === '/blog' ? 'daily' : 'weekly',
-        priority: path === '' ? 1.0 : path === '/pricing' ? 0.9 : 0.7,
-    }));
+    const staticEntries: MetadataRoute.Sitemap = staticPages
+        .filter(path => !['/login', '/register'].includes(path))
+        .map((path) => {
+            // Lower priority for legal/utility pages
+            const isLegalPage = [
+                '/privacy', 
+                '/terms', 
+                '/cookie-policy', 
+                '/cancellation-and-refund', 
+                '/shipping-and-delivery'
+            ].includes(path);
+
+            return {
+                url: `${baseUrl}${path}`,
+                lastModified: new Date(),
+                changeFrequency: path === '/blog' ? 'daily' : 'weekly',
+                priority: isLegalPage ? 0.3 : (path === '' ? 1.0 : path === '/pricing' ? 0.9 : 0.7),
+            };
+        });
 
     // Dedicated Solution Pages
     const solutionEntries: MetadataRoute.Sitemap = SOLUTIONS.map((solution) => ({
