@@ -11,6 +11,7 @@ import {
 import Link from 'next/link';
 import NetworkBackground from '@/components/NetworkBackground';
 import Chatbot from '@/components/Chatbot';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -90,7 +91,14 @@ export default function DownloadsPage() {
             {/* Top Glow */}
             <div className="absolute top-0 inset-x-0 h-[600px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#C3EB7A]/15 via-[#050505]/40 to-transparent pointer-events-none -z-0" />
 
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-24 relative z-10">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-2relative z-10">
+                <Breadcrumbs 
+                    items={[
+                        { label: 'Resources' },
+                        { label: 'Downloads' }
+                    ]} 
+                    className="mb-8"
+                />
 
                 {/* ─── HERO ─── */}
                 <motion.div

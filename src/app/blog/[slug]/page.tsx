@@ -5,6 +5,7 @@ import { getBlogPostBySlug } from '@/data/blog';
 import NetworkBackground from '@/components/NetworkBackground';
 import { Clock, Calendar, ArrowLeft, BookOpen } from 'lucide-react';
 import Link from 'next/link';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export const revalidate = 0; // Always fetch fresh article content from Supabase
 
@@ -151,14 +152,44 @@ export default async function BlogPostPage({ params }: Props) {
             <NetworkBackground />
             <div className="absolute inset-0 bg-black/40 xl:bg-black/60 z-0 pointer-events-none" />
 
+            {/* Structured Data (JSON-LD) */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'BlogPosting',
+                        'headline': post.title,
+                        'description': post.excerpt,
+                        'image': post.featured_image ? [`https://mochaease.com${post.featured_image}`] : [],
+                        'datePublished': post.published_at,
+                        'author': [{
+                            '@type': 'Person',
+                            'name': post.author,
+                            'url': 'https://mochaease.com/blog'
+                        }],
+                        'publisher': {
+                            '@type': 'Organization',
+                            'name': 'MochaEase',
+                            'logo': {
+                                '@type': 'ImageObject',
+                                'url': 'https://mochaease.com/logo.png'
+                            }
+                        }
+                    })
+                }}
+            />
+
             <article className="relative w-full max-w-4xl mx-auto px-4 sm:px-6 pt-32 pb-24 flex flex-col z-10">
-                {/* Back Navigation */}
-                <Link href="/blog" className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors mb-12 group w-max">
-                    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors">
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    </div>
-                    <span className="text-sm font-bold uppercase tracking-wider">Back to Journal</span>
-                </Link>
+                {/* Breadcrumbs */}
+                <Breadcrumbs 
+                    items={[
+                        { label: 'Blog', href: '/blog' },
+                        { label: post.category },
+                        { label: post.title }
+                    ]} 
+                    className="mb-12"
+                />
 
                 {/* Article Header */}
                 <header className="mb-16">

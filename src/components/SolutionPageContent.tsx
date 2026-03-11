@@ -13,6 +13,7 @@ import {
 import Link from 'next/link';
 import NetworkBackground from '@/components/NetworkBackground';
 import ExperienceJourney from '@/components/ExperienceJourney';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import { SolutionData } from '@/data/solutions';
 import { BlogPostSummary } from '@/app/blog/BlogClient';
 
@@ -65,8 +66,65 @@ export default function SolutionPageContent({
             <div className="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay z-10" />
             <div className="fixed inset-0 bg-grid-white/[0.02] bg-[size:50px_50px] pointer-events-none z-10" />
 
+            {/* Structured Data (JSON-LD) */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'Service',
+                        'name': `${solution.title} POS Solution`,
+                        'description': solution.metaDescription,
+                        'provider': {
+                            '@type': 'Organization',
+                            'name': 'MochaEase',
+                            'url': 'https://mochaease.com'
+                        },
+                        'areaServed': 'Global',
+                        'hasOfferCatalog': {
+                            '@type': 'OfferCatalog',
+                            'name': 'POS Features',
+                            'itemListElement': (solution.features || industryContent.steps).map((step: any, idx: number) => ({
+                                '@type': 'Offer',
+                                'itemOffered': {
+                                    '@type': 'Service',
+                                    'name': step.title,
+                                    'description': step.desc
+                                }
+                            }))
+                        }
+                    })
+                }}
+            />
+            {solution.faqs && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            '@context': 'https://schema.org',
+                            '@type': 'FAQPage',
+                            'mainEntity': solution.faqs.map((faq) => ({
+                                '@type': 'Question',
+                                'name': faq.question,
+                                'acceptedAnswer': {
+                                    '@type': 'Answer',
+                                    'text': faq.answer
+                                }
+                            }))
+                        })
+                    }}
+                />
+            )}
+
             {/* Hero Section */}
             <section className="relative w-full max-w-6xl mx-auto px-6 pt-44 pb-24 z-10 text-center">
+                <Breadcrumbs 
+                    items={[
+                        { label: 'Solutions', href: '/solutions' },
+                        { label: solution.title }
+                    ]} 
+                    className="mb-12 flex justify-center"
+                />
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}

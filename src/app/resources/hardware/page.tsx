@@ -11,6 +11,7 @@ import {
 import Link from 'next/link';
 import NetworkBackground from '@/components/NetworkBackground';
 import Chatbot from '@/components/Chatbot';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export default function HardwarePage() {
     return (
@@ -20,7 +21,14 @@ export default function HardwarePage() {
             {/* Top Glow */}
             <div className="absolute top-0 inset-x-0 h-[600px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#4A90E2]/20 via-[#050505]/40 to-transparent pointer-events-none -z-0" />
 
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-24 relative z-10">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-2relative z-10">
+                <Breadcrumbs 
+                    items={[
+                        { label: 'Resources' },
+                        { label: 'Hardware' }
+                    ]} 
+                    className="mb-8"
+                />
                 {/* Hero Section */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
