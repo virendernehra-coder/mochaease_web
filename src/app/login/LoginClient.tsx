@@ -1,136 +1,245 @@
 'use client';
 
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+    Mail, Lock, ArrowRight, Loader2, Sparkles,
+    ShieldCheck, Zap, Chrome, Apple, AlertCircle,
+    Activity
+} from 'lucide-react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowRight, Chrome } from 'lucide-react';
-import NetworkBackground from '@/components/NetworkBackground';
-import type { Variants } from 'framer-motion';
+import dynamic from 'next/dynamic';
+import { createClient } from '@/utils/supabase/client';
+import { useRouter } from 'next/navigation';
+
+const NetworkBackground = dynamic(() => import('@/components/NetworkBackground'), { ssr: false });
 
 export default function LoginClient() {
-    const fadeUpVariant: Variants = {
-        hidden: { opacity: 0, y: 30 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const supabase = createClient();
+
+    // Form State
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+
+        try {
+            const { error: authError } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (authError) throw authError;
+
+            // Redirect to dashboard or home
+            router.push('/');
+            router.refresh();
+        } catch (err: any) {
+            setError(err.message || 'Invalid login credentials.');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const staggerContainer: Variants = {
-        hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    const handleOAuth = async (provider: 'google' | 'apple') => {
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider,
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`,
+                },
+            });
+            if (error) throw error;
+        } catch (err: any) {
+            setError(err.message);
+        }
     };
 
     return (
-        <main className="flex min-h-screen bg-[#050505] selection:bg-[#C3EB7A]/30 relative overflow-hidden">
-
-            {/* Dynamic Background */}
+        <main className="flex min-h-screen bg-[#050505] selection:bg-[#C3EB7A]/30 relative overflow-hidden font-sans">
+            {/* Premium Background Layer */}
             <div className="absolute inset-0 z-0">
                 <NetworkBackground />
-                {/* Subtle ambient glows */}
-                <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-[#4A90E2]/10 blur-[150px] rounded-full -translate-x-1/2 -translate-y-1/2" />
-                <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-[#C3EB7A]/10 blur-[120px] rounded-full translate-x-1/3 translate-y-1/3" />
+                <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-[#4A90E2]/20 blur-[180px] rounded-full animate-pulse" />
+                <div className="absolute bottom-[-20%] left-[-10%] w-[1000px] h-[1000px] bg-[#C3EB7A]/15 blur-[200px] rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/10 blur-[250px] rounded-full" />
             </div>
 
-            {/* Left: Interactive Form */}
-            <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 md:px-24 z-10 relative">
-
-                <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-md w-full mx-auto mt-20">
-                    <motion.div variants={fadeUpVariant}>
-                        <h1 className="text-4xl font-black text-white mb-3 tracking-tight">Welcome back</h1>
-                        <p className="text-white/60 mb-10">Sign in to control your empire.</p>
-                    </motion.div>
-
-                    {/* OAuth Buttons */}
-                    <motion.div variants={fadeUpVariant} className="flex gap-4 mb-8">
-                        <button className="flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 hover:border-white/20 transition-all group">
-                            <Chrome className="w-5 h-5 text-white/70 group-hover:text-white transition-colors" />
-                            <span className="text-sm">Google</span>
-                        </button>
-                        <button className="flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 hover:border-white/20 transition-all group">
-                            <svg className="w-5 h-5 text-white/70 group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" className="hidden" /><path d="M16.5 13.974c0-3.187 2.651-4.755 2.766-4.832-1.503-2.147-3.834-2.435-4.664-2.47-1.956-.192-3.824 1.134-4.82 1.134-1.006 0-2.541-1.11-4.14-1.08-2.071.028-3.987 1.187-5.048 3.011-2.158 3.665-.552 9.074 1.545 12.046 1.026 1.455 2.245 3.1 3.82 3.042 1.517-.058 2.091-.968 3.916-.968 1.815 0 2.341.968 3.935.94 1.634-.03 2.668-1.488 3.684-2.923 1.173-1.674 1.656-3.296 1.674-3.376-.037-.015-3.168-1.189-3.168-4.524zm-2.73-8.814c.83-.984 1.385-2.348 1.233-3.71-.143-.021-.295-.032-.442-.032-1.39 0-2.887.65-3.774 1.696-.78.916-1.385 2.313-1.215 3.66 1.52.115 2.97-.565 3.847-1.614z" /></svg>
-                            <span className="text-sm">Apple</span>
-                        </button>
-                    </motion.div>
-
-                    <motion.div variants={fadeUpVariant} className="flex items-center gap-4 mb-8">
-                        <div className="h-[1px] flex-1 bg-white/10"></div>
-                        <span className="text-xs text-white/30 uppercase font-bold tracking-widest">or continue with email</span>
-                        <div className="h-[1px] flex-1 bg-white/10"></div>
-                    </motion.div>
-
-                    {/* Form */}
-                    <motion.form variants={staggerContainer} className="space-y-5">
-                        <motion.div variants={fadeUpVariant} className="space-y-2">
-                            <label className="text-xs font-bold text-white/50 uppercase tracking-wider pl-1">Email Address</label>
-                            <div className="relative group/input">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-white/30 group-focus-within/input:text-[#4A90E2] transition-colors" />
-                                </div>
-                                <input
-                                    type="email"
-                                    required
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#4A90E2]/50 focus:bg-white/10 transition-all group-hover/input:border-white/20"
-                                    placeholder="you@company.com"
-                                />
-                            </div>
-                        </motion.div>
-
-                        <motion.div variants={fadeUpVariant} className="space-y-2">
-                            <div className="flex justify-between items-center pl-1 pr-2">
-                                <label className="text-xs font-bold text-white/50 uppercase tracking-wider">Password</label>
-                                <Link href="/forgot" className="text-xs font-bold text-[#4A90E2] hover:text-white transition-colors">Forgot?</Link>
-                            </div>
-                            <div className="relative group/input">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-white/30 group-focus-within/input:text-[#4A90E2] transition-colors" />
-                                </div>
-                                <input
-                                    type="password"
-                                    required
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#4A90E2]/50 focus:bg-white/10 transition-all group-hover/input:border-white/20"
-                                    placeholder="••••••••••••"
-                                />
-                            </div>
-                        </motion.div>
-
-                        <motion.button
-                            variants={fadeUpVariant}
-                            type="submit"
-                            className="w-full py-4 rounded-2xl bg-[#C3EB7A] text-black font-black text-lg hover:brightness-110 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_20px_rgba(195,235,122,0.3)] mt-8 flex justify-center items-center gap-2 group"
+            {/* Content Container */}
+            <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col min-h-screen pt-32 pb-20 px-6">
+                
+                <div className="flex flex-col items-center justify-center flex-1 w-full max-w-4xl mx-auto">
+                    
+                    {/* Centered Hero Text */}
+                    <div className="w-full text-center mb-16">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
                         >
-                            Sign In to Dashboard
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </motion.button>
-                    </motion.form>
+                            <h1 className="text-5xl md:text-8xl font-black text-white mb-6 leading-[0.95] tracking-tighter">
+                                Welcome <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C3EB7A] to-[#4A90E2]">
+                                    Back home.
+                                </span>
+                            </h1>
+                            <p className="text-xl text-white/50 font-medium mb-12 max-w-2xl mx-auto text-balance">
+                                Sign in to your command center and keep your ecosystem hummin'. <br className="hidden md:block" />
+                                Your data is ready, the empire awaits.
+                            </p>
 
-                    <motion.p variants={fadeUpVariant} className="text-center text-sm text-white/50 mt-8">
-                        Don't have an account? <Link href="/register" className="text-[#C3EB7A] font-bold hover:underline underline-offset-4 decoration-2">Start your free trial</Link>
-                    </motion.p>
-                </motion.div>
-            </div>
-
-            {/* Right: Ambient Visuals / Quote */}
-            <div className="hidden lg:flex w-1/2 bg-[#0A0A0A] border-l border-white/5 relative items-center justify-center overflow-hidden">
-                {/* Glass Abstract Shapes */}
-                <div className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-[#4A90E2]/10 to-[#C3EB7A]/10 blur-[80px] z-0 animate-pulse-slow" />
-
-                <div className="relative z-10 max-w-lg p-12 rounded-[40px] bg-white/5 border border-white/10 backdrop-blur-2xl shadow-[0_40px_100px_rgba(0,0,0,0.8)]">
-                    <svg className="w-12 h-12 text-[#C3EB7A] mb-8 opacity-50" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                    </svg>
-                    <p className="text-2xl text-white font-medium mb-8 leading-relaxed">
-                        "We transitioned 42 outlets to MochaEase in one weekend. The visibility into our stock and revenue numbers has completely changed how we operate."
-                    </p>
-                    <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-purple-500 to-[#4A90E2] p-[2px]">
-                            <div className="w-full h-full rounded-full bg-black flex items-center justify-center">
-                                <span className="text-[#4A90E2] font-black text-lg">SJ</span>
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-16 border-t border-white/5 pt-12 max-w-3xl mx-auto">
+                                <HeroFeature icon={<Zap className="w-5 h-5" />} title="Fast Sync" desc="Real-time data." />
+                                <HeroFeature icon={<ShieldCheck className="w-5 h-5" />} title="Secure" desc="AES-256 Auth." />
+                                <HeroFeature icon={<Sparkles className="w-5 h-5" />} title="AI Ready" desc="Insights active." />
+                                <HeroFeature icon={<Activity className="w-5 h-5" />} title="Uptime" desc="99.9% Reliable." />
                             </div>
-                        </div>
-                        <div>
-                            <h4 className="text-white font-bold text-lg">Sarah Jenkins</h4>
-                            <p className="text-[#C3EB7A] text-sm">VP Operations, The Daily Grind</p>
+                        </motion.div>
+                    </div>
+
+                    {/* Centered Login Card */}
+                    <div className="relative group w-full max-w-[480px] mx-auto">
+                        {/* Card Glow Background */}
+                        <div className="absolute -inset-1 bg-gradient-to-r from-[#C3EB7A]/20 to-[#4A90E2]/20 rounded-[40px] blur-xl opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
+                        
+                        <div className="relative w-full bg-[#0F0F0F]/80 border border-white/10 rounded-[40px] shadow-2xl backdrop-blur-3xl overflow-hidden min-h-[500px] flex flex-col p-8 md:p-10">
+                            
+                            <div className="mb-10 text-center">
+                                <h2 className="text-3xl font-black text-white mb-2 tracking-tight text-center">Authorized Access</h2>
+                                <p className="text-white/40 text-sm font-medium">Verify your credentials to enter the dashboard.</p>
+                            </div>
+
+                            <div className="space-y-6 flex-1">
+                                {/* OAuth Options */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button 
+                                        onClick={() => handleOAuth('google')}
+                                        className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all group"
+                                    >
+                                        <Chrome className="w-5 h-5 text-white/40 group-hover:text-white transition-colors" />
+                                        <span className="text-sm">Google</span>
+                                    </button>
+                                    <button 
+                                        onClick={() => handleOAuth('apple')}
+                                        className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all group"
+                                    >
+                                        <Apple className="w-5 h-5 text-white/40 group-hover:text-white transition-colors" />
+                                        <span className="text-sm">Apple</span>
+                                    </button>
+                                </div>
+
+                                <div className="flex items-center gap-4 py-2">
+                                    <div className="h-[1px] flex-1 bg-white/5" />
+                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-[2px]">OR EMAIL LOGIN</span>
+                                    <div className="h-[1px] flex-1 bg-white/5" />
+                                </div>
+
+                                <form onSubmit={handleLogin} className="space-y-5">
+                                    <InputGroup 
+                                        label="Work Email" 
+                                        icon={<Mail className="w-4 h-4" />} 
+                                        type="email" 
+                                        placeholder="alex@enterprise.com"
+                                        value={email}
+                                        onChange={setEmail}
+                                    />
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-[2px] ml-1 text-left">Password</label>
+                                            <Link href="/forgot-password" className="text-[10px] font-black text-[#4A90E2] uppercase tracking-[1px] hover:text-[#C3EB7A] transition-colors">
+                                                Forgot?
+                                            </Link>
+                                        </div>
+                                        <div className="relative group/input">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/input:text-[#C3EB7A] transition-colors">
+                                                <Lock className="w-4 h-4" />
+                                            </div>
+                                            <input 
+                                                type="password"
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/10 focus:outline-none focus:border-[#C3EB7A]/40 transition-all font-bold text-sm"
+                                                placeholder="••••••••••••"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {error && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold flex items-center gap-2"
+                                        >
+                                            <AlertCircle className="w-4 h-4 shrink-0" />
+                                            {error}
+                                        </motion.div>
+                                    )}
+
+                                    <button 
+                                        type="submit"
+                                        disabled={loading || !email || !password}
+                                        className="w-full bg-[#C3EB7A] text-black font-black py-4 rounded-2xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_30px_rgba(195,235,122,0.3)] disabled:opacity-50 disabled:scale-100 disabled:shadow-none mt-4"
+                                    >
+                                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Enter Command Center'}
+                                        {!loading && <ArrowRight className="w-5 h-5" />}
+                                    </button>
+                                </form>
+                            </div>
+
+                            <p className="text-center text-sm text-white/40 mt-10 font-medium">
+                                No account? <Link href="/onboarding" className="text-[#C3EB7A] font-black hover:underline underline-offset-4 decoration-2">Begin Onboarding</Link>
+                            </p>
                         </div>
                     </div>
                 </div>
+
+                {/* Footer Copy */}
+                <footer className="mt-20 flex justify-between items-center text-[10px] font-bold text-white/20 uppercase tracking-[4px]">
+                    <div>&copy; 2026 MOCHAEASE TECH</div>
+                    <div className="hidden md:block">ISO 27001 :: AICPA SOC 2 COMPLIANT</div>
+                    <div>SECURED BY AES-256</div>
+                </footer>
             </div>
         </main>
+    );
+}
+
+function InputGroup({ label, icon, type, placeholder, value, onChange }: { label: string, icon: React.ReactNode, type: string, placeholder: string, value: string, onChange: (v: string) => void }) {
+    return (
+        <div className="space-y-2">
+            <label className="text-[10px] font-black text-white/30 uppercase tracking-[2px] ml-1 text-left block w-full">{label}</label>
+            <div className="relative group/input">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/input:text-[#C3EB7A] transition-colors">
+                    {icon}
+                </div>
+                <input 
+                    type={type}
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/10 focus:outline-none focus:border-[#C3EB7A]/40 transition-all font-bold text-sm"
+                    placeholder={placeholder}
+                />
+            </div>
+        </div>
+    );
+}
+
+function HeroFeature({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
+    return (
+        <div className="flex flex-col items-center text-center gap-2 group">
+            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 group-hover:text-[#C3EB7A] group-hover:border-[#C3EB7A]/30 transition-all shrink-0">
+                {icon}
+            </div>
+            <div>
+                <h4 className="text-white font-black text-[10px] uppercase tracking-wider">{title}</h4>
+                <p className="text-white/30 text-[9px] mt-1 leading-tight hidden md:block">{desc}</p>
+            </div>
+        </div>
     );
 }
