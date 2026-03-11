@@ -1,4 +1,5 @@
 import HomeComponent from "@/components/HomeComponent";
+import { getOrganizationSchema, getSoftwareApplicationSchema } from "@/data/structured-data";
 
 export const metadata = {
     title: "MochaEase - Smart POS & Management",
@@ -21,36 +22,8 @@ export default function Home() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
                     __html: JSON.stringify([
-                        {
-                            '@context': 'https://schema.org',
-                            '@type': 'Organization',
-                            'name': 'MochaEase',
-                            'url': 'https://mochaease.com',
-                            'logo': 'https://mochaease.com/logo.png',
-                            'sameAs': [
-                                'https://twitter.com/mochaease',
-                                'https://linkedin.com/company/mochaease'
-                            ],
-                            'contactPoint': {
-                                '@type': 'ContactPoint',
-                                'telephone': '+91-XXXXXXXXXX',
-                                'contactType': 'customer service',
-                                'email': 'hello@mochaease.com',
-                                'areaServed': 'Global',
-                                'availableLanguage': 'en'
-                            }
-                        },
-                        {
-                            '@context': 'https://schema.org',
-                            '@type': 'WebSite',
-                            'name': 'MochaEase',
-                            'url': 'https://mochaease.com',
-                            'potentialAction': {
-                                '@type': 'SearchAction',
-                                'target': 'https://mochaease.com/search?q={search_term_string}',
-                                'query-input': 'required name=search_term_string'
-                            }
-                        }
+                        getOrganizationSchema(),
+                        getSoftwareApplicationSchema()
                     ])
                 }}
             />

@@ -62,6 +62,8 @@ export interface SolutionData {
         imageGradient: string;
     }>;
     category: 'fnb' | 'retail' | 'enterprise';
+    keywords?: string[];
+    ogImage?: string;
 }
 
 export const SOLUTIONS: SolutionData[] = [
@@ -75,6 +77,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Brew More. Manage Less.',
         heroSubheadline: "Running a cafe is tough enough without wrestling with five different apps. Let's see how MochaEase handles everything for your coffee shop.",
         blogTag: 'Cafe Management',
+        keywords: ['Cafe POS', 'Coffee Shop Management', 'Barista Software', 'Inventory Tracking for Cafes', 'Smart Cafe Solution'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "How does MochaEase handle oat milk and ingredient tracking?", answer: "MochaEase tracks ingredients down to the milliliter. When a drink is sold, it automatically deducts the exact amount of milk or beans, alerting you before you run out during a morning rush." },
             { question: "Can I manage multiple cafe locations synchronously?", answer: "Yes. Our cloud-first architecture allows you to update menus, track costs, and manage staff across all locations from one central dashboard instantly." },
@@ -130,6 +134,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Lightning Fast Operations.',
         heroSubheadline: 'Speed is everything in QSR. MochaEase is engineered to slash your wait times and keep your kitchen humming.',
         blogTag: 'Product Updates',
+        keywords: ['QSR POS', 'Fast Food Software', 'Kitchen Display System', 'Restaurant Workflow', 'Franchise Management'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "How fast is the checkout process?", answer: "Our QSR interface is optimized for speed, allowing cashiers to process high-volume orders in seconds. We also support self-serve kiosks to bust lines during peak hours." },
             { question: "Can it integrate with delivery apps like Zomato or Swiggy?", answer: "Yes, all major delivery aggregators are injected directly into your POS and Kitchen Display System, eliminating 'tablet hell' at the counter." },
@@ -185,6 +191,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Table Service, Elevated.',
         heroSubheadline: 'Running a full-service dining room requires choreography. MochaEase unites your hosts, servers, and chefs in perfect sync.',
         blogTag: 'Enterprise',
+        keywords: ['Restaurant POS', 'Fine Dining Software', 'Table Management', 'Handheld Server Terminals', 'Kitchen Sync'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "How does table management work?", answer: "Our dynamic floor plan view shows real-time table status (seated, dessert, empty) and allows hosts to manage waitlists and reservations from an iPad." },
             { question: "Do you offer handheld devices for servers?", answer: "Yes. Servers can take orders tableside using mobile terminals, firing tickets instantly to the bar or kitchen without leaving the floor." },
@@ -209,6 +217,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Pour Profitably.',
         heroSubheadline: 'Bars move fast. High volume, high shrinkage. MochaEase keeps your bartenders pouring while locking down your inventory.',
         blogTag: 'Retail Tips',
+        keywords: ['Bar POS', 'Brewery Software', 'Liquor Inventory', 'Pre-authorized Tabs', 'Happy Hour Automation'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "Can I open tabs with pre-authorization?", answer: "Yes. Swipe a card to open a pre-authorized tab in just 1 second, allowing drinks to flow without delay while securing your revenue." },
             { question: "How do you track liquor shrinkage?", answer: "MochaEase maps cocktail recipes to deduct exact ounces from your inventory, flagging discrepancies or over-pours instantly on your dashboard." },
@@ -233,6 +243,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Scale Your Street Food.',
         heroSubheadline: 'Tight spaces, high heat, and huge lines. MochaEase gives your food truck enterprise-grade tech that fits in your pocket.',
         blogTag: 'Cafe Management',
+        keywords: ['Food Truck POS', 'Mobile POS', 'Offline POS', 'Line Busting', 'Street Food Management'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "Does it work without internet?", answer: "Yes. Our systems are built local-first, allowing you to process card and cash payments even at remote festivals with zero connectivity." },
             { question: "Can I take orders from people in line?", answer: "Absolutely. Our handheld terminals allow staff to walk the line and fire orders to the truck window before the customer even reaches the front." },
@@ -257,6 +269,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Rise to the Occasion.',
         heroSubheadline: 'Bakeries require incredible precision, early mornings, and strict shelf lives. Let MochaEase manage the math.',
         blogTag: 'Product Updates',
+        keywords: ['Bakery POS', 'Production Planning', 'Cake Order Management', 'Wholesale Billing', 'Expiry Tracking'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "How do you help with bake production?", answer: "Our AI analyzes historical sales and weather patterns to tell your bakers exactly how many units to produce at 4 AM to maximize profit." },
             { question: "Can I manage custom wedding cake orders?", answer: "Yes. Track deposits, design notes, and pickup dates for complex custom orders with automated customer reminders." },
@@ -281,6 +295,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Sell More. Stress Less.',
         heroSubheadline: 'Whether you sell sneakers or streetwear, MochaEase is built to keep your shelves moving and your customers smiling.',
         blogTag: 'Retail Tips',
+        keywords: ['Fashion Retail POS', 'Shopify Sync', 'Apparel Inventory', 'SKU Matrix', 'Clothing Store Software'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "Does it sync with my Shopify store?", answer: "Yes, we provide real-time omnichannel sync. Sales in your physical boutique are instantly reflected in your online store to prevent overselling." },
             { question: "How do you handle size and color variants?", answer: "MochaEase manages complex matrix inventory effortlessly, allowing you to track every SKU by size, color, and season with ease." },
@@ -315,6 +331,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Radiate Excellence.',
         heroSubheadline: 'From booking chairs to tracking products, running a beauty clinic is an art. Let MochaEase handle the science.',
         blogTag: 'Retail Tips',
+        keywords: ['Salon POS', 'Spa Management', 'Appointment Booking', 'Beauty Clinic Software', 'Commission Tracking'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "Do you have an online booking widget?", answer: "Yes. A 24/7 web-based booking tool that integrates directly with your staff calendar and sends automated SMS reminders to reduce no-shows." },
             { question: "Can it track staff commissions?", answer: "Easily. Set custom commission rates for different services or products, and MochaEase will calculate your payroll splits automatically." },
@@ -339,6 +357,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'High Volume. Perfect Control.',
         heroSubheadline: 'Ten thousand SKUs. Narrow margins. Endless foot traffic. MochaEase gives you the heavy-duty tech needed to run convenience retail.',
         blogTag: 'Retail Tips',
+        keywords: ['Grocery POS', 'Supermarket Software', 'Scale Integration', 'SKU Management', 'Expiry Tracking'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "How many SKUs can it handle?", answer: "MochaEase is built for high volume, easily handling over 50,000 unique SKUs with rapid barcode scanning and master categorization." },
             { question: "Can it integrate with weighing scales?", answer: "Yes. The POS interfaces directly with digital scales to sell produce and deli items by the gram or kilo instantly." },
@@ -363,6 +383,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Cater to Lifestyle.',
         heroSubheadline: 'Big items, diverse homeware sets, and delivery logistics. MochaEase provides the architecture lifestyle stores need.',
         blogTag: 'Retail Tips',
+        keywords: ['Furniture POS', 'Homeware Retail', 'Logistics Management', 'Warehouse Sync', 'Showroom Software'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "Can I sell items not in stock at the showroom?", answer: "Yes. Sync your showroom POS to your warehouse inventory so staff can sell large furniture items they don't physically have on hand." },
             { question: "How do you handle delivery routing?", answer: "Our white-glove delivery tools allow you to route trucks efficiently and send customers live SMS tracking links for their furniture arrival." },
@@ -387,6 +409,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Compliance Meets Commerce.',
         heroSubheadline: 'Age verification, vast SKU variations, and strict regulations. MochaEase streamlines your vape or smoke shop operations.',
         blogTag: 'Retail Tips',
+        keywords: ['Vape Shop POS', 'Age Verification', 'Compliance Software', 'Smoke Shop Inventory', 'Flavor Variants'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "Does it support mandatory age checks?", answer: "Yes. Our POS includes an age-gate that requires ID scanning to process any age-restricted transactions, ensuring 100% compliance." },
             { question: "How do you handle thousands of juice flavors?", answer: "MochaEase uses an intelligent variant matrix that allows you to manage flavors, nicotine levels, and bottle sizes without cluttering your database." },
@@ -411,6 +435,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Command Your Empire.',
         heroSubheadline: "Running an empire requires a bird's-eye view with ground-level control. MochaEase unites your entire chain under one roof.",
         blogTag: 'Enterprise',
+        keywords: ['Enterprise POS', 'Franchise Management', 'Chain Retail Software', 'Global Supply Chain', 'ERP Integration'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "How do I update menus across 100 locations?", answer: "Our Master Menu Management allows you to push price changes or new items to every location at once from your Head Office dashboard." },
             { question: "Can you automate franchise royalties?", answer: "Yes. MochaEase acts as the neutral source of truth, automatically calculating and ledgering royalty splits based on verified sales data." },
@@ -445,6 +471,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'One Screen. Multiple Domains.',
         heroSubheadline: 'Running ghost kitchens, food halls, or massive hospitality groups? Command distinctly multiple brands entirely from one single login.',
         blogTag: 'Enterprise',
+        keywords: ['Multi-Brand POS', 'Ghost Kitchen Software', 'Food Hall POS', 'Portfolio Management', 'Shared Inventory'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "Can I manage different brands from one screen?", answer: "Yes. Toggle instantly between different brand entities and compare portfolio health without ever logging out of the system." },
             { question: "How do you handle shared inventory?", answer: "If multiple brands share ingredients (e.g., tomatoes or flour), our system intelligently deducts from a shared master warehouse in real-time." },
@@ -469,6 +497,8 @@ export const SOLUTIONS: SolutionData[] = [
         heroHeadline: 'Handle The Halftime Rush.',
         heroSubheadline: 'Fifty thousand fans. 15 minutes. Pure chaos. MochaEase deploys the most robust, high-availability architecture to handle immense spikes.',
         blogTag: 'Enterprise',
+        keywords: ['Stadium POS', 'Venue Management', 'High-Volume POS', 'Offline Transactions', 'Concession Software'],
+        ogImage: '/blog/blog_ai_inventory_1773002441722.png',
         faqs: [
             { question: "Can it work without WiFi?", answer: "Yes. Stadium environments are tough on connectivity. Our terminals run fully local-first and can process thousands of orders with zero internet access." },
             { question: "Do you offer in-seat mobile ordering?", answer: "Yes. Fans scan a QR code on their seat to order concessions, which are then routed to the nearest runner or collection point instantly." },

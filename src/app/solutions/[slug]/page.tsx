@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
         title: solution.metaTitle,
         description: solution.metaDescription,
+        keywords: solution.keywords,
         alternates: {
             canonical: `https://mochaease.com/solutions/${slug}`,
         },
@@ -36,7 +37,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             description: solution.metaDescription,
             type: 'website',
             url: `https://mochaease.com/solutions/${slug}`,
+            images: [
+                {
+                    url: solution.ogImage || '/blog/blog_ai_inventory_1773002441722.png',
+                    width: 1200,
+                    height: 630,
+                    alt: solution.title,
+                }
+            ],
         },
+        twitter: {
+            card: 'summary_large_image',
+            title: solution.metaTitle,
+            description: solution.metaDescription,
+            images: [solution.ogImage || '/blog/blog_ai_inventory_1773002441722.png'],
+        }
     };
 }
 

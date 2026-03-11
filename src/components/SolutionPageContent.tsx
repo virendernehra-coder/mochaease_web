@@ -14,8 +14,9 @@ import Link from 'next/link';
 import NetworkBackground from '@/components/NetworkBackground';
 import ExperienceJourney from '@/components/ExperienceJourney';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { SolutionData } from '@/data/solutions';
+import { SolutionData, SOLUTIONS } from '@/data/solutions';
 import { BlogPostSummary } from '@/app/blog/BlogClient';
+import { getFAQSchema } from '@/data/structured-data';
 
 interface SolutionPageContentProps {
     solution: SolutionData;
@@ -100,18 +101,7 @@ export default function SolutionPageContent({
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            '@context': 'https://schema.org',
-                            '@type': 'FAQPage',
-                            'mainEntity': solution.faqs.map((faq) => ({
-                                '@type': 'Question',
-                                'name': faq.question,
-                                'acceptedAnswer': {
-                                    '@type': 'Answer',
-                                    'text': faq.answer
-                                }
-                            }))
-                        })
+                        __html: JSON.stringify(getFAQSchema(solution.faqs))
                     }}
                 />
             )}
@@ -124,6 +114,7 @@ export default function SolutionPageContent({
                         { label: solution.title }
                     ]} 
                     className="mb-12 flex justify-center"
+                    aria-label="Breadcrumb navigation"
                 />
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -201,7 +192,7 @@ export default function SolutionPageContent({
                                     <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-white/10 transition-all duration-500 group-hover:rotate-6 shadow-[0_0_30px_rgba(255,255,255,0.05)]">
                                         {(() => {
                                             const Icon = ICON_MAP[step.iconName] || Zap;
-                                            return <Icon className="w-8 h-8 text-white group-hover:text-[#C3EB7A] transition-colors" />;
+                                            return <Icon className="w-8 h-8 text-white group-hover:text-[#C3EB7A] transition-colors" aria-hidden="true" />;
                                         })()}
                                     </div>
                                     
@@ -248,7 +239,7 @@ export default function SolutionPageContent({
                                     <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                                     <div className="relative z-10">
                                         <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                                            <Icon className={`w-7 h-7 ${item.text}`} />
+                                            <Icon className={`w-7 h-7 ${item.text}`} aria-hidden="true" />
                                         </div>
                                         <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">{item.title}</h3>
                                         <p className="text-white/40 text-lg leading-relaxed group-hover:text-white/60 transition-colors">{item.desc}</p>
@@ -420,7 +411,40 @@ export default function SolutionPageContent({
                     </div>
                 </section>
             )}
+            
+            {/* Related Solutions */}
+            <section className="relative w-full max-w-7xl mx-auto px-6 py-32 z-10 border-t border-white/5">
+                <div className="mb-16">
+                    <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">Expand Your Ecosystem.</h2>
+                    <p className="text-white/40 text-lg font-medium">Explore related industries MochaEase helps transform.</p>
+                </div>
 
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                    {SOLUTIONS
+                        .filter(s => s.id !== solution.id && (s.category === solution.category || true))
+                        .slice(0, 4)
+                        .map((s, i) => (
+                            <Link 
+                                key={s.id} 
+                                href={`/solutions/${s.slug}`}
+                                className="group p-6 rounded-[2rem] bg-white/[0.02] border border-white/10 hover:border-[#C3EB7A]/30 hover:bg-white/[0.04] transition-all duration-500"
+                            >
+                                <div className="text-[#C3EB7A] mb-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                                    {(() => {
+                                        const Icon = ICON_MAP[s.slug.split('-')[0].charAt(0).toUpperCase() + s.slug.split('-')[0].slice(1)] || Zap;
+                                        // Attempt to find icon from first word of slug
+                                        return <Icon className="w-6 h-6" aria-hidden="true" />;
+                                    })()}
+                                </div>
+                                <h4 className="text-white font-black text-lg mb-2 leading-tight group-hover:text-[#C3EB7A] transition-colors">{s.title}</h4>
+                                <div className="text-[10px] font-black uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors">
+                                    Explore Solution →
+                                </div>
+                            </Link>
+                        ))
+                    }
+                </div>
+            </section>
         </main>
     );
 }

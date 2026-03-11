@@ -6,6 +6,7 @@ import NetworkBackground from '@/components/NetworkBackground';
 import { Clock, Calendar, ArrowLeft, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { getBlogPostSchema } from '@/data/structured-data';
 
 export const revalidate = 0; // Always fetch fresh article content from Supabase
 
@@ -113,6 +114,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: post.seo_description,
         keywords: post.seo_keywords,
         authors: [{ name: post.author }],
+        alternates: {
+            canonical: `https://mochaease.com/blog/${post.slug}`,
+        },
         openGraph: {
             title: post.title,
             description: post.seo_description,
@@ -156,27 +160,14 @@ export default async function BlogPostPage({ params }: Props) {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
-                        '@context': 'https://schema.org',
-                        '@type': 'BlogPosting',
-                        'headline': post.title,
-                        'description': post.excerpt,
-                        'image': post.featured_image ? [`https://mochaease.com${post.featured_image}`] : [],
-                        'datePublished': post.published_at,
-                        'author': [{
-                            '@type': 'Person',
-                            'name': post.author,
-                            'url': 'https://mochaease.com/blog'
-                        }],
-                        'publisher': {
-                            '@type': 'Organization',
-                            'name': 'MochaEase',
-                            'logo': {
-                                '@type': 'ImageObject',
-                                'url': 'https://mochaease.com/logo.png'
-                            }
-                        }
-                    })
+                    __html: JSON.stringify(getBlogPostSchema({
+                        title: post.title,
+                        description: post.excerpt,
+                        slug: post.slug,
+                        publishedAt: post.published_at,
+                        author: post.author,
+                        image: post.featured_image ? (post.featured_image.startsWith('http') ? post.featured_image : `https://mochaease.com${post.featured_image}`) : undefined
+                    }))
                 }}
             />
 
