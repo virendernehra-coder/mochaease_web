@@ -7,9 +7,13 @@ export async function createClient() {
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
+    // Server-side: use real variables at runtime, placeholders only if missing during prerendering
+    const url = supabaseUrl || 'https://placeholder.supabase.co';
+    const key = supabaseKey || 'placeholder';
+
     return createServerClient(
-        supabaseUrl || 'https://placeholder.supabase.co',
-        supabaseKey || 'placeholder',
+        url,
+        key,
         {
             cookies: {
                 getAll() {
