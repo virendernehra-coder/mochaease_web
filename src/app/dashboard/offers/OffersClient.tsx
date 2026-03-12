@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-    Tag, Plus, Search, Calendar, 
+import {
+    Tag, Plus, Search, Calendar,
     Percent, Gift, DollarSign, Check, AlertCircle, ShoppingBag,
     X, Trash2, Edit3, Power
 } from 'lucide-react';
@@ -22,8 +22,9 @@ interface Offer {
     bogo_buy_qty?: number;
     bogo_get_qty?: number;
     min_order_amount: number;
-    applicable_product_ids: string[];
+    applicable_product_ids: number[];
     status: boolean;
+    outlet_id?: string;
 }
 
 interface Product {
@@ -34,15 +35,18 @@ interface Product {
 }
 
 export default function OffersClient() {
-    const { activeContextId, contexts, user } = useUserStore();
-    const activeContext = contexts.find(c => c.id === activeContextId) || contexts[0];
-    const isGlobal = activeContextId === 'global';
-    
+    const { activeContextId, user } = useUserStore();
+    const isGlobal = activeContextId === 'business';
+
+    // Simple context name resolution
+    const contextName = isGlobal ? 'Global Business' : 'Selected Outlet';
+
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [step, setStep] = useState(1);
     const [offers, setOffers] = useState<Offer[]>([]);
     const [loading, setLoading] = useState(true);
-    const [products, setProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<any[]>([]);
+    const [outlets, setOutlets] = useState<any[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -58,64 +62,71 @@ export default function OffersClient() {
         bogo_buy_qty: '',
         bogo_get_qty: '',
         min_order_amount: '0',
-        applicable_product_ids: [] as string[],
+        applicable_product_ids: [] as number[],
         status: true
     });
 
     const supabase = createClient();
 
-    const filteredProducts = products.filter(p => 
-        p.product_name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredProducts = products.filter(p =>
+        (p.product_name || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const handleSelectAll = () => {
         if (formData.applicable_product_ids.length === products.length) {
             setFormData(prev => ({ ...prev, applicable_product_ids: [] }));
         } else {
-            setFormData(prev => ({ 
-                ...prev, 
-                applicable_product_ids: products.map(p => p.id.toString()) 
+            setFormData(prev => ({
+                ...prev,
+                applicable_product_ids: products.map(p => p.id)
             }));
         }
     };
-
-    const fetchOffers = React.useCallback(async () => {
+    const fetchData = React.useCallback(async () => {
+        if (!user?.business_id) return;
         setLoading(true);
         try {
-            let query = supabase.from('business_offers').select('*');
-            
-            if (!isGlobal) {
-                query = query.eq('business_id', activeContextId);
+            // Fetch Offers
+            let offersQuery = supabase.from('business_offers').select('*').order('created_at', { ascending: false });
+            if (isGlobal) {
+                offersQuery = offersQuery.eq('business_id', user.business_id);
+            } else {
+                offersQuery = offersQuery.eq('outlet_id', activeContextId);
             }
+            const { data: offersData } = await offersQuery;
+            setOffers(offersData || []);
 
-            const { data, error } = await query.order('created_at', { ascending: false });
-            if (error) throw error;
-            setOffers(data || []);
+            // Fetch Products
+            let productsQuery = supabase.from('add_new_products').select('*');
+            if (isGlobal) {
+                productsQuery = productsQuery.eq('business_id', user.business_id);
+            } else {
+                productsQuery = productsQuery.eq('outlet_id', activeContextId);
+            }
+            const { data: productsData } = await productsQuery;
+            setProducts(productsData || []);
+
+            // Fetch Outlets for naming
+            const { data: outletsData } = await supabase
+                .from('business_details')
+                .select('outlet_id, outlet_name')
+                .eq('business_id', user.business_id);
+            setOutlets(outletsData || []);
+
         } catch (err) {
-            console.error('Error fetching offers:', err);
+            console.error('Error fetching dashboard data:', err);
         } finally {
             setLoading(false);
         }
-    }, [activeContextId, isGlobal, supabase]);
-
-    const fetchProducts = React.useCallback(async () => {
-        try {
-            let query = supabase.from('add_new_products').select('*');
-            if (!isGlobal) {
-                query = query.eq('business_id', activeContextId);
-            }
-            const { data, error } = await query;
-            if (error) throw error;
-            setProducts(data || []);
-        } catch (err) {
-            console.error('Error fetching products:', err);
-        }
-    }, [activeContextId, isGlobal, supabase]);
+    }, [activeContextId, isGlobal, supabase, user?.business_id]);
 
     useEffect(() => {
-        fetchOffers();
-        fetchProducts();
-    }, [fetchOffers, fetchProducts]);
+        fetchData();
+    }, [fetchData]);
+
+    const currentOutletName = isGlobal
+        ? 'Global Business'
+        : outlets.find(o => o.outlet_id === activeContextId)?.outlet_name || 'Selected Outlet';
 
     const handleCreateOffer = async () => {
         setIsSubmitting(true);
@@ -127,12 +138,14 @@ export default function OffersClient() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...formData,
-                    business_id: activeContextId === 'global' ? user?.business_id : activeContextId,
-                    outlet_name: activeContext?.name,
+                    business_id: user?.business_id, // Always send the master business ID
+                    outlet_id: isGlobal ? null : activeContextId, // Send outlet ID if not global
+                    outlet_name: currentOutletName,
                     discount_value: formData.discount_value ? parseFloat(formData.discount_value) : null,
                     min_order_amount: parseFloat(formData.min_order_amount),
                     bogo_buy_qty: formData.bogo_buy_qty ? parseInt(formData.bogo_buy_qty) : null,
                     bogo_get_qty: formData.bogo_get_qty ? parseInt(formData.bogo_get_qty) : null,
+                    applicable_product_ids: formData.applicable_product_ids
                 })
             });
 
@@ -141,7 +154,7 @@ export default function OffersClient() {
 
             setIsWizardOpen(false);
             setStep(1);
-            fetchOffers();
+            fetchData();
             setFormData({
                 promo_name: '',
                 promo_code: '',
@@ -163,7 +176,7 @@ export default function OffersClient() {
         }
     };
 
-    const toggleProductSelection = (productId: string) => {
+    const toggleProductSelection = (productId: number) => {
         setFormData(prev => ({
             ...prev,
             applicable_product_ids: prev.applicable_product_ids.includes(productId)
@@ -184,7 +197,7 @@ export default function OffersClient() {
                         <h1 className="text-3xl font-black tracking-tighter">OFFERS & PROMOS</h1>
                     </div>
                     <p className="text-white/40 text-sm font-medium">
-                        Manage discounts for <span className="text-[#C3EB7A]">@{activeContext?.name}</span>
+                        Manage discounts for <span className="text-[#C3EB7A]">@{currentOutletName}</span>
                     </p>
                 </div>
 
@@ -233,7 +246,7 @@ export default function OffersClient() {
                             <Tag className="w-12 h-12 text-white/10 mb-4" />
                             <h3 className="text-xl font-bold mb-2">No promotions found</h3>
                             <p className="text-white/40 max-w-sm mb-8">Start by creating your first discount offer to boost your sales.</p>
-                            <button 
+                            <button
                                 onClick={() => setIsWizardOpen(true)}
                                 className="px-8 py-3 bg-white/5 hover:bg-white/10 rounded-2xl font-black text-xs transition-all"
                             >
@@ -252,9 +265,8 @@ export default function OffersClient() {
                                 <div className="flex items-start justify-between relative z-10">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-4">
-                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase ${
-                                                offer.status ? 'bg-[#C3EB7A]/20 text-[#C3EB7A]' : 'bg-white/10 text-white/30'
-                                            }`}>
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase ${offer.status ? 'bg-[#C3EB7A]/20 text-[#C3EB7A]' : 'bg-white/10 text-white/30'
+                                                }`}>
                                                 {offer.status ? 'Active' : 'Paused'}
                                             </span>
                                             <span className="text-white/20 text-[10px] font-black tracking-widest uppercase">
@@ -279,19 +291,19 @@ export default function OffersClient() {
                                     <div className="text-right">
                                         {offer.discount_type === 'percentage' && (
                                             <div className="text-4xl font-black text-[#C3EB7A] leading-none mb-1">
-                                                {offer.discount_value}%<br/>
+                                                {offer.discount_value}%<br />
                                                 <span className="text-[10px] uppercase tracking-[3px] text-white/40">OFF</span>
                                             </div>
                                         )}
                                         {offer.discount_type === 'flat' && (
                                             <div className="text-4xl font-black text-[#4A90E2] leading-none mb-1">
-                                                ${offer.discount_value}<br/>
+                                                ${offer.discount_value}<br />
                                                 <span className="text-[10px] uppercase tracking-[3px] text-white/40">OFF</span>
                                             </div>
                                         )}
                                         {offer.discount_type === 'bogo' && (
                                             <div className="text-4xl font-black text-[#F59E0B] leading-none mb-1">
-                                                BOGO<br/>
+                                                BOGO<br />
                                                 <span className="text-[10px] uppercase tracking-[3px] text-white/40">BUY {offer.bogo_buy_qty} GET {offer.bogo_get_qty}</span>
                                             </div>
                                         )}
@@ -331,32 +343,32 @@ export default function OffersClient() {
             {/* Wizard Modal */}
             <AnimatePresence>
                 {isWizardOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div 
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10 overflow-y-auto">
+                        <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsWizardOpen(false)}
-                            className="absolute inset-0 bg-[#0A0A0A]/95 backdrop-blur-xl"
+                            className="fixed inset-0 bg-[#0A0A0A]/95 backdrop-blur-xl"
                         />
-                        
+
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="relative w-full max-w-2xl bg-[#121212] border border-white/10 rounded-[40px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.8)]"
+                            className="relative w-full max-w-2xl bg-[#121212] border border-white/10 rounded-[40px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.8)] my-auto"
                         >
                             {/* Wizard Progress */}
                             <div className="absolute top-0 left-0 w-full h-1.5 bg-white/5 flex gap-1">
                                 {[1, 2, 3].map(i => (
-                                    <div 
-                                        key={i} 
-                                        className={`flex-1 transition-all duration-500 ${step >= i ? 'bg-[#C3EB7A]' : 'bg-transparent'}`} 
+                                    <div
+                                        key={i}
+                                        className={`flex-1 transition-all duration-500 ${step >= i ? 'bg-[#C3EB7A]' : 'bg-transparent'}`}
                                     />
                                 ))}
                             </div>
 
-                            <button 
+                            <button
                                 onClick={() => setIsWizardOpen(false)}
                                 className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/5 text-white/30 hover:text-white transition-all z-20"
                             >
@@ -382,47 +394,47 @@ export default function OffersClient() {
                                             <div className="space-y-6">
                                                 <div className="space-y-2">
                                                     <label className="text-[10px] font-black text-white/30 uppercase tracking-widest pl-4">Promotion Name</label>
-                                                    <input 
+                                                    <input
                                                         type="text"
                                                         placeholder="e.g. Summer Weekend Sale"
                                                         value={formData.promo_name}
-                                                        onChange={e => setFormData({...formData, promo_name: e.target.value})}
+                                                        onChange={e => setFormData({ ...formData, promo_name: e.target.value })}
                                                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold focus:border-[#C3EB7A]/50 outline-none transition-all"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
                                                     <label className="text-[10px] font-black text-white/30 uppercase tracking-widest pl-4">Promo Code (Optional)</label>
-                                                    <input 
+                                                    <input
                                                         type="text"
                                                         placeholder="e.g. SUMMER50"
                                                         value={formData.promo_code}
-                                                        onChange={e => setFormData({...formData, promo_code: e.target.value})}
+                                                        onChange={e => setFormData({ ...formData, promo_code: e.target.value })}
                                                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold focus:border-[#C3EB7A]/50 outline-none transition-all uppercase"
                                                     />
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="space-y-2">
                                                         <label className="text-[10px] font-black text-white/30 uppercase tracking-widest pl-4">Start Date</label>
-                                                        <input 
+                                                        <input
                                                             type="date"
                                                             value={formData.start_date}
-                                                            onChange={e => setFormData({...formData, start_date: e.target.value})}
+                                                            onChange={e => setFormData({ ...formData, start_date: e.target.value })}
                                                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold focus:border-[#C3EB7A]/50 outline-none transition-all"
                                                         />
                                                     </div>
                                                     <div className="space-y-2">
                                                         <label className="text-[10px] font-black text-white/30 uppercase tracking-widest pl-4">End Date</label>
-                                                        <input 
+                                                        <input
                                                             type="date"
                                                             value={formData.end_date}
-                                                            onChange={e => setFormData({...formData, end_date: e.target.value})}
+                                                            onChange={e => setFormData({ ...formData, end_date: e.target.value })}
                                                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold focus:border-[#C3EB7A]/50 outline-none transition-all"
                                                         />
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <button 
+                                            <button
                                                 onClick={() => setStep(2)}
                                                 disabled={!formData.promo_name}
                                                 className="w-full py-5 bg-white text-black rounded-3xl font-black text-sm tracking-widest uppercase hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-30"
@@ -454,12 +466,11 @@ export default function OffersClient() {
                                                 ].map(type => (
                                                     <button
                                                         key={type.id}
-                                                        onClick={() => setFormData({...formData, discount_type: type.id})}
-                                                        className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${
-                                                            formData.discount_type === type.id 
-                                                            ? 'bg-[#C3EB7A]/10 border-[#C3EB7A] text-[#C3EB7A]' 
-                                                            : 'bg-white/5 border-white/10 text-white/20 hover:border-white/20'
-                                                        }`}
+                                                        onClick={() => setFormData({ ...formData, discount_type: type.id as any })}
+                                                        className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${formData.discount_type === type.id
+                                                                ? 'bg-[#C3EB7A]/10 border-[#C3EB7A] text-[#C3EB7A]'
+                                                                : 'bg-white/5 border-white/10 text-white/20 hover:border-white/20'
+                                                            }`}
                                                     >
                                                         <type.icon className="w-8 h-8" />
                                                         <span className="text-[10px] font-black tracking-widest">{type.label}</span>
@@ -473,11 +484,11 @@ export default function OffersClient() {
                                                         <label className="text-[10px] font-black text-white/30 uppercase tracking-widest pl-4">
                                                             {formData.discount_type === 'percentage' ? 'Percentage Value (%)' : 'Flat Amount ($)'}
                                                         </label>
-                                                        <input 
+                                                        <input
                                                             type="number"
                                                             placeholder="0"
                                                             value={formData.discount_value}
-                                                            onChange={e => setFormData({...formData, discount_value: e.target.value})}
+                                                            onChange={e => setFormData({ ...formData, discount_value: e.target.value })}
                                                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-3xl font-black focus:border-[#C3EB7A]/50 outline-none transition-all text-center"
                                                         />
                                                     </div>
@@ -485,19 +496,19 @@ export default function OffersClient() {
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-2">
                                                             <label className="text-[10px] font-black text-white/30 uppercase tracking-widest pl-4">Buy Quantity</label>
-                                                            <input 
+                                                            <input
                                                                 type="number"
                                                                 value={formData.bogo_buy_qty}
-                                                                onChange={e => setFormData({...formData, bogo_buy_qty: e.target.value})}
+                                                                onChange={e => setFormData({ ...formData, bogo_buy_qty: e.target.value })}
                                                                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-center text-xl font-black outline-none"
                                                             />
                                                         </div>
                                                         <div className="space-y-2">
                                                             <label className="text-[10px] font-black text-white/30 uppercase tracking-widest pl-4">Get Quantity</label>
-                                                            <input 
+                                                            <input
                                                                 type="number"
                                                                 value={formData.bogo_get_qty}
-                                                                onChange={e => setFormData({...formData, bogo_get_qty: e.target.value})}
+                                                                onChange={e => setFormData({ ...formData, bogo_get_qty: e.target.value })}
                                                                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-center text-xl font-black outline-none"
                                                             />
                                                         </div>
@@ -508,10 +519,10 @@ export default function OffersClient() {
                                                     <label className="text-[10px] font-black text-white/30 uppercase tracking-widest pl-4">Minimum Order Amount</label>
                                                     <div className="relative">
                                                         <DollarSign className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
-                                                        <input 
+                                                        <input
                                                             type="number"
                                                             value={formData.min_order_amount}
-                                                            onChange={e => setFormData({...formData, min_order_amount: e.target.value})}
+                                                            onChange={e => setFormData({ ...formData, min_order_amount: e.target.value })}
                                                             className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold outline-none"
                                                         />
                                                     </div>
@@ -519,13 +530,13 @@ export default function OffersClient() {
                                             </div>
 
                                             <div className="flex gap-3">
-                                                <button 
+                                                <button
                                                     onClick={() => setStep(1)}
                                                     className="flex-1 py-5 bg-white/5 text-white rounded-3xl font-black text-sm tracking-widest uppercase"
                                                 >
                                                     Back
                                                 </button>
-                                                <button 
+                                                <button
                                                     onClick={() => setStep(3)}
                                                     className="flex-[2] py-5 bg-white text-black rounded-3xl font-black text-sm tracking-widest uppercase"
                                                 >
@@ -558,7 +569,7 @@ export default function OffersClient() {
                                             <div className="space-y-4">
                                                 <div className="relative">
                                                     <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
-                                                    <input 
+                                                    <input
                                                         type="text"
                                                         value={searchTerm}
                                                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -574,23 +585,22 @@ export default function OffersClient() {
                                                         <div className="text-center py-10 text-white/20 font-bold text-xs">No products match &quot;{searchTerm}&quot;</div>
                                                     ) : (
                                                         filteredProducts.map(product => (
-                                                            <div 
+                                                            <div
                                                                 key={product.id}
                                                                 onClick={() => toggleProductSelection(product.id.toString())}
-                                                                className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all border ${
-                                                                    formData.applicable_product_ids.includes(product.id.toString())
-                                                                    ? 'bg-[#C3EB7A]/10 border-[#C3EB7A]/30'
-                                                                    : 'bg-white/5 border-transparent hover:border-white/10'
-                                                                }`}
+                                                                className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all border ${formData.applicable_product_ids.includes(product.id.toString())
+                                                                        ? 'bg-[#C3EB7A]/10 border-[#C3EB7A]/30'
+                                                                        : 'bg-white/5 border-transparent hover:border-white/10'
+                                                                    }`}
                                                             >
                                                                 <div className="flex items-center gap-3">
                                                                     <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center overflow-hidden relative">
                                                                         {product.product_image ? (
-                                                                            <Image 
-                                                                                src={product.product_image} 
-                                                                                alt={product.product_name} 
+                                                                            <Image
+                                                                                src={product.product_image}
+                                                                                alt={product.product_name}
                                                                                 fill
-                                                                                className="object-cover" 
+                                                                                className="object-cover"
                                                                             />
                                                                         ) : (
                                                                             <ShoppingBag className="w-4 h-4 text-white/20" />
@@ -610,7 +620,7 @@ export default function OffersClient() {
                                                         ))
                                                     )}
                                                 </div>
-                                                <button 
+                                                <button
                                                     onClick={handleSelectAll}
                                                     className="w-full text-center text-[10px] font-black text-[#C3EB7A] hover:text-white uppercase tracking-widest transition-colors"
                                                 >
@@ -619,7 +629,7 @@ export default function OffersClient() {
                                             </div>
 
                                             {error && (
-                                                <motion.div 
+                                                <motion.div
                                                     initial={{ opacity: 0, y: -10 }}
                                                     animate={{ opacity: 1, y: 0 }}
                                                     className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center gap-3 text-red-500"
@@ -630,13 +640,13 @@ export default function OffersClient() {
                                             )}
 
                                             <div className="flex gap-3">
-                                                <button 
+                                                <button
                                                     onClick={() => setStep(2)}
                                                     className="flex-1 py-5 bg-white/5 text-white rounded-3xl font-black text-sm tracking-widest uppercase"
                                                 >
                                                     Back
                                                 </button>
-                                                <button 
+                                                <button
                                                     onClick={handleCreateOffer}
                                                     disabled={isSubmitting}
                                                     className="flex-[2] py-5 bg-[#C3EB7A] text-black rounded-3xl font-black text-sm tracking-widest uppercase hover:shadow-[0_0_30px_rgba(195,235,122,0.4)] transition-all"

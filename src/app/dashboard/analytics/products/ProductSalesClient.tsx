@@ -118,7 +118,17 @@ export default function ProductSalesClient() {
                                         </div>
                                     </td>
                                     <td className="px-8 py-6 text-right">
-                                        <button className="text-[10px] font-black text-white/20 hover:text-white uppercase tracking-widest transition-colors">Details</button>
+                                        <div className="flex items-center justify-end gap-4">
+                                            <button 
+                                                onClick={() => router.push('/dashboard/offers')}
+                                                className="text-[10px] font-black text-[#C3EB7A] hover:underline uppercase tracking-widest transition-colors"
+                                            >
+                                                Promo
+                                            </button>
+                                            <button className="text-[10px] font-black text-white/20 hover:text-white uppercase tracking-widest transition-colors">
+                                                Details
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

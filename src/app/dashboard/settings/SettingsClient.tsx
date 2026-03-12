@@ -145,6 +145,8 @@ export default function SettingsClient() {
             setIsCreateModalOpen(true);
         } else if (id === 'profile') {
             router.push('/dashboard/settings/profile');
+        } else if (id === 'discounts') {
+            router.push('/dashboard/offers');
         }
     };
 

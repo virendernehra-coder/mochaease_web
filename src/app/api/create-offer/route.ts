@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
     try {
         const supabase = await createClient()
-        
+
         // Check authentication
         const { data: { user }, error: authError } = await supabase.auth.getUser()
         if (authError || !user) {
@@ -12,24 +12,25 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json()
-        const { 
-            business_id, 
-            outlet_name, 
-            promo_name, 
-            promo_code, 
-            status, 
-            start_date, 
-            end_date, 
-            discount_type, 
-            discount_value, 
-            bogo_buy_qty, 
-            bogo_get_qty, 
-            min_order_amount, 
-            applicable_product_ids 
+        const {
+            business_id,
+            outlet_id,
+            outlet_name,
+            promo_name,
+            promo_code,
+            status,
+            start_date,
+            end_date,
+            discount_type,
+            discount_value,
+            bogo_buy_qty,
+            bogo_get_qty,
+            min_order_amount,
+            applicable_product_ids
         } = body
 
         // Validate required fields
-        if (!business_id || !promo_name ) {
+        if (!business_id || !promo_name) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
         }
 
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
             .from('business_offers')
             .insert({
                 business_id,
+                outlet_id,
                 outlet_name,
                 user_id: user.id,
                 promo_name,
