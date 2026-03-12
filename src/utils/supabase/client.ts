@@ -4,11 +4,11 @@ export function createClient() {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    // Use placeholders ONLY during the server-side build/prerendering phase
-    // to prevent the build from crashing when environment variables are missing.
-    // At runtime in the browser, we use the real variables.
-    const url = supabaseUrl || (typeof window === 'undefined' ? 'https://placeholder.supabase.co' : '');
-    const key = supabaseKey || (typeof window === 'undefined' ? 'placeholder' : '');
+    // Use placeholders during build OR if environment variables are missing in the browser
+    // to prevent a hard client-side crash. Note: Active functionality (like login)
+    // still requires these keys to be set in the deployment environment.
+    const url = supabaseUrl || 'https://placeholder.supabase.co';
+    const key = supabaseKey || 'placeholder';
 
     return createBrowserClient(url, key);
 }
