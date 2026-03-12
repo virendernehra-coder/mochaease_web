@@ -10,6 +10,7 @@ import {
 import Image from 'next/image';
 import { useUserStore } from '@/store/user-store';
 import { createClient } from '@/utils/supabase/client';
+import { createPortal } from 'react-dom';
 
 interface Offer {
     id: number;
@@ -40,6 +41,9 @@ export default function OffersClient() {
 
     // Simple context name resolution
     const contextName = isGlobal ? 'Global Business' : 'Selected Outlet';
+
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
 
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [step, setStep] = useState(1);
@@ -341,25 +345,25 @@ export default function OffersClient() {
             </div>
 
             {/* Wizard Modal */}
-            <AnimatePresence>
-                {isWizardOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10 overflow-y-auto">
+            {mounted && isWizardOpen && createPortal(
+                <AnimatePresence mode="wait">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10 overflow-hidden">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsWizardOpen(false)}
-                            className="fixed inset-0 bg-[#0A0A0A]/95 backdrop-blur-xl"
+                            className="fixed inset-0 bg-[#0A0A0A]/95 backdrop-blur-xl z-0"
                         />
 
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="relative w-full max-w-2xl bg-[#121212] border border-white/10 rounded-[40px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.8)] my-auto"
+                            className="relative w-full max-w-2xl bg-[#121212] border border-white/10 rounded-[40px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.8)] z-10 max-h-[95vh] flex flex-col my-auto"
                         >
                             {/* Wizard Progress */}
-                            <div className="absolute top-0 left-0 w-full h-1.5 bg-white/5 flex gap-1">
+                            <div className="absolute top-0 left-0 w-full h-1.5 bg-white/5 flex gap-1 flex-shrink-0">
                                 {[1, 2, 3].map(i => (
                                     <div
                                         key={i}
@@ -375,8 +379,9 @@ export default function OffersClient() {
                                 <X className="w-5 h-5" />
                             </button>
 
-                            <div className="p-10 pt-14">
+                            <div className="flex-1 overflow-y-auto custom-scrollbar p-10 pt-14">
                                 <AnimatePresence mode="wait">
+
                                     {/* Step 1: Identity */}
                                     {step === 1 && (
                                         <motion.div
@@ -660,8 +665,9 @@ export default function OffersClient() {
                             </div>
                         </motion.div>
                     </div>
-                )}
-            </AnimatePresence>
+                </AnimatePresence>,
+                document.body
+            )}
 
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {

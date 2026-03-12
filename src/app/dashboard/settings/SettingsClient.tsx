@@ -8,7 +8,7 @@ import {
     Smartphone, ShieldCheck, MessageSquarePlus, Mail,
     Sparkles, Settings as SettingsIcon, User,
     ArrowUpRight, X, MapPin, Phone, DollarSign,
-    CheckCircle2, ArrowRight, ArrowLeft, Loader2
+    CheckCircle2, ArrowRight, ArrowLeft, Loader2, Users
 } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
 import { useRouter } from 'next/navigation';
@@ -20,7 +20,8 @@ const settingSections = [
         description: "Manage your physical footprint and catalog.",
         cards: [
             { id: 'outlet', title: "Add New Outlet", desc: "Expand your physical presence.", icon: Store, color: "#C3EB7A" },
-            { id: 'import', title: "Import Products", desc: "Batch upload inventory items.", icon: PackageSearch, color: "#4A90E2" },
+            { id: 'employees', title: "Team Management", desc: "Manage staff roles & payroll.", icon: Users, color: "#4A90E2" },
+            { id: 'import', title: "Import Products", desc: "Batch upload inventory items.", icon: PackageSearch, color: "#8B5CF6" },
         ]
     },
     {
@@ -147,6 +148,8 @@ export default function SettingsClient() {
             router.push('/dashboard/settings/profile');
         } else if (id === 'discounts') {
             router.push('/dashboard/offers');
+        } else if (id === 'employees') {
+            router.push('/dashboard/employees');
         }
     };
 
