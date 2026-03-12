@@ -45,6 +45,7 @@ export default function OffersClient() {
     const [products, setProducts] = useState<Product[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     // Form State
     const [formData, setFormData] = useState({
@@ -62,6 +63,21 @@ export default function OffersClient() {
     });
 
     const supabase = createClient();
+
+    const filteredProducts = products.filter(p => 
+        p.product_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const handleSelectAll = () => {
+        if (formData.applicable_product_ids.length === products.length) {
+            setFormData(prev => ({ ...prev, applicable_product_ids: [] }));
+        } else {
+            setFormData(prev => ({ 
+                ...prev, 
+                applicable_product_ids: products.map(p => p.id.toString()) 
+            }));
+        }
+    };
 
     const fetchOffers = React.useCallback(async () => {
         setLoading(true);
@@ -544,16 +560,20 @@ export default function OffersClient() {
                                                     <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
                                                     <input 
                                                         type="text"
+                                                        value={searchTerm}
+                                                        onChange={(e) => setSearchTerm(e.target.value)}
                                                         placeholder="SEARCH PRODUCTS..."
-                                                        className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-6 py-4 text-[10px] font-black tracking-widest outline-none transition-all"
+                                                        className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-6 py-4 text-[10px] font-black tracking-widest outline-none transition-all flex-1"
                                                     />
                                                 </div>
 
                                                 <div className="h-64 overflow-y-auto pr-2 space-y-2 custom-scrollbar">
                                                     {products.length === 0 ? (
                                                         <div className="text-center py-10 text-white/20 font-bold text-xs">No products found in this context.</div>
+                                                    ) : filteredProducts.length === 0 ? (
+                                                        <div className="text-center py-10 text-white/20 font-bold text-xs">No products match &quot;{searchTerm}&quot;</div>
                                                     ) : (
-                                                        products.map(product => (
+                                                        filteredProducts.map(product => (
                                                             <div 
                                                                 key={product.id}
                                                                 onClick={() => toggleProductSelection(product.id.toString())}
@@ -591,10 +611,10 @@ export default function OffersClient() {
                                                     )}
                                                 </div>
                                                 <button 
-                                                    onClick={() => setFormData({...formData, applicable_product_ids: []})}
-                                                    className="w-full text-center text-[10px] font-black text-white/20 hover:text-white uppercase tracking-widest transition-colors"
+                                                    onClick={handleSelectAll}
+                                                    className="w-full text-center text-[10px] font-black text-[#C3EB7A] hover:text-white uppercase tracking-widest transition-colors"
                                                 >
-                                                    Select All / Clear (Store-wide)
+                                                    {formData.applicable_product_ids.length === products.length ? 'Clear All Selection' : 'Select All Available Products'}
                                                 </button>
                                             </div>
 
