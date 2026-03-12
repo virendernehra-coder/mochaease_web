@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     LayoutDashboard, PieChart, Users, Package, 
     CreditCard, Calendar, Settings, LogOut,
-    Menu, X, Sparkles, ChevronRight, ChevronDown, Activity
+    Menu, X, Sparkles, ChevronRight, ChevronDown, Activity, Tag
 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 
@@ -45,6 +45,7 @@ const navItems = [
     },
     { name: 'Employees', href: '/dashboard/employees', icon: Users },
     { name: 'Schedules', href: '/dashboard/schedules', icon: Calendar },
+    { name: 'Offers & Promos', href: '/dashboard/offers', icon: Tag },
     { name: 'Expenses', href: '/dashboard/expenses', icon: CreditCard },
     { 
         name: 'Settings', 
