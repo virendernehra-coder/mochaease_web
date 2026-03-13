@@ -112,7 +112,7 @@ ContextSwitcher.MobileHub = function MobileHub() {
     const selected = options.find(opt => opt.id === activeContextId) || options[0];
 
     return (
-        <div className="grid grid-cols-1 gap-2 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2">
+        <div className="grid grid-cols-1 gap-2 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2 pb-8 scroll-smooth">
             {options.map((option) => (
                 <button
                     key={option.id}
