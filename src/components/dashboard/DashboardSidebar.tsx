@@ -92,7 +92,7 @@ export default function DashboardSidebar({ collapsed, setCollapsed }: SidebarPro
                 ${collapsed ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'}
             `}
         >
-            <div className="flex flex-col h-full p-4">
+            <div className="flex flex-col h-full p-4 overflow-y-auto no-scrollbar">
                 
                 {/* Logo Area */}
                 <div className="flex items-center justify-between mb-10 px-2 mt-2">
@@ -200,7 +200,7 @@ export default function DashboardSidebar({ collapsed, setCollapsed }: SidebarPro
                 </div>
 
                 {/* Primary Navigation */}
-                <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar">
+                <nav className="space-y-2 mb-6">
                     {navItems.map((item) => {
                         const hasSubItems = item.subItems && item.subItems.length > 0;
                         const isExpanded = expandedItem === item.name;

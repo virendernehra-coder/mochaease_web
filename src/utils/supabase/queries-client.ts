@@ -299,3 +299,177 @@ export async function updateBusinessInfo(
         if (error) throw error;
     }
 }
+
+export type SalesPeriod = 'today' | 'yesterday' | 'this_week' | 'last_week' | 'this_month' | 'last_month';
+
+/**
+ * Fetches sales performance for a specific date range using the RPC function.
+ */
+export async function getSalesByDateRange(
+    businessId: string,
+    outletId: string | null,
+    startDate: string,
+    endDate: string
+): Promise<import('./queries').SalesPerformanceRecord | null> {
+    const supabase = createClient();
+    
+    // Call the v2 RPC that handles aggregation for custom ranges
+    const { data, error } = await supabase.rpc('get_business_sales_by_date_range_v2', {
+        p_business_id: businessId,
+        p_start_date: startDate,
+        p_end_date: endDate
+    });
+
+    if (error) {
+        console.error('Error in get_business_sales_by_date_range_v2:', error);
+        return null;
+    }
+
+    // Map output to match our UI-expected field names
+    // Note: The RPC returns both business-level (outlet_id null) and outlet rows.
+    // We filter for the one we need.
+    const records = data as any[];
+    const targetRecord = records.find(r => 
+        outletId && outletId !== 'business' 
+            ? r.outlet_id === outletId 
+            : r.outlet_id === null
+    );
+
+    if (!targetRecord) return null;
+
+    // Mapping total_sales -> gross_sales to match SalesPerformanceRecord type
+    return {
+        ...targetRecord,
+        gross_sales: Number(targetRecord.total_sales || 0),
+        net_sales: Number(targetRecord.net_sales || 0),
+        order_count: Number(targetRecord.order_count || 0),
+        total_items_sold: Number(targetRecord.total_items_sold || 0)
+    } as import('./queries').SalesPerformanceRecord;
+}
+
+/**
+ * Fetches sales performance data. Switches between static Views (for today/yesterday) 
+ * and dynamic RPC (for custom ranges) for optimal performance.
+ */
+export async function getSalesPerformance(
+    period: SalesPeriod,
+    businessId: string,
+    outletId: string | null,
+    startDate?: string,
+    endDate?: string
+): Promise<import('./queries').SalesPerformanceRecord | null> {
+    // If we have custom dates, always use the RPC path
+    if (startDate && endDate) {
+        return getSalesByDateRange(businessId, outletId, startDate, endDate);
+    }
+
+    // Fallback or optimized quick filters using static views
+    const supabase = createClient();
+    const tableName = `business_sales_${period}_v1`;
+    
+    let query = supabase
+        .from(tableName)
+        .select('*')
+        .eq('business_id', businessId);
+    
+    if (outletId && outletId !== 'business') {
+        query = query.eq('outlet_id', outletId);
+    } else {
+        query = query.is('outlet_id', null);
+    }
+    
+    const { data, error } = await query.single();
+    
+    if (error && error.code !== 'PGRST116') {
+        console.error(`Error fetching sales for ${period}:`, error);
+    }
+    
+    return data as import('./queries').SalesPerformanceRecord | null;
+}
+
+/**
+ * Fetches Day of the Week performance data.
+ */
+export async function getDOWPerformance(
+    businessId: string,
+    outletId: string | null
+): Promise<import('./queries').DOWPerformanceRecord[]> {
+    const supabase = createClient();
+    let query = supabase
+        .from('business_sales_by_dow_last_7_weeks_v1')
+        .select('*')
+        .eq('business_id', businessId)
+        .order('dow_number', { ascending: true });
+
+    if (outletId && outletId !== 'business') {
+        query = query.eq('outlet_id', outletId);
+    } else {
+        query = query.is('outlet_id', null);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+        console.error('Error fetching DOW performance:', error);
+        return [];
+    }
+    return data as import('./queries').DOWPerformanceRecord[];
+}
+
+/**
+ * Fetches daily sales trend data for the last 30 days.
+ */
+export async function getDailyTrendLine(
+    businessId: string,
+    outletId: string | null
+): Promise<import('./queries').DailyTrendRecord[]> {
+    const supabase = createClient();
+    let query = supabase
+        .from('business_sales_last_30_days_graph_data_v1')
+        .select('*')
+        .eq('business_id', businessId)
+        .order('sale_date', { ascending: true });
+
+    if (outletId && outletId !== 'business') {
+        query = query.eq('outlet_id', outletId);
+    } else {
+        query = query.is('outlet_id', null);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+        console.error('Error fetching daily trend:', error);
+        return [];
+    }
+    return data as import('./queries').DailyTrendRecord[];
+}
+
+/**
+ * Fetches hourly performance data for temporal trends.
+ */
+export async function getHourlyPerformance(
+    businessId: string,
+    outletId: string | null
+): Promise<import('./queries').HourlyPerformanceRecord[]> {
+    const supabase = createClient();
+    
+    let query = supabase
+        .from('hourly_business_performance_v1')
+        .select('*')
+        .eq('business_id', businessId)
+        .order('hour_of_day', { ascending: true });
+    
+    if (outletId && outletId !== 'business') {
+        query = query.eq('outlet_id', outletId);
+    } else {
+        query = query.is('outlet_id', null);
+    }
+    
+    const { data, error } = await query;
+    
+    if (error) {
+        console.error(`Error fetching hourly performance:`, error);
+        return [];
+    }
+    
+    return (data || []) as import('./queries').HourlyPerformanceRecord[];
+}

@@ -106,3 +106,55 @@ export async function getEmployeeProfile(userId: string) {
     }
     return data;
 }
+
+export type SalesPerformanceRecord = {
+    idx: number;
+    business_id: string;
+    outlet_id: string | null;
+    gross_sales: number;
+    net_sales: number;
+    canceled_sales_amount: number;
+    total_items_sold: number;
+    order_count: number;
+    confirmed_orders: number;
+    canceled_orders: number;
+    total_expanses: number;
+    payment_method_cash: number;
+    online_order_sales: number;
+    payment_method_edc: number;
+    payment_method_digital_wallet: number;
+    average_order_value: number;
+};
+
+export type HourlyPerformanceRecord = {
+    idx: number;
+    business_id: string;
+    outlet_id: string | null;
+    hour_of_day: number;
+    avg_hourly_revenue: number;
+    avg_hourly_orders: number;
+    total_90d_orders: number;
+};
+
+export type DOWPerformanceRecord = {
+    idx: number;
+    business_id: string;
+    outlet_id: string | null;
+    dow_number: number;
+    dow_name: string;
+    total_sales_for_dow: number;
+    net_sales_for_dow: number;
+    total_items_sold_for_dow: number;
+    total_orders_for_dow: number;
+    total_confirmed_orders_for_dow: number;
+    total_canceled_orders_for_dow: number;
+    average_order_value_for_dow: number;
+};
+
+export type DailyTrendRecord = {
+    idx: number;
+    sale_date: string;
+    business_id: string;
+    outlet_id: string | null;
+    total_sales: number;
+};
