@@ -87,8 +87,8 @@ export default function DashboardSidebar({ collapsed, setCollapsed }: SidebarPro
 
     return (
         <aside 
-            className={`fixed left-0 top-0 h-screen bg-[#0A0A0A]/80 backdrop-blur-2xl border-r border-white/5 z-50 transition-all duration-500 ease-in-out 
-                ${collapsed ? 'w-24' : 'w-80'} 
+            className={`fixed left-0 top-0 h-screen bg-[#0A0A0A]/80 backdrop-blur-2xl border-r border-white/5 z-50 transition-all duration-500 ease-in-out overflow-x-hidden
+                ${collapsed ? 'lg:w-24 w-80' : 'w-80'} 
                 ${collapsed ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'}
             `}
         >
