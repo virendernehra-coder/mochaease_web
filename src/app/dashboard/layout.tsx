@@ -7,7 +7,6 @@ import DateRangePicker from '@/components/dashboard/DateRangePicker';
 import UserProfile from '@/components/dashboard/UserProfile';
 import dynamic from 'next/dynamic';
 import { Search, Bell, Settings, Menu } from 'lucide-react';
-import MobileNavbar from '@/components/dashboard/MobileNavbar';
 
 const NetworkBackground = dynamic(() => import('@/components/NetworkBackground'), { ssr: false });
 
@@ -82,14 +81,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </div>
                 </header>
 
-                {/* Sub-Dashboard Area */}
-                <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-                    {children}
-                </div>
-            </main>
-
-            {/* Premium Mobile Navigation */}
-            <MobileNavbar />
-        </div>
-    );
+            {/* Sub-Dashboard Area */}
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+                {children}
+            </div>
+        </main>
+    </div>
+);
 }

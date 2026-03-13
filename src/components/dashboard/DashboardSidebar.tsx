@@ -7,9 +7,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     LayoutDashboard, PieChart, Users, Package, 
     CreditCard, Calendar, Settings, LogOut,
-    Menu, X, Sparkles, ChevronRight, ChevronDown, Activity, Tag
+    Menu, X, Sparkles, ChevronRight, ChevronDown, Activity, Tag, Globe, Calendar as CalendarIcon
 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
+import ContextSwitcher from './ContextSwitcher';
+import DateRangePicker from './DateRangePicker';
 
 const navItems = [
     { 
@@ -118,6 +120,19 @@ export default function DashboardSidebar({ collapsed, setCollapsed }: SidebarPro
                     >
                         {collapsed ? <Menu className="w-5 h-5" /> : <X className="w-5 h-5" />}
                     </button>
+                </div>
+
+                {/* Mobile-Only Controls Section */}
+                <div className="lg:hidden mb-10 px-2 space-y-6">
+                    <div className="space-y-3">
+                        <p className="text-[10px] font-black text-white/20 uppercase tracking-[3px] ml-1">Business Context</p>
+                        <ContextSwitcher.MobileHub />
+                    </div>
+                    <div className="space-y-3">
+                        <p className="text-[10px] font-black text-white/20 uppercase tracking-[3px] ml-1">Time Windows</p>
+                        <DateRangePicker.MobileHub />
+                    </div>
+                    <div className="h-[1px] w-full bg-white/5 mt-8" />
                 </div>
 
                 {/* Primary Navigation */}
