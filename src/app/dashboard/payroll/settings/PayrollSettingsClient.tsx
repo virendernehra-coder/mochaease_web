@@ -9,19 +9,23 @@ import {
     X, Check, AlertCircle
 } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
+import { useBusinessStore } from '@/store/business-store';
 import { useThemeStore } from '@/store/theme-store';
 import Link from 'next/link';
 import { getAdvancePayments, createAdvancePayment, deleteAdvancePayment, getEmployees, updateEmployeeSalary, updateEmployeeGovernance, updateEmployeePayDetails, type AdvancePayment } from '@/utils/supabase/queries-client';
 import { type EmployeeDetails } from '@/utils/supabase/queries';
 import Portal from '@/components/Portal';
+import ContextGuardModal from '@/components/dashboard/ContextGuardModal';
 const toast = {
     success: (msg: string) => alert(msg),
     error: (msg: string) => alert(msg)
 };
 
 export default function PayrollSettingsClient() {
-    const { activeContextId, user } = useUserStore();
+    const { user, businessConfig } = useUserStore();
+    const { activeContextId } = useBusinessStore();
     const { primaryColor } = useThemeStore();
+    const [guardModal, setGuardModal] = useState<{ isOpen: boolean; action: string }>({ isOpen: false, action: '' });
     const isGlobal = activeContextId === 'business';
     const contextName = isGlobal ? (user?.business_name || 'Global Business') : 
                        (user?.outlet_name || 'Outlet Context');
@@ -104,7 +108,25 @@ export default function PayrollSettingsClient() {
         });
     };
 
-    const toggleGovernance = async (empId: string, field: 'daily_shift_status' | 'backup_shift', value: boolean) => {
+    const handleOpenPayWizard = (employee: EmployeeDetails) => {
+        if (isGlobal) {
+            setGuardModal({ isOpen: true, action: 'Update Compensation' });
+            return;
+        }
+        setWizardFormData({
+            first_name: employee.employee_id,
+            employee_fix_pay: employee.employee_fix_pay?.toString() || '',
+            employee_variable_pay: employee.employee_variable_pay?.toString() || '',
+            employee_bonus: employee.employee_bonus?.toString() || '',
+        });
+        setIsAddModalOpen(true);
+    };
+
+    const handleToggleGovernance = async (empId: string, field: 'daily_shift_status' | 'backup_shift', value: boolean) => {
+        if (isGlobal) {
+            setGuardModal({ isOpen: true, action: 'Toggle Payroll Governance' });
+            return;
+        }
         toggleMutation.mutate({ empId, field, value });
     };
 
@@ -146,7 +168,13 @@ export default function PayrollSettingsClient() {
                         />
                     </div>
                     <button 
-                        onClick={() => setIsAddModalOpen(true)}
+                        onClick={() => {
+                            if (isGlobal) {
+                                setGuardModal({ isOpen: true, action: 'Update Employee Pay' });
+                                return;
+                            }
+                            setIsAddModalOpen(true);
+                        }}
                         className="flex items-center justify-center gap-2 px-8 py-3 rounded-2xl bg-[#C3EB7A] text-black text-xs font-black uppercase tracking-widest hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(195,235,122,0.3)] w-full sm:w-auto"
                     >
                         <DollarSign className="w-4 h-4" /> Update Employee Pay
@@ -193,17 +221,11 @@ export default function PayrollSettingsClient() {
                                         <div className="text-left md:text-right shrink-0">
                                             <p className="text-[9px] md:text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Base Salary</p>
                                             <div className="flex items-center gap-2 justify-end">
-                                                <span className="text-xl font-black text-[#C3EB7A] tabular-nums tracking-tighter">${(emp.employee_fix_pay || 0).toLocaleString()}</span>
+                                                <span className="text-xl font-black text-[#C3EB7A] tabular-nums tracking-tighter">
+                                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: businessConfig.currency, maximumFractionDigits: 0 }).format(emp.employee_fix_pay || 0)}
+                                                </span>
                                                 <button 
-                                                    onClick={() => {
-                                                        setWizardFormData({
-                                                            first_name: emp.employee_id,
-                                                            employee_fix_pay: emp.employee_fix_pay?.toString() || '',
-                                                            employee_variable_pay: emp.employee_variable_pay?.toString() || '',
-                                                            employee_bonus: emp.employee_bonus?.toString() || '',
-                                                        });
-                                                        setIsAddModalOpen(true);
-                                                    }}
+                                                    onClick={() => handleOpenPayWizard(emp)}
                                                     className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/20 hover:text-white transition-all"
                                                 >
                                                     <Edit3 className="w-3.5 h-3.5" />
@@ -215,13 +237,13 @@ export default function PayrollSettingsClient() {
                                             <p className="text-[9px] md:text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Governance</p>
                                             <div className="flex items-center gap-2">
                                                 <button 
-                                                    onClick={() => toggleGovernance(emp.employee_id, 'daily_shift_status', !emp.daily_shift_status)}
+                                                    onClick={() => handleToggleGovernance(emp.employee_id, 'daily_shift_status', !emp.daily_shift_status)}
                                                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all text-[8px] md:text-[9px] font-black uppercase tracking-wider ${emp.daily_shift_status ? 'bg-[#C3EB7A]/10 border-[#C3EB7A]/20 text-[#C3EB7A]' : 'bg-white/5 border-white/10 text-white/20'}`}
                                                 >
                                                     OT
                                                 </button>
                                                 <button 
-                                                    onClick={() => toggleGovernance(emp.employee_id, 'backup_shift', !emp.backup_shift)}
+                                                    onClick={() => handleToggleGovernance(emp.employee_id, 'backup_shift', !emp.backup_shift)}
                                                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all text-[8px] md:text-[9px] font-black uppercase tracking-wider ${emp.backup_shift ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-white/5 border-white/10 text-white/20'}`}
                                                 >
                                                     Tax
@@ -450,7 +472,7 @@ export default function PayrollSettingsClient() {
 
                                 <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tighter mb-4 uppercase">Matrix Synchronized</h3>
                                 <p className="text-white/40 font-medium text-sm leading-relaxed mb-8">
-                                    The compensation structure for <span className="text-white font-bold">{successData.name}</span> has been successfully updated to <span className="text-[#C3EB7A] font-black tracking-tight">${successData.pay.toLocaleString()}</span> and synced with active payroll governance.
+                                    The compensation structure for <span className="text-white font-bold">{successData.name}</span> has been successfully updated to <span className="text-[#C3EB7A] font-black tracking-tight">{new Intl.NumberFormat('en-US', { style: 'currency', currency: businessConfig.currency, maximumFractionDigits: 0 }).format(successData.pay)}</span> and synced with active payroll governance.
                                 </p>
 
                                 <button 
@@ -461,6 +483,15 @@ export default function PayrollSettingsClient() {
                                 </button>
                             </motion.div>
                         </div>
+                    )}
+                </AnimatePresence>
+                <AnimatePresence>
+                    {guardModal.isOpen && (
+                        <ContextGuardModal 
+                            isOpen={guardModal.isOpen} 
+                            onClose={() => setGuardModal({ isOpen: false, action: '' })} 
+                            actionName={guardModal.action}
+                        />
                     )}
                 </AnimatePresence>
             </Portal>

@@ -8,6 +8,7 @@ import {
     Package, Plus, Search, ChevronRight, Sparkles
 } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
+import { useBusinessStore } from '@/store/business-store';
 import Link from 'next/link';
 
 // Mock Data
@@ -19,7 +20,7 @@ const initialIngredients = [
 ];
 
 export default function InventorySettingsClient() {
-    const { activeContextId } = useUserStore();
+    const { activeContextId } = useBusinessStore();
     const isGlobal = activeContextId === 'business';
     const contextName = isGlobal ? 'Global Business' : 
                        activeContextId === 'outlet-1' ? 'Downtown Cafe' : 'Uptown Bistro';

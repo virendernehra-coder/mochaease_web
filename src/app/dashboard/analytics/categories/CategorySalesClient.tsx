@@ -8,11 +8,11 @@ import {
     Utensils, Coffee, IceCream
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useUserStore } from '@/store/user-store';
+import { useBusinessStore } from '@/store/business-store';
 
 export default function CategorySalesClient() {
     const router = useRouter();
-    const { activeContextId } = useUserStore();
+    const { activeContextId } = useBusinessStore();
     
     const contextName = activeContextId === 'business' ? 'Global Business' : 'Selected Outlet';
 

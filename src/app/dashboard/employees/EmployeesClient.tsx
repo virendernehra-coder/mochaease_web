@@ -10,6 +10,7 @@ import {
     Plus, Mail, Phone, Clock, Calendar, Check, AlertCircle, X, Trash2, Edit3, Camera, DollarSign
 } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
+import { useBusinessStore } from '@/store/business-store';
 import { createClient } from '@/utils/supabase/client';
 import Image from 'next/image';
 import { AnimatePresence } from 'framer-motion';
@@ -39,7 +40,8 @@ interface Employee {
 }
 
 export default function EmployeesClient() {
-    const { activeContextId, user } = useUserStore();
+    const { user } = useUserStore();
+    const { activeContextId } = useBusinessStore();
     const isGlobal = activeContextId === 'business';
     const supabase = createClient();
 

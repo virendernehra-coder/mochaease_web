@@ -79,10 +79,12 @@ export async function getPayrollReport(
     }
 
     if (startDate) {
-        query = query.gte('payroll_start', startDate);
+        // Correct overlap logic: row ends after or on query start
+        query = query.gte('payroll_end', startDate);
     }
     if (endDate) {
-        query = query.lte('payroll_end', endDate);
+        // Correct overlap logic: row starts before or on query end
+        query = query.lte('payroll_start', endDate);
     }
 
     const { data, error } = await query.order('pay_day', { ascending: false });
@@ -152,6 +154,14 @@ export async function updateEmployeeGovernance(employeeId: string, updates: Part
     if (error) throw error;
 }
 
+export interface BusinessOutlet {
+    id: number;
+    outlet_id: string;
+    outlet_name: string;
+    outlet_address: string;
+    outlet_phone: number;
+}
+
 export type AdvancePayment = {
     id: number;
     created_at: string;
@@ -187,7 +197,7 @@ export async function getAdvancePayments(
         query = query.gte('created_at', startDate);
     }
     if (endDate) {
-        query = query.lte('created_at', endDate);
+        query = query.lte('created_at', endDate + 'T23:59:59.999Z');
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });

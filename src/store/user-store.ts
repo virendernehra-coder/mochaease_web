@@ -35,12 +35,10 @@ interface UserState {
     user: SessionUser | null;
     isAuthenticated: boolean;
     lastChecked: number | null;
-    activeContextId: string;
     businessConfig: BusinessConfig;
     setUser: (user: SessionUser | null) => void;
     setBusinessConfig: (config: Partial<BusinessConfig>) => void;
     clearSession: () => void;
-    setActiveContext: (id: string) => void;
 }
 
 // Custom Encrypted Storage Wrapper
@@ -71,7 +69,6 @@ export const useUserStore = create<UserState>()(
             user: null,
             isAuthenticated: false,
             lastChecked: null,
-            activeContextId: 'business', // Default to global business
             businessConfig: {
                 currency: 'USD',
                 monthly_revenue_goal: 0
@@ -88,13 +85,11 @@ export const useUserStore = create<UserState>()(
                 user: null, 
                 isAuthenticated: false, 
                 lastChecked: null,
-                activeContextId: 'business',
                 businessConfig: {
                     currency: 'USD',
                     monthly_revenue_goal: 0
                 }
             }),
-            setActiveContext: (id) => set({ activeContextId: id }),
         }),
         {
             name: 'me-session-vault',

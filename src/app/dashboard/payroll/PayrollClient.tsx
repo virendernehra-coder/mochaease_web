@@ -10,6 +10,7 @@ import {
     Download, Clock, MapPin
 } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
+import { useBusinessStore } from '@/store/business-store';
 import { useFilterStore } from '@/store/filter-store';
 import { getPayrollReport } from '@/utils/supabase/queries-client';
 import { type PayrollReport } from '@/utils/supabase/queries';
@@ -17,12 +18,14 @@ import { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AnimatePresence } from 'framer-motion';
 import { Search, ChevronLeft, X, Info, ShieldCheck, Activity, Target } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, Area, AreaChart } from 'recharts';
 import { useThemeStore, THEME_COLORS } from '@/store/theme-store';
 import Portal from '@/components/Portal';
+import { BarChart3, LineChart as LineChartIcon } from 'lucide-react';
 
 export default function PayrollClient() {
-    const { activeContextId, user, businessConfig } = useUserStore();
+    const { user, businessConfig } = useUserStore();
+    const { activeContextId } = useBusinessStore();
     const { primaryColor, setPrimaryColor } = useThemeStore();
     const [selectedStaff, setSelectedStaff] = useState<PayrollReport | null>(null);
     const { selectedRange, activePreset } = useFilterStore();
@@ -30,14 +33,36 @@ export default function PayrollClient() {
     // UI State
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
     const itemsPerPage = 8;
 
     const isGlobal = activeContextId === 'business';
     const queryContextId = isGlobal ? user?.business_id : activeContextId;
 
     const { data: payrollData = [], isLoading } = useQuery({
-        queryKey: ['payroll', queryContextId, isGlobal],
-        queryFn: () => getPayrollReport(queryContextId!, isGlobal),
+        queryKey: ['payroll', queryContextId, isGlobal, selectedRange.from.toISOString().split('T')[0], selectedRange.to.toISOString().split('T')[0]],
+        queryFn: () => getPayrollReport(
+            queryContextId!, 
+            isGlobal, 
+            selectedRange.from.toISOString().split('T')[0], 
+            selectedRange.to.toISOString().split('T')[0]
+        ),
+        enabled: !!user?.business_id && !!queryContextId,
+    });
+
+    // Constant 12-month historical data for chart comparison
+    const twelveMonthsAgo = useMemo(() => {
+        const d = new Date();
+        d.setMonth(d.getMonth() - 11);
+        d.setDate(1);
+        return d.toISOString().split('T')[0];
+    }, []);
+
+    const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
+
+    const { data: historicalData = [] } = useQuery({
+        queryKey: ['payroll-historical', queryContextId, isGlobal, twelveMonthsAgo, todayStr],
+        queryFn: () => getPayrollReport(queryContextId!, isGlobal, twelveMonthsAgo, todayStr),
         enabled: !!user?.business_id && !!queryContextId,
     });
 
@@ -78,8 +103,8 @@ export default function PayrollClient() {
         const laborPerc = totalSales > 0 ? (totalGross / totalSales) * 100 : 0;
         const currency = businessConfig.currency;
 
-        // 5. Monthly Aggregation for Chart
-        const monthlyDataMap = payrollData.reduce((acc: Record<string, number>, row) => {
+        // 5. Monthly Aggregation for Chart (using historical data)
+        const monthlyDataMap = (historicalData.length > 0 ? historicalData : payrollData).reduce((acc: Record<string, number>, row) => {
             const date = new Date(row.payroll_start);
             const monthKey = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
             acc[monthKey] = (acc[monthKey] || 0) + (row.net_salary || 0);
@@ -106,7 +131,7 @@ export default function PayrollClient() {
                 periodName: activePreset
             }
         };
-    }, [payrollData, selectedRange, activePreset, searchQuery, currentPage]);
+    }, [payrollData, historicalData, selectedRange, activePreset, searchQuery, currentPage, businessConfig]);
 
     const handleExportCSV = () => {
         if (searchedRows.length === 0) return;
@@ -229,10 +254,35 @@ export default function PayrollClient() {
                     <div>
                         <h3 className="text-xl font-black text-white tracking-tight">Capital Expenditure Velocity</h3>
                         <p className="text-[10px] font-black text-purple-400 uppercase tracking-[3px] mt-1">Monthly Payout Trends • Projections Active</p>
+                        <div className="flex items-center gap-2 mt-4">
+                            {THEME_COLORS.map((color) => (
+                                <button
+                                    key={color.value}
+                                    onClick={() => setPrimaryColor(color.value)}
+                                    className={`w-4 h-4 rounded-full border transition-all ${primaryColor === color.value ? 'border-white scale-125 shadow-[0_0_10px_rgba(255,255,255,0.3)]' : 'border-transparent opacity-30 hover:opacity-100 hover:scale-110'}`}
+                                    style={{ backgroundColor: color.value }}
+                                    title={color.name}
+                                />
+                            ))}
+                        </div>
                     </div>
-                    <div className="flex items-center gap-4 text-right">
-                        <div>
-                            <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-0.5">Rolling Average</p>
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10">
+                            <button 
+                                onClick={() => setChartType('bar')}
+                                className={`p-2 rounded-xl transition-all ${chartType === 'bar' ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20' : 'text-white/20 hover:text-white/40'}`}
+                            >
+                                <BarChart3 className="w-4 h-4" />
+                            </button>
+                            <button 
+                                onClick={() => setChartType('line')}
+                                className={`p-2 rounded-xl transition-all ${chartType === 'line' ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20' : 'text-white/20 hover:text-white/40'}`}
+                            >
+                                <LineChartIcon className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-0.5">Rolling 12M Average</p>
                             <p className="text-sm font-black text-white">{kpis.totalPayout}</p>
                         </div>
                     </div>
@@ -240,46 +290,89 @@ export default function PayrollClient() {
 
                 <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={filteredRows.length > 0 ? chartData : []} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                            <defs>
-                                <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor={primaryColor} stopOpacity={0.8}/>
-                                    <stop offset="100%" stopColor={primaryColor} stopOpacity={0.1}/>
-                                </linearGradient>
-                            </defs>
-                            <XAxis 
-                                dataKey="month" 
-                                axisLine={false} 
-                                tickLine={false} 
-                                tick={{ fill: 'rgba(255,255,255,0.2)', fontSize: 10, fontWeight: 900 }} 
-                                dy={10}
-                            />
-                            <YAxis 
-                                axisLine={false} 
-                                tickLine={false} 
-                                tick={{ fill: 'rgba(255,255,255,0.2)', fontSize: 10, fontWeight: 900 }}
-                            />
-                            <Tooltip 
-                                cursor={{ fill: 'rgba(255,255,255,0.03)' }}
-                                contentStyle={{ 
-                                    backgroundColor: '#0A0A0A', 
-                                    border: '1px solid rgba(255,255,255,0.1)', 
-                                    borderRadius: '16px',
-                                    padding: '12px'
-                                }}
-                                itemStyle={{ color: primaryColor, fontWeight: 900, fontSize: '12px' }}
-                                labelStyle={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}
-                            />
-                            <Bar 
-                                dataKey="amount" 
-                                radius={[8, 8, 0, 0]} 
-                                fill="url(#barGradient)"
-                            >
-                                {filteredRows.length > 0 && chartData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={index === chartData.length - 1 ? '#C3EB7A' : 'url(#barGradient)'} />
-                                ))}
-                            </Bar>
-                        </BarChart>
+                        {chartType === 'bar' ? (
+                            <BarChart data={chartData.length > 0 ? chartData : []} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor={primaryColor} stopOpacity={0.8}/>
+                                        <stop offset="100%" stopColor={primaryColor} stopOpacity={0.1}/>
+                                    </linearGradient>
+                                </defs>
+                                <XAxis 
+                                    dataKey="month" 
+                                    axisLine={false} 
+                                    tickLine={false} 
+                                    tick={{ fill: 'rgba(255,255,255,0.2)', fontSize: 10, fontWeight: 900 }} 
+                                    dy={10}
+                                />
+                                <YAxis 
+                                    axisLine={false} 
+                                    tickLine={false} 
+                                    tick={{ fill: 'rgba(255,255,255,0.2)', fontSize: 10, fontWeight: 900 }}
+                                />
+                                <Tooltip 
+                                    cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                                    contentStyle={{ 
+                                        backgroundColor: '#0A0A0A', 
+                                        border: '1px solid rgba(255,255,255,0.1)', 
+                                        borderRadius: '16px',
+                                        padding: '12px'
+                                    }}
+                                    itemStyle={{ color: primaryColor, fontWeight: 900, fontSize: '12px' }}
+                                    labelStyle={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}
+                                />
+                                <Bar 
+                                    dataKey="amount" 
+                                    radius={[8, 8, 0, 0]} 
+                                    fill="url(#barGradient)"
+                                    barSize={32}
+                                >
+                                    {chartData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={index === chartData.length - 1 ? '#C3EB7A' : 'url(#barGradient)'} />
+                                    ))}
+                                </Bar>
+                            </BarChart>
+                        ) : (
+                            <AreaChart data={chartData.length > 0 ? chartData : []} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor={primaryColor} stopOpacity={0.3}/>
+                                        <stop offset="100%" stopColor={primaryColor} stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <XAxis 
+                                    dataKey="month" 
+                                    axisLine={false} 
+                                    tickLine={false} 
+                                    tick={{ fill: 'rgba(255,255,255,0.2)', fontSize: 10, fontWeight: 900 }} 
+                                    dy={10}
+                                />
+                                <YAxis 
+                                    axisLine={false} 
+                                    tickLine={false} 
+                                    tick={{ fill: 'rgba(255,255,255,0.2)', fontSize: 10, fontWeight: 900 }}
+                                />
+                                <Tooltip 
+                                    contentStyle={{ 
+                                        backgroundColor: '#0A0A0A', 
+                                        border: '1px solid rgba(255,255,255,0.1)', 
+                                        borderRadius: '16px',
+                                        padding: '12px'
+                                    }}
+                                    itemStyle={{ color: primaryColor, fontWeight: 900, fontSize: '12px' }}
+                                    labelStyle={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}
+                                />
+                                <Area 
+                                    type="monotone" 
+                                    dataKey="amount" 
+                                    stroke={primaryColor} 
+                                    strokeWidth={4}
+                                    fill="url(#areaGradient)" 
+                                    dot={{ fill: primaryColor, strokeWidth: 2, r: 4, stroke: '#0A0A0A' }}
+                                    activeDot={{ r: 6, strokeWidth: 0, fill: '#C3EB7A' }}
+                                />
+                            </AreaChart>
+                        )}
                     </ResponsiveContainer>
                 </div>
             </div>
@@ -316,17 +409,6 @@ export default function PayrollClient() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                         <div className="flex flex-col">
                             <h3 className="text-xl font-black text-white tracking-tight shrink-0">Staff Compensation Ledger</h3>
-                            <div className="flex items-center gap-2 mt-2">
-                                {THEME_COLORS.map((color) => (
-                                    <button
-                                        key={color.value}
-                                        onClick={() => setPrimaryColor(color.value)}
-                                        className={`w-4 h-4 rounded-full border transition-all ${primaryColor === color.value ? 'border-white scale-125 shadow-[0_0_10px_rgba(255,255,255,0.3)]' : 'border-transparent opacity-30 hover:opacity-100 hover:scale-110'}`}
-                                        style={{ backgroundColor: color.value }}
-                                        title={color.name}
-                                    />
-                                ))}
-                            </div>
                         </div>
                         
                         <div className="flex flex-1 max-w-md items-center gap-3 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 focus-within:border-purple-500/50 transition-all">

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useUserStore } from '@/store/user-store';
+import { useBusinessStore } from '@/store/business-store';
 import { createClient } from '@/utils/supabase/client';
 import { createPortal } from 'react-dom';
 
@@ -36,7 +37,8 @@ interface Product {
 }
 
 export default function OffersClient() {
-    const { activeContextId, user } = useUserStore();
+    const { user } = useUserStore();
+    const { activeContextId } = useBusinessStore();
     const isGlobal = activeContextId === 'business';
 
     // Simple context name resolution

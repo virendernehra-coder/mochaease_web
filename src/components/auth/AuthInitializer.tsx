@@ -3,12 +3,14 @@
 import { useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useUserStore, SessionUser } from '@/store/user-store';
-import { getUserProfile, getEmployeeProfile, getBusinessInfo } from '@/utils/supabase/queries-client';
+import { useBusinessStore } from '@/store/business-store';
+import { getUserProfile, getEmployeeProfile, getBusinessInfo, getBusinessOutlets } from '@/utils/supabase/queries-client';
 import { useRouter, usePathname } from 'next/navigation';
 
 export default function AuthInitializer({ children }: { children: React.ReactNode }) {
     const supabase = createClient();
     const { setUser, setBusinessConfig, clearSession } = useUserStore();
+    const { setOutlets, clearBusinessData } = useBusinessStore();
     const router = useRouter();
     const pathname = usePathname();
 
@@ -32,7 +34,7 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
                     };
                     setUser(userData);
 
-                    // Fetch Business Info
+                    // Fetch Business Info & Outlets
                     const busInfo = await getBusinessInfo(userData.business_id!);
                     if (busInfo) {
                         setBusinessConfig({
@@ -40,6 +42,9 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
                             monthly_revenue_goal: Number(busInfo.business_monthly_revenue_goal) || 0
                         });
                     }
+
+                    const outlets = await getBusinessOutlets(userData.business_id!);
+                    if (outlets) setOutlets(outlets);
 
                     if (pathname === '/login' || pathname === '/') {
                         router.push('/dashboard');
@@ -64,7 +69,7 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
                     };
                     setUser(userData);
 
-                    // Fetch Business Info
+                    // Fetch Business Info & Outlets
                     if (userData.business_id) {
                         const busInfo = await getBusinessInfo(userData.business_id);
                         if (busInfo) {
@@ -73,6 +78,8 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
                                 monthly_revenue_goal: Number(busInfo.business_monthly_revenue_goal) || 0
                             });
                         }
+                        const outlets = await getBusinessOutlets(userData.business_id);
+                        if (outlets) setOutlets(outlets);
                     }
 
                     if (pathname === '/login' || pathname === '/') {
@@ -84,6 +91,7 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
                 }
             } else if (event === 'SIGNED_OUT') {
                 clearSession();
+                clearBusinessData();
                 if (pathname.startsWith('/dashboard')) {
                     router.push('/login');
                 }

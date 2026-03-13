@@ -10,10 +10,11 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/store/user-store';
+import { useBusinessStore } from '@/store/business-store';
 
 export default function OrderHistoryClient() {
     const router = useRouter();
-    const { activeContextId } = useUserStore();
+    const { activeContextId } = useBusinessStore();
     const [searchQuery, setSearchQuery] = useState('');
     
     const contextName = activeContextId === 'business' ? 'Global Business' : 'Selected Outlet';

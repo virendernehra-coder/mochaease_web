@@ -4,41 +4,19 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Store, ChevronDown, Check, Globe } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
-import { getBusinessOutlets } from '@/utils/supabase/queries-client';
+import { useBusinessStore } from '@/store/business-store';
 
-interface BusinessOutlet {
-    id: number;
-    outlet_id: string;
-    outlet_name: string;
-    outlet_address: string;
-    outlet_phone: number;
-}
+import { BusinessOutlet } from '@/utils/supabase/queries-client';
 
 export default function ContextSwitcher() {
     const [isOpen, setIsOpen] = useState(false);
-    const { activeContextId, setActiveContext, user } = useUserStore();
-    const [outlets, setOutlets] = useState<BusinessOutlet[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const { user } = useUserStore();
+    const { outlets, setActiveContext, activeContextId } = useBusinessStore();
 
-    const fetchOutlets = React.useCallback(async () => {
-        if (!user?.business_id) return;
-        setIsLoading(true);
-        try {
-            const data = await getBusinessOutlets(user.business_id);
-            setOutlets(data || []);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [user?.business_id]);
-
-    useEffect(() => {
-        fetchOutlets();
-    }, [fetchOutlets]);
-    
     // Map static options + dynamic outlets
     const options = [
         { id: 'business', name: 'Global Business', type: 'Level 1', icon: Globe, color: 'text-[#C3EB7A]' },
-        ...outlets.map(o => ({
+        ...outlets.map((o: BusinessOutlet) => ({
             id: o.outlet_id,
             name: o.outlet_name,
             type: `Outlet #${o.id}`,
@@ -49,8 +27,8 @@ export default function ContextSwitcher() {
 
     const selected = options.find(opt => opt.id === activeContextId) || options[0];
 
-    const handleSelect = (optionId: string) => {
-        setActiveContext(optionId);
+    const handleSelect = (option: typeof options[0]) => {
+        setActiveContext(option.id, option.name, option.type);
         setIsOpen(false);
     };
 
@@ -85,35 +63,28 @@ export default function ContextSwitcher() {
                             </div>
 
                             <div className="max-h-[300px] overflow-y-auto custom-scrollbar space-y-1">
-                                {isLoading ? (
-                                    <div className="p-4 text-center">
-                                        <div className="w-4 h-4 border-2 border-[#C3EB7A] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                                        <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Syncing Ecosystem...</span>
-                                    </div>
-                                ) : (
-                                    options.map((option) => (
-                                        <button
-                                            key={option.id}
-                                            onClick={() => handleSelect(option.id)}
-                                            className={`w-full flex items-center justify-between p-3 rounded-2xl transition-all ${
-                                                selected.id === option.id 
-                                                ? 'bg-white/10' 
-                                                : 'hover:bg-white/5'
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-3 text-left">
-                                                <div className={`p-2 rounded-xl bg-black/40 ${option.color}`}>
-                                                    <option.icon className="w-4 h-4" />
-                                                </div>
-                                                <div>
-                                                    <h5 className="text-sm font-bold text-white leading-none mb-1">{option.name}</h5>
-                                                    <p className="text-[9px] font-medium text-white/30 uppercase tracking-widest leading-none">{option.type}</p>
-                                                </div>
+                                {options.map((option) => (
+                                    <button
+                                        key={option.id}
+                                        onClick={() => handleSelect(option)}
+                                        className={`w-full flex items-center justify-between p-3 rounded-2xl transition-all ${
+                                            selected.id === option.id 
+                                            ? 'bg-white/10' 
+                                            : 'hover:bg-white/5'
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-3 text-left">
+                                            <div className={`p-2 rounded-xl bg-black/40 ${option.color}`}>
+                                                <option.icon className="w-4 h-4" />
                                             </div>
-                                            {selected.id === option.id && <Check className="w-4 h-4 text-[#C3EB7A]" />}
-                                        </button>
-                                    ))
-                                )}
+                                            <div>
+                                                <h5 className="text-sm font-bold text-white leading-none mb-1">{option.name}</h5>
+                                                <p className="text-[9px] font-medium text-white/30 uppercase tracking-widest leading-none">{option.type}</p>
+                                            </div>
+                                        </div>
+                                        {selected.id === option.id && <Check className="w-4 h-4 text-[#C3EB7A]" />}
+                                    </button>
+                                ))}
                             </div>
                         </motion.div>
                     </>
@@ -124,28 +95,12 @@ export default function ContextSwitcher() {
 }
 
 ContextSwitcher.MobileHub = function MobileHub() {
-    const { activeContextId, setActiveContext, user } = useUserStore();
-    const [outlets, setOutlets] = useState<BusinessOutlet[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const fetchOutlets = React.useCallback(async () => {
-        if (!user?.business_id) return;
-        setIsLoading(true);
-        try {
-            const data = await getBusinessOutlets(user.business_id);
-            setOutlets(data || []);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [user?.business_id]);
-
-    useEffect(() => {
-        fetchOutlets();
-    }, [fetchOutlets]);
+    const { user } = useUserStore();
+    const { outlets, setActiveContext, activeContextId } = useBusinessStore();
 
     const options = [
         { id: 'business', name: 'Global Business', type: 'Level 1', icon: Globe, color: 'text-[#C3EB7A]' },
-        ...outlets.map(o => ({
+        ...outlets.map((o: BusinessOutlet) => ({
             id: o.outlet_id,
             name: o.outlet_name,
             type: `Outlet #${o.id}`,
@@ -158,39 +113,32 @@ ContextSwitcher.MobileHub = function MobileHub() {
 
     return (
         <div className="grid grid-cols-1 gap-2 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2">
-            {isLoading ? (
-                <div className="py-8 text-center bg-white/5 rounded-3xl border border-white/5">
-                    <div className="w-5 h-5 border-2 border-[#C3EB7A] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Hydrating Ecosystem...</span>
-                </div>
-            ) : (
-                options.map((option) => (
-                    <button
-                        key={option.id}
-                        onClick={() => setActiveContext(option.id)}
-                        className={`w-full flex items-center justify-between p-4 rounded-3xl transition-all border ${
-                            selected.id === option.id 
-                            ? 'bg-white/10 border-white/10 shadow-inner' 
-                            : 'bg-white/[0.02] border-white/5 hover:bg-white/5'
-                        }`}
-                    >
-                        <div className="flex items-center gap-4 text-left">
-                            <div className={`p-2.5 rounded-2xl bg-black/40 ${option.color}`}>
-                                <option.icon className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <h5 className="text-[15px] font-black text-white leading-none mb-1 uppercase tracking-tight">{option.name}</h5>
-                                <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest leading-none">{option.type}</p>
-                            </div>
+            {options.map((option) => (
+                <button
+                    key={option.id}
+                    onClick={() => setActiveContext(option.id, option.name, option.type)}
+                    className={`w-full flex items-center justify-between p-4 rounded-3xl transition-all border ${
+                        selected.id === option.id 
+                        ? 'bg-white/10 border-white/10 shadow-inner' 
+                        : 'bg-white/[0.02] border-white/5 hover:bg-white/5'
+                    }`}
+                >
+                    <div className="flex items-center gap-4 text-left">
+                        <div className={`p-2.5 rounded-2xl bg-black/40 ${option.color}`}>
+                            <option.icon className="w-5 h-5" />
                         </div>
-                        {selected.id === option.id && (
-                            <div className="w-8 h-8 rounded-full bg-[#C3EB7A]/10 flex items-center justify-center">
-                                <Check className="w-4 h-4 text-[#C3EB7A]" />
-                            </div>
-                        )}
-                    </button>
-                ))
-            )}
+                        <div>
+                            <h5 className="text-[15px] font-black text-white leading-none mb-1 uppercase tracking-tight">{option.name}</h5>
+                            <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest leading-none">{option.type}</p>
+                        </div>
+                    </div>
+                    {selected.id === option.id && (
+                        <div className="w-8 h-8 rounded-full bg-[#C3EB7A]/10 flex items-center justify-center">
+                            <Check className="w-4 h-4 text-[#C3EB7A]" />
+                        </div>
+                    )}
+                </button>
+            ))}
         </div>
     );
 };

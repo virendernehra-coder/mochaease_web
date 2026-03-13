@@ -9,9 +9,11 @@ import {
     LayoutGrid, List, MapPin
 } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
+import { useBusinessStore } from '@/store/business-store';
 
 export default function DashboardPage() {
-    const { activeContextId, businessConfig } = useUserStore();
+    const { businessConfig } = useUserStore();
+    const { activeContextId } = useBusinessStore();
     
     // Simulated context-specific data
     const isGlobal = activeContextId === 'business';
