@@ -69,6 +69,8 @@ export default function DashboardSidebar({ collapsed, setCollapsed }: SidebarPro
     const pathname = usePathname();
     const supabase = createClient();
     const [expandedItem, setExpandedItem] = React.useState<string | null>(null);
+    const [isContextExpanded, setIsContextExpanded] = React.useState(false);
+    const [isTimeframeExpanded, setIsTimeframeExpanded] = React.useState(false);
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
@@ -123,16 +125,78 @@ export default function DashboardSidebar({ collapsed, setCollapsed }: SidebarPro
                 </div>
 
                 {/* Mobile-Only Controls Section */}
-                <div className="lg:hidden mb-10 px-2 space-y-6">
-                    <div className="space-y-3">
-                        <p className="text-[10px] font-black text-white/20 uppercase tracking-[3px] ml-1">Business Context</p>
-                        <ContextSwitcher.MobileHub />
+                <div className="lg:hidden mb-10 px-2 space-y-4">
+                    {/* Business Context Trigger */}
+                    <div className="space-y-2">
+                        <button 
+                            onClick={() => setIsContextExpanded(!isContextExpanded)}
+                            className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all border ${
+                                isContextExpanded ? 'bg-white/10 border-white/10' : 'bg-white/[0.03] border-white/5 hover:bg-white/5'
+                            }`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-xl bg-[#C3EB7A]/10 text-[#C3EB7A]">
+                                    <Globe className="w-4 h-4" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-[9px] font-black text-white/20 uppercase tracking-widest leading-none mb-1">Context</p>
+                                    <h4 className="text-xs font-bold text-white truncate max-w-[120px]">Viewpoint Selector</h4>
+                                </div>
+                            </div>
+                            <ChevronDown className={`w-4 h-4 text-white/20 transition-transform duration-300 ${isContextExpanded ? 'rotate-180' : ''}`} />
+                        </button>
+                        
+                        <AnimatePresence>
+                            {isContextExpanded && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="pt-2">
+                                        <ContextSwitcher.MobileHub />
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
-                    <div className="space-y-3">
-                        <p className="text-[10px] font-black text-white/20 uppercase tracking-[3px] ml-1">Time Windows</p>
-                        <DateRangePicker.MobileHub />
+
+                    {/* Timeframe Trigger */}
+                    <div className="space-y-2">
+                        <button 
+                            onClick={() => setIsTimeframeExpanded(!isTimeframeExpanded)}
+                            className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all border ${
+                                isTimeframeExpanded ? 'bg-white/10 border-white/10' : 'bg-white/[0.03] border-white/5 hover:bg-white/5'
+                            }`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-xl bg-[#4A90E2]/10 text-[#4A90E2]">
+                                    <CalendarIcon className="w-4 h-4" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-[9px] font-black text-white/20 uppercase tracking-widest leading-none mb-1">Timeframe</p>
+                                    <h4 className="text-xs font-bold text-white truncate max-w-[120px]">Epoch Window</h4>
+                                </div>
+                            </div>
+                            <ChevronDown className={`w-4 h-4 text-white/20 transition-transform duration-300 ${isTimeframeExpanded ? 'rotate-180' : ''}`} />
+                        </button>
+                        
+                        <AnimatePresence>
+                            {isTimeframeExpanded && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="pt-2">
+                                        <DateRangePicker.MobileHub />
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
-                    <div className="h-[1px] w-full bg-white/5 mt-8" />
                 </div>
 
                 {/* Primary Navigation */}
