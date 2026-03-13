@@ -21,7 +21,7 @@ import { useThemeStore, THEME_COLORS } from '@/store/theme-store';
 import Portal from '@/components/Portal';
 
 export default function PayrollClient() {
-    const { activeContextId, user } = useUserStore();
+    const { activeContextId, user, businessConfig } = useUserStore();
     const { primaryColor, setPrimaryColor } = useThemeStore();
     const [payrollData, setPayrollData] = useState<PayrollReport[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -103,7 +103,7 @@ export default function PayrollClient() {
         const totalVariable = activeRows.reduce((sum, row) => sum + (row.calculated_variable_pay || 0), 0);
         const staffCount = new Set(activeRows.map(row => row.employee_id)).size;
         const laborPerc = totalSales > 0 ? (totalGross / totalSales) * 100 : 0;
-        const currency = activeRows[0]?.country_code === 'ID' ? 'IDR' : 'USD';
+        const currency = businessConfig.currency;
 
         // 5. Monthly Aggregation for Chart
         const monthlyDataMap = payrollData.reduce((acc: Record<string, number>, row) => {

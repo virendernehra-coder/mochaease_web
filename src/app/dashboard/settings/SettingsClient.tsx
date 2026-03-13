@@ -13,12 +13,14 @@ import {
 import { useUserStore } from '@/store/user-store';
 import { useRouter } from 'next/navigation';
 import Portal from '@/components/Portal';
+import { getBusinessInfo, updateBusinessInfo, type BusinessInfo } from '@/utils/supabase/queries-client';
 
 const settingSections = [
     {
         title: "Operations Command",
         description: "Manage your physical footprint and catalog.",
         cards: [
+            { id: 'business-details', title: "Business Details", desc: "Configure global goals & currency.", icon: SettingsIcon, color: "#C3EB7A" },
             { id: 'outlet', title: "Add New Outlet", desc: "Expand your physical presence.", icon: Store, color: "#C3EB7A" },
             { id: 'employees', title: "Team Management", desc: "Manage staff roles & payroll.", icon: Users, color: "#4A90E2" },
             { id: 'import', title: "Import Products", desc: "Batch upload inventory items.", icon: PackageSearch, color: "#8B5CF6" },
@@ -63,8 +65,37 @@ interface OutletForm {
     outlet_currency: string;
 }
 
+const CURRENCY_OPTIONS = [
+    { code: 'USD', name: 'US Dollar', symbol: '$' },
+    { code: 'IDR', name: 'Indonesian Rupiah', symbol: 'Rp' },
+    { code: 'EUR', name: 'Euro', symbol: '€' },
+    { code: 'GBP', name: 'British Pound', symbol: '£' },
+    { code: 'INR', name: 'Indian Rupee', symbol: '₹' },
+    { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
+    { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
+    { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
+    { code: 'SGD', name: 'Singapore Dollar', symbol: 'S$' },
+    { code: 'AED', name: 'UAE Dirham', symbol: 'د.إ' },
+    { code: 'SAR', name: 'Saudi Riyal', symbol: '﷼' },
+    { code: 'MYR', name: 'Malaysian Ringgit', symbol: 'RM' },
+    { code: 'THB', name: 'Thai Baht', symbol: '฿' },
+    { code: 'PHP', name: 'Philippine Peso', symbol: '₱' },
+    { code: 'VND', name: 'Vietnamese Dong', symbol: '₫' },
+    { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
+    { code: 'HKD', name: 'Hong Kong Dollar', symbol: 'HK$' },
+    { code: 'KRW', name: 'South Korean Won', symbol: '₩' },
+    { code: 'MXN', name: 'Mexican Peso', symbol: '$' },
+    { code: 'BRL', name: 'Brazilian Real', symbol: 'R$' },
+    { code: 'RUB', name: 'Russian Ruble', symbol: '₽' },
+    { code: 'TRY', name: 'Turkish Lira', symbol: '₺' },
+    { code: 'CHF', name: 'Swiss Franc', symbol: 'Fr.' },
+    { code: 'SEK', name: 'Swedish Krona', symbol: 'kr' },
+    { code: 'ILS', name: 'Israeli Shekel', symbol: '₪' },
+    { code: 'NZD', name: 'New Zealand Dollar', symbol: 'NZ$' },
+];
+
 export default function SettingsClient() {
-    const { user } = useUserStore();
+    const { user, setBusinessConfig } = useUserStore();
     const router = useRouter();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [step, setStep] = useState(1);
@@ -72,7 +103,6 @@ export default function SettingsClient() {
     const [isSuccess, setIsSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Form State
     const [newOutlet, setNewOutlet] = useState<OutletForm>({
         outlet_name: '',
         outlet_address: '',
@@ -80,6 +110,53 @@ export default function SettingsClient() {
         outlet_email: '',
         outlet_currency: 'USD',
     });
+
+    // Business Details State
+    const [isBusinessModalOpen, setIsBusinessModalOpen] = useState(false);
+    const [businessDetails, setBusinessDetails] = useState({
+        business_currency: 'USD',
+        business_monthly_revenue_goal: ''
+    });
+    const [showBusinessSuccess, setShowBusinessSuccess] = useState(false);
+
+    React.useEffect(() => {
+        if (user?.business_id && isBusinessModalOpen) {
+            getBusinessInfo(user.business_id).then(data => {
+                if (data) {
+                    setBusinessDetails({
+                        business_currency: data.business_currency || 'USD',
+                        business_monthly_revenue_goal: data.business_monthly_revenue_goal?.toString() || ''
+                    });
+                }
+            });
+        }
+    }, [user?.business_id, isBusinessModalOpen]);
+
+    const handleUpdateBusinessDetails = async () => {
+        if (!user?.business_id) return;
+        setIsLoading(true);
+        try {
+            await updateBusinessInfo(user.business_id, {
+                business_currency: businessDetails.business_currency,
+                business_monthly_revenue_goal: parseInt(businessDetails.business_monthly_revenue_goal) || 0,
+                user_id: user.id
+            });
+            setBusinessConfig({
+                currency: businessDetails.business_currency,
+                monthly_revenue_goal: parseInt(businessDetails.business_monthly_revenue_goal) || 0,
+            });
+            setShowBusinessSuccess(true);
+            setTimeout(() => {
+                setShowBusinessSuccess(false);
+                setIsBusinessModalOpen(false);
+            }, 3000);
+        } catch (error) {
+            console.error('Failed to update business details:', error);
+            setErrorMessage('Matrix rejection: Database failed to synchronize business info.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleCreateOutlet = async () => {
         setErrorMessage('');
@@ -144,6 +221,8 @@ export default function SettingsClient() {
     const handleCardClick = (id: string) => {
         if (id === 'outlet') {
             setIsCreateModalOpen(true);
+        } else if (id === 'business-details') {
+            setIsBusinessModalOpen(true);
         } else if (id === 'profile') {
             router.push('/dashboard/settings/profile');
         } else if (id === 'discounts') {
@@ -459,6 +538,114 @@ export default function SettingsClient() {
                                         </div>
                                     )}
                                 </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+            </Portal>
+
+            {/* Business Details Modal */}
+            <Portal>
+                <AnimatePresence>
+                    {isBusinessModalOpen && (
+                        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => !isLoading && setIsBusinessModalOpen(false)}
+                                className="absolute inset-0 bg-black/95 backdrop-blur-3xl cursor-pointer"
+                            />
+                            <motion.div 
+                                initial={{ scale: 0.9, opacity: 0, y: 100 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 100 }}
+                                className="relative w-full max-w-xl bg-[#0F0F0F] border border-white/10 rounded-[48px] shadow-[0_0_200px_rgba(0,0,0,1)] overflow-hidden z-20"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="p-10 md:p-12">
+                                    <div className="flex justify-between items-start mb-12">
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="text-[10px] font-black text-[#C3EB7A] uppercase tracking-[3px]">Global Configuration</span>
+                                            </div>
+                                            <h3 className="text-4xl font-black text-white tracking-tighter">
+                                                Business <span className="text-white/30">Protocol.</span>
+                                            </h3>
+                                        </div>
+                                        <button 
+                                            onClick={() => setIsBusinessModalOpen(false)}
+                                            className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/20 hover:text-white transition-all"
+                                        >
+                                            <X className="w-5 h-5" />
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-8">
+                                        <WizardInput 
+                                            label="Monthly Revenue Goal" 
+                                            icon={<TrendingUp className="w-5 h-5" />} 
+                                            placeholder="Enter goal amount..." 
+                                            type="number"
+                                            value={businessDetails.business_monthly_revenue_goal}
+                                            onChange={(val) => setBusinessDetails({...businessDetails, business_monthly_revenue_goal: val})}
+                                        />
+
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-white/20 uppercase tracking-[2px] ml-1">Dashboard Currency</label>
+                                            <div className="relative group">
+                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#C3EB7A] transition-colors">
+                                                    <DollarSign className="w-5 h-5" />
+                                                </div>
+                                                <select 
+                                                    value={businessDetails.business_currency}
+                                                    onChange={(e) => setBusinessDetails({...businessDetails, business_currency: e.target.value})}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-[28px] pl-16 pr-8 py-5 text-sm text-white outline-none focus:border-[#C3EB7A]/30 focus:bg-[#C3EB7A]/5 transition-all appearance-none cursor-pointer font-bold"
+                                                >
+                                                    {CURRENCY_OPTIONS.map(curr => (
+                                                        <option key={curr.code} value={curr.code} className="bg-[#0F0F0F]">
+                                                            {curr.code} - {curr.name} ({curr.symbol})
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <button 
+                                            onClick={handleUpdateBusinessDetails}
+                                            disabled={isLoading}
+                                            className="w-full py-5 rounded-[24px] bg-[#C3EB7A] text-black font-black uppercase tracking-[3px] text-[11px] shadow-[0_0_50px_rgba(195,235,122,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 mt-4"
+                                        >
+                                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                                            Update Business Matrix
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Success Overlay */}
+                                <AnimatePresence>
+                                    {showBusinessSuccess && (
+                                        <motion.div 
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            className="absolute inset-0 bg-black/95 backdrop-blur-2xl z-50 flex flex-col items-center justify-center text-center p-12"
+                                        >
+                                            <motion.div 
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                transition={{ type: "spring", damping: 12 }}
+                                                className="w-24 h-24 bg-[#C3EB7A]/10 rounded-[35px] flex items-center justify-center mb-8 mx-auto border border-[#C3EB7A]/20"
+                                            >
+                                                <Sparkles className="w-10 h-10 text-[#C3EB7A]" />
+                                            </motion.div>
+                                            <h3 className="text-3xl font-black text-white tracking-tighter mb-4 uppercase">Protocol Updated</h3>
+                                            <p className="text-white/40 font-medium text-sm leading-relaxed max-w-xs mx-auto">
+                                                Business goals and dashboard standards have been successfully synchronized across your global ecosystem.
+                                            </p>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </motion.div>
                         </div>
                     )}

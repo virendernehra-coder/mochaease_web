@@ -3,12 +3,12 @@
 import { useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useUserStore, SessionUser } from '@/store/user-store';
-import { getUserProfile, getEmployeeProfile } from '@/utils/supabase/queries-client';
+import { getUserProfile, getEmployeeProfile, getBusinessInfo } from '@/utils/supabase/queries-client';
 import { useRouter, usePathname } from 'next/navigation';
 
 export default function AuthInitializer({ children }: { children: React.ReactNode }) {
     const supabase = createClient();
-    const { setUser, clearSession } = useUserStore();
+    const { setUser, setBusinessConfig, clearSession } = useUserStore();
     const router = useRouter();
     const pathname = usePathname();
 
@@ -31,6 +31,16 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
                         account_status: ownerProfile.account_status,
                     };
                     setUser(userData);
+
+                    // Fetch Business Info
+                    const busInfo = await getBusinessInfo(userData.business_id!);
+                    if (busInfo) {
+                        setBusinessConfig({
+                            currency: busInfo.business_currency || 'USD',
+                            monthly_revenue_goal: Number(busInfo.business_monthly_revenue_goal) || 0
+                        });
+                    }
+
                     if (pathname === '/login' || pathname === '/') {
                         router.push('/dashboard');
                     }
@@ -53,6 +63,18 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
                         profile_pic: empProfile.profile_pic,
                     };
                     setUser(userData);
+
+                    // Fetch Business Info
+                    if (userData.business_id) {
+                        const busInfo = await getBusinessInfo(userData.business_id);
+                        if (busInfo) {
+                            setBusinessConfig({
+                                currency: busInfo.business_currency || 'USD',
+                                monthly_revenue_goal: Number(busInfo.business_monthly_revenue_goal) || 0
+                            });
+                        }
+                    }
+
                     if (pathname === '/login' || pathname === '/') {
                         // Default employee redirect to Schedules per previous suggestion
                         // User can clarify if a different module is preferred

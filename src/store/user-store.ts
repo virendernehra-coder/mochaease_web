@@ -26,12 +26,19 @@ export interface SessionUser {
     phone_number?: string;
 }
 
+export interface BusinessConfig {
+    currency: string;
+    monthly_revenue_goal: number;
+}
+
 interface UserState {
     user: SessionUser | null;
     isAuthenticated: boolean;
     lastChecked: number | null;
     activeContextId: string;
+    businessConfig: BusinessConfig;
     setUser: (user: SessionUser | null) => void;
+    setBusinessConfig: (config: Partial<BusinessConfig>) => void;
     clearSession: () => void;
     setActiveContext: (id: string) => void;
 }
@@ -65,16 +72,27 @@ export const useUserStore = create<UserState>()(
             isAuthenticated: false,
             lastChecked: null,
             activeContextId: 'business', // Default to global business
+            businessConfig: {
+                currency: 'USD',
+                monthly_revenue_goal: 0
+            },
             setUser: (user) => set({ 
                 user, 
                 isAuthenticated: !!user, 
                 lastChecked: Date.now() 
             }),
+            setBusinessConfig: (config) => set((state) => ({
+                businessConfig: { ...state.businessConfig, ...config }
+            })),
             clearSession: () => set({ 
                 user: null, 
                 isAuthenticated: false, 
                 lastChecked: null,
-                activeContextId: 'business'
+                activeContextId: 'business',
+                businessConfig: {
+                    currency: 'USD',
+                    monthly_revenue_goal: 0
+                }
             }),
             setActiveContext: (id) => set({ activeContextId: id }),
         }),

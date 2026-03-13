@@ -40,6 +40,30 @@ export type PayrollReport = {
     is_current_period: boolean;
 };
 
+export type EmployeeDetails = {
+    id: number;
+    created_at: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone_number: string;
+    business_id: string;
+    business_name: string;
+    role_id_employee: string;
+    profile_pic: string;
+    role_id_creator: string;
+    employee_id: string;
+    outlet_id: string;
+    outlet_name: string;
+    employee_fix_pay: number;
+    employee_variable_pay: number;
+    employee_bonus: number;
+    daily_shift_status: boolean;
+    backup_shift: boolean;
+    weekly_off_days: number;
+    preferred_shift: string;
+};
+
 export async function getPricingPlans(): Promise<PricingPlan[]> {
     const supabase = await createClient();
     const { data, error } = await supabase

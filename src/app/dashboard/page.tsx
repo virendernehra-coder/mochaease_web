@@ -11,12 +11,18 @@ import {
 import { useUserStore } from '@/store/user-store';
 
 export default function DashboardPage() {
-    const { activeContextId } = useUserStore();
+    const { activeContextId, businessConfig } = useUserStore();
     
     // Simulated context-specific data
     const isGlobal = activeContextId === 'business';
     const contextName = activeContextId === 'business' ? 'Global Business' : 
                        activeContextId === 'outlet-1' ? 'Downtown Cafe' : 'Uptown Bistro';
+
+    const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: businessConfig.currency, 
+        maximumFractionDigits: 0 
+    }).format(val);
 
     return (
         <div className="space-y-8 pb-20">
@@ -56,7 +62,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <KPICard 
                     title="Total Revenue" 
-                    value={isGlobal ? "$128,430.50" : "$42,120.00"} 
+                    value={isGlobal ? formatCurrency(128430) : formatCurrency(42120)} 
                     trend={isGlobal ? "+12.5%" : "+8.2%"} 
                     isUp={true} 
                     icon={<TrendingUp className="w-5 h-5" />}

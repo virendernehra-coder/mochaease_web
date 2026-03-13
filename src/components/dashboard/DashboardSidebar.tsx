@@ -31,6 +31,7 @@ const navItems = [
         icon: PieChart,
         subItems: [
             { name: 'Overview', href: '/dashboard/payroll' },
+            { name: 'Advance Manager', href: '/dashboard/payroll/advances' },
             { name: 'Settings', href: '/dashboard/payroll/settings' },
         ]
     },
