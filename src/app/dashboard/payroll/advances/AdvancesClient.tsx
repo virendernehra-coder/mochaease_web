@@ -284,28 +284,28 @@ export default function AdvancesClient() {
                             <motion.div
                                 layout
                                 key={adv.id}
-                                className="p-4 md:p-6 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-all group flex flex-col md:flex-row md:items-center justify-between gap-6"
+                                className="p-5 md:p-6 rounded-[32px] bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-all group flex flex-col sm:flex-row sm:items-center justify-between gap-6"
                             >
-                                <div className="flex items-center gap-4 md:gap-6">
-                                    <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-white/5 text-purple-400 group-hover:scale-110 transition-transform shrink-0">
-                                        <User className="w-4 h-4 md:w-5 md:h-5" />
+                                <div className="flex items-center gap-4 md:gap-6 flex-1 min-w-0">
+                                    <div className="p-3.5 md:p-4 rounded-2xl bg-white/5 text-purple-400 group-hover:scale-110 transition-transform shrink-0">
+                                        <User className="w-5 h-5" />
                                     </div>
-                                    <div className="min-w-0">
+                                    <div className="min-w-0 flex-1">
                                         <h4 className="text-base md:text-lg font-black text-white tracking-tight truncate">{adv.employee_name}</h4>
-                                        <div className="flex flex-wrap items-center gap-2 md:gap-3 mt-1">
-                                            <div className="flex items-center gap-1.5 opacity-40 shrink-0">
+                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                                            <div className="flex items-center gap-1.5 opacity-40">
                                                 <Calendar className="w-3 h-3 text-white" />
-                                                <span className="text-[9px] md:text-[10px] font-bold text-white uppercase tracking-widest">{new Date(adv.created_at).toLocaleDateString()}</span>
+                                                <span className="text-[10px] font-bold text-white uppercase tracking-widest">{new Date(adv.created_at).toLocaleDateString()}</span>
                                             </div>
-                                            <div className="hidden md:block w-1 h-1 rounded-full bg-white/10" />
-                                            <span className="text-[8px] md:text-[9px] font-black text-white/20 uppercase tracking-[2px] truncate">{isGlobal ? adv.outlet_name : 'Authorized'}</span>
+                                            <div className="hidden sm:block w-1 h-1 rounded-full bg-white/10" />
+                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-[2px] truncate">{isGlobal ? adv.outlet_name : 'Authorized'}</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex flex-items-center justify-between md:justify-end gap-6 md:gap-12 text-right">
-                                    <div className="flex flex-col items-start md:items-center gap-2 shrink-0">
-                                        <div className={`px-3 py-1 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 ${
+                                <div className="flex items-center justify-between sm:justify-end gap-4 md:gap-10 border-t border-white/5 sm:border-0 pt-4 sm:pt-0">
+                                    <div className="flex flex-col items-start sm:items-end gap-1.5 sm:min-w-[120px]">
+                                        <div className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 ${
                                             adv.status === 'approved' ? 'bg-[#C3EB7A]/10 text-[#C3EB7A]' :
                                             adv.status === 'rejected' ? 'bg-red-500/10 text-red-400' :
                                             'bg-amber-500/10 text-amber-400'
@@ -313,27 +313,24 @@ export default function AdvancesClient() {
                                             {adv.status === 'pending' && <div className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" />}
                                             {adv.status || 'pending'}
                                         </div>
-                                    </div>
-                                    <div className="shrink-0">
-                                        <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Disbursement</p>
-                                        <p className="text-xl md:text-2xl font-black text-[#C3EB7A] tabular-nums leading-none">
+                                        <p className="text-lg md:text-xl font-black text-[#C3EB7A] tabular-nums leading-none tracking-tight">
                                             {new Intl.NumberFormat('en-US', { style: 'currency', currency: businessConfig.currency, maximumFractionDigits: 0 }).format(adv.advance_payment || 0)}
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center gap-2 shrink-0">
+                                    <div className="flex items-center gap-2">
                                         {adv.status === 'pending' && (
                                             <>
                                                 <button
                                                     onClick={() => setApprovalModal({ isOpen: true, advance: adv, type: 'approved' })}
-                                                    className="p-3 rounded-2xl bg-[#C3EB7A]/5 border border-[#C3EB7A]/10 text-[#C3EB7A]/20 hover:text-[#C3EB7A] hover:bg-[#C3EB7A]/10 transition-all outline-none"
+                                                    className="p-3 rounded-2xl bg-[#C3EB7A]/5 border border-[#C3EB7A]/10 text-[#C3EB7A]/40 hover:text-[#C3EB7A] hover:bg-[#C3EB7A]/10 transition-all outline-none"
                                                     title="Approve"
                                                 >
                                                     <Check className="w-4 h-4" />
                                                 </button>
                                                 <button
                                                     onClick={() => setApprovalModal({ isOpen: true, advance: adv, type: 'rejected' })}
-                                                    className="p-3 rounded-2xl bg-red-500/5 border border-red-500/10 text-red-500/20 hover:text-red-500 hover:bg-red-500/5 transition-all outline-none"
+                                                    className="p-3 rounded-2xl bg-red-500/5 border border-red-500/10 text-red-500/40 hover:text-red-500 hover:bg-red-500/5 transition-all outline-none"
                                                     title="Reject"
                                                 >
                                                     <XCircle className="w-4 h-4" />
@@ -342,7 +339,7 @@ export default function AdvancesClient() {
                                         )}
                                         <button
                                             onClick={() => setDeleteModal({ isOpen: true, id: adv.id })}
-                                            className="p-3 rounded-2xl bg-white/5 border border-white/10 text-red-500/20 hover:text-red-500 hover:bg-red-500/5 transition-all outline-none"
+                                            className="p-3 rounded-2xl bg-white/5 border border-white/10 text-red-500/30 hover:text-red-500 hover:bg-red-500/5 transition-all outline-none"
                                             title="Void Record"
                                         >
                                             <Trash2 className="w-4 h-4" />
