@@ -65,7 +65,7 @@ export default function ConfirmationModal({
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="relative w-full max-w-md bg-[#0A0A0A] border border-white/10 rounded-[40px] p-10 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,1)]"
+                            className="relative w-[92%] sm:max-w-md bg-[#0A0A0A] border border-white/10 rounded-[40px] p-6 sm:p-10 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,1)]"
                             onClick={(e) => e.stopPropagation()}
                         >
                             {/* Decorative Glow */}

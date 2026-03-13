@@ -125,3 +125,75 @@ export default function DateRangePicker() {
         </div>
     );
 }
+
+DateRangePicker.MobileHub = function MobileHub() {
+    const { selectedRange, activePreset, setDateRange } = useFilterStore();
+
+    const handlePresetSelect = (preset: typeof presets[0]) => {
+        setDateRange(preset.getValue(), preset.label);
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-2">
+                {presets.map((preset) => (
+                    <button
+                        key={preset.label}
+                        onClick={() => handlePresetSelect(preset)}
+                        className={`flex flex-col items-center justify-center p-4 rounded-3xl transition-all border ${
+                            activePreset === preset.label 
+                            ? 'bg-[#4A90E2]/10 border-[#4A90E2]/30 text-[#4A90E2]' 
+                            : 'bg-white/[0.02] border-white/5 text-white/40 hover:bg-white/5'
+                        }`}
+                    >
+                        <Clock className={`w-4 h-4 mb-2 ${activePreset === preset.label ? 'opacity-100' : 'opacity-20'}`} />
+                        <span className="text-[11px] font-black uppercase tracking-wider">{preset.label}</span>
+                    </button>
+                ))}
+            </div>
+
+            <div className="p-6 rounded-[32px] bg-white/[0.02] border border-white/5 space-y-6">
+                <div className="flex items-center gap-3 px-2">
+                    <div className="p-2 rounded-xl bg-purple-500/20 text-purple-400">
+                        <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div>
+                        <h4 className="text-xs font-black text-white uppercase tracking-tight leading-none mb-1">Custom Epoch</h4>
+                        <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest">Select specific dates below</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest pl-1">Start Point</label>
+                        <input 
+                            type="date" 
+                            value={format(selectedRange.from, 'yyyy-MM-dd')}
+                            onChange={(e) => {
+                                const date = new Date(e.target.value);
+                                if (!isNaN(date.getTime())) {
+                                    setDateRange({ ...selectedRange, from: startOfDay(date) }, 'Custom Range');
+                                }
+                            }}
+                            className="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-3 text-xs font-bold text-white outline-none focus:border-purple-500/50 transition-all [color-scheme:dark]"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest pl-1">End Point</label>
+                        <input 
+                            type="date" 
+                            value={format(selectedRange.to, 'yyyy-MM-dd')}
+                            onChange={(e) => {
+                                const date = new Date(e.target.value);
+                                if (!isNaN(date.getTime())) {
+                                    setDateRange({ ...selectedRange, to: endOfDay(date) }, 'Custom Range');
+                                }
+                            }}
+                            className="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-3 text-xs font-bold text-white outline-none focus:border-purple-500/50 transition-all [color-scheme:dark]"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};

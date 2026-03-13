@@ -6,7 +6,8 @@ import ContextSwitcher from '@/components/dashboard/ContextSwitcher';
 import DateRangePicker from '@/components/dashboard/DateRangePicker';
 import UserProfile from '@/components/dashboard/UserProfile';
 import dynamic from 'next/dynamic';
-import { Search, Bell, Settings } from 'lucide-react';
+import { Search, Bell, Settings, Menu } from 'lucide-react';
+import MobileNavbar from '@/components/dashboard/MobileNavbar';
 
 const NetworkBackground = dynamic(() => import('@/components/NetworkBackground'), { ssr: false });
 
@@ -27,7 +28,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             
             <DashboardSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
 
-            <main className={`flex-1 flex flex-col relative z-10 transition-all duration-500 ease-in-out ${sidebarCollapsed ? 'lg:pl-24' : 'lg:pl-80'}`}>
+            <main className={`flex-1 flex flex-col relative z-10 transition-all duration-500 ease-in-out ${sidebarCollapsed ? 'lg:pl-24' : 'lg:pl-80'} pb-20 lg:pb-0`}>
                 {/* 
                     NOTE: On mobile, sidebar is hidden/drawer. 
                     On desktop, we have a fixed pl matches sidebar width.
@@ -37,10 +38,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {/* Dashboard Header */}
                 <header className="sticky top-0 h-24 border-b border-white/5 bg-[#050505]/60 backdrop-blur-3xl px-4 md:px-8 flex items-center justify-between z-40">
                     <div className="flex items-center gap-4 md:gap-6">
-                        <ContextSwitcher />
+                        <div className="lg:hidden">
+                             <button 
+                                onClick={() => setSidebarCollapsed(false)}
+                                className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white"
+                             >
+                                <Menu className="w-5 h-5" />
+                             </button>
+                        </div>
+                        <div className="hidden lg:block">
+                            <ContextSwitcher />
+                        </div>
                         <div className="h-8 w-[1px] bg-white/5 hidden lg:block" />
-                        <div className="hidden sm:block">
+                        <div className="hidden lg:block">
                             <DateRangePicker />
+                        </div>
+                        
+                        {/* Mobile Logo Visibility */}
+                        <div className="flex items-center lg:hidden">
+                            <div className="text-[#C3EB7A] font-extrabold text-xl tracking-tighter shrink-0 m-0 leading-none drop-shadow-[0_0_8px_rgba(195,235,122,0.5)]">m</div>
+                            <div className="text-white font-extrabold text-xl tracking-tighter shrink-0 m-0 leading-none">E.</div>
                         </div>
                     </div>
 
@@ -70,6 +87,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {children}
                 </div>
             </main>
+
+            {/* Premium Mobile Navigation */}
+            <MobileNavbar />
         </div>
     );
 }

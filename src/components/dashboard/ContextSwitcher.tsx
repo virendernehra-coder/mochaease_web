@@ -123,4 +123,74 @@ export default function ContextSwitcher() {
     );
 }
 
-// No FormInput needed here anymore
+ContextSwitcher.MobileHub = function MobileHub() {
+    const { activeContextId, setActiveContext, user } = useUserStore();
+    const [outlets, setOutlets] = useState<BusinessOutlet[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchOutlets = React.useCallback(async () => {
+        if (!user?.business_id) return;
+        setIsLoading(true);
+        try {
+            const data = await getBusinessOutlets(user.business_id);
+            setOutlets(data || []);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [user?.business_id]);
+
+    useEffect(() => {
+        fetchOutlets();
+    }, [fetchOutlets]);
+
+    const options = [
+        { id: 'business', name: 'Global Business', type: 'Level 1', icon: Globe, color: 'text-[#C3EB7A]' },
+        ...outlets.map(o => ({
+            id: o.outlet_id,
+            name: o.outlet_name,
+            type: `Outlet #${o.id}`,
+            icon: Store,
+            color: o.id % 2 === 0 ? 'text-[#4A90E2]' : 'text-purple-400'
+        }))
+    ];
+
+    const selected = options.find(opt => opt.id === activeContextId) || options[0];
+
+    return (
+        <div className="grid grid-cols-1 gap-2 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2">
+            {isLoading ? (
+                <div className="py-8 text-center bg-white/5 rounded-3xl border border-white/5">
+                    <div className="w-5 h-5 border-2 border-[#C3EB7A] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Hydrating Ecosystem...</span>
+                </div>
+            ) : (
+                options.map((option) => (
+                    <button
+                        key={option.id}
+                        onClick={() => setActiveContext(option.id)}
+                        className={`w-full flex items-center justify-between p-4 rounded-3xl transition-all border ${
+                            selected.id === option.id 
+                            ? 'bg-white/10 border-white/10 shadow-inner' 
+                            : 'bg-white/[0.02] border-white/5 hover:bg-white/5'
+                        }`}
+                    >
+                        <div className="flex items-center gap-4 text-left">
+                            <div className={`p-2.5 rounded-2xl bg-black/40 ${option.color}`}>
+                                <option.icon className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h5 className="text-[15px] font-black text-white leading-none mb-1 uppercase tracking-tight">{option.name}</h5>
+                                <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest leading-none">{option.type}</p>
+                            </div>
+                        </div>
+                        {selected.id === option.id && (
+                            <div className="w-8 h-8 rounded-full bg-[#C3EB7A]/10 flex items-center justify-center">
+                                <Check className="w-4 h-4 text-[#C3EB7A]" />
+                            </div>
+                        )}
+                    </button>
+                ))
+            )}
+        </div>
+    );
+};

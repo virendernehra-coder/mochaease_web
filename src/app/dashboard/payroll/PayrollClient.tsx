@@ -14,6 +14,7 @@ import { useFilterStore } from '@/store/filter-store';
 import { getPayrollReport } from '@/utils/supabase/queries-client';
 import { type PayrollReport } from '@/utils/supabase/queries';
 import { useState, useEffect, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { AnimatePresence } from 'framer-motion';
 import { Search, ChevronLeft, X, Info, ShieldCheck, Activity, Target } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -23,8 +24,6 @@ import Portal from '@/components/Portal';
 export default function PayrollClient() {
     const { activeContextId, user, businessConfig } = useUserStore();
     const { primaryColor, setPrimaryColor } = useThemeStore();
-    const [payrollData, setPayrollData] = useState<PayrollReport[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [selectedStaff, setSelectedStaff] = useState<PayrollReport | null>(null);
     const { selectedRange, activePreset } = useFilterStore();
     
@@ -34,42 +33,16 @@ export default function PayrollClient() {
     const itemsPerPage = 8;
 
     const isGlobal = activeContextId === 'business';
+    const queryContextId = isGlobal ? user?.business_id : activeContextId;
+
+    const { data: payrollData = [], isLoading } = useQuery({
+        queryKey: ['payroll', queryContextId, isGlobal],
+        queryFn: () => getPayrollReport(queryContextId!, isGlobal),
+        enabled: !!user?.business_id && !!queryContextId,
+    });
+
     const contextName = isGlobal ? (user?.business_name || 'Global Business') : 
                        (user?.outlet_name || 'Outlet Context');
-
-    // Reset page on search or range change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchQuery, selectedRange]);
-
-    // Body scroll lock
-    useEffect(() => {
-        if (selectedStaff) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
-        return () => { document.body.style.overflow = 'unset'; };
-    }, [selectedStaff]);
-
-    useEffect(() => {
-        async function fetchData() {
-            if (!user?.business_id) return;
-            
-            setIsLoading(true);
-            try {
-                // Determine the correct context ID for the query
-                const queryContextId = isGlobal ? user.business_id : activeContextId;
-                const data = await getPayrollReport(queryContextId, isGlobal);
-                setPayrollData(data);
-            } catch (err) {
-                console.error('Failed to fetch payroll data:', err);
-            } finally {
-                setIsLoading(false);
-            }
-        }
-        fetchData();
-    }, [activeContextId, user?.business_id, isGlobal]);
 
     // KPI Aggregations & Period Filtering
     const { filteredRows, searchedRows, paginatedRows, kpis, chartData, totalPages } = useMemo(() => {
@@ -230,14 +203,14 @@ export default function PayrollClient() {
                     </p>
                 </div>
 
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full md:w-auto">
                     <button 
                         onClick={handleExportCSV}
-                        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                        className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all w-full sm:w-auto"
                     >
                         <Download className="w-4 h-4" /> Export Report
                     </button>
-                    <button className="flex items-center gap-2 px-8 py-3 rounded-2xl bg-purple-500 text-white text-xs font-black uppercase tracking-widest hover:bg-purple-600 transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)]">
+                    <button className="flex items-center justify-center gap-2 px-8 py-3 rounded-2xl bg-purple-500 text-white text-xs font-black uppercase tracking-widest hover:bg-purple-600 transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] w-full sm:w-auto">
                         Run New Cycle
                     </button>
                 </div>
@@ -251,7 +224,7 @@ export default function PayrollClient() {
                 <KPICard title="Variable Pay" value={kpis.variablePay} sub="Incentives" trend="+0.0%" icon={<Sparkles className="w-5 h-5" />} color="amber" />
             </div>
             {/* Monthly Trend Chart */}
-            <div className="p-8 sm:p-10 rounded-[40px] bg-white/[0.02] border border-white/5 relative overflow-hidden group">
+            <div className="p-4 sm:p-8 lg:p-10 rounded-[40px] bg-white/[0.02] border border-white/5 relative overflow-hidden group">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
                     <div>
                         <h3 className="text-xl font-black text-white tracking-tight">Capital Expenditure Velocity</h3>
@@ -677,36 +650,36 @@ function StaffRow({ name, role, base, variable, total, status, onClick }: { name
     return (
         <div 
             onClick={onClick}
-            className="p-5 rounded-[24px] bg-white/[0.01] border border-white/5 hover:bg-white/[0.03] transition-all flex items-center gap-6 group cursor-pointer"
+            className="p-4 md:p-5 rounded-[24px] bg-white/[0.01] border border-white/5 hover:bg-white/[0.03] transition-all flex items-center gap-4 md:gap-6 group cursor-pointer"
         >
             <div 
-                className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center font-black text-sm text-white group-hover:bg-purple-500 group-hover:border-purple-500 transition-all hover-theme-bg"
+                className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center font-black text-sm text-white group-hover:bg-purple-500 group-hover:border-purple-500 transition-all hover-theme-bg shrink-0"
                 style={{ '--hover-bg': primaryColor } as React.CSSProperties}
             >
                 {name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-black text-white tracking-tight truncate group-hover:text-purple-400 transition-colors uppercase hover-theme-text" style={{ '--hover-color': primaryColor } as React.CSSProperties}>{name}</h4>
-                <p className="text-[10px] text-white/20 uppercase tracking-[2px] truncate font-bold">{role}</p>
+                <h4 className="text-xs md:text-sm font-black text-white tracking-tight truncate group-hover:text-purple-400 transition-colors uppercase hover-theme-text" style={{ '--hover-color': primaryColor } as React.CSSProperties}>{name}</h4>
+                <p className="text-[9px] md:text-[10px] text-white/20 uppercase tracking-[2px] truncate font-bold">{role}</p>
             </div>
             
             {/* Flex container for payouts to handle long numbers */}
-            <div className="flex items-center gap-8 text-right shrink-0">
+            <div className="flex items-center gap-4 md:gap-8 text-right shrink-0">
                 <div className="hidden md:block">
                     <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-0.5">Base / Var</p>
                     <p className="text-xs font-bold text-white/60 tabular-nums">{base} <span className="opacity-20 mx-1">/</span> {variable}</p>
                 </div>
                 <div>
                     <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-0.5">Total Net</p>
-                    <p className="text-sm font-black text-[#C3EB7A] tabular-nums tracking-tighter">{total}</p>
+                    <p className="text-xs md:text-sm font-black text-[#C3EB7A] tabular-nums tracking-tighter">{total}</p>
                 </div>
             </div>
 
-            <div className={`hidden lg:flex px-4 py-1.5 rounded-full border ${status === 'Verified' ? 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5' : 'text-amber-400 border-amber-400/20 bg-amber-400/5'} text-[9px] font-black uppercase tracking-[2px]`}>
+            <div className={`hidden sm:flex px-3 md:px-4 py-1.5 rounded-full border ${status === 'Verified' ? 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5' : 'text-amber-400 border-amber-400/20 bg-amber-400/5'} text-[8px] md:text-[9px] font-black uppercase tracking-[2px]`}>
                 {status}
             </div>
-            <button className="p-3 rounded-xl bg-white/5 border border-white/10 text-white/20 group-hover:text-white group-hover:bg-white/10 transition-all shrink-0">
-                <Info className="w-4 h-4" />
+            <button className="p-2 md:p-3 rounded-xl bg-white/5 border border-white/10 text-white/20 group-hover:text-white group-hover:bg-white/10 transition-all shrink-0">
+                <Info className="w-3.5 h-3.5 md:w-4 md:h-4" />
             </button>
         </div>
     );

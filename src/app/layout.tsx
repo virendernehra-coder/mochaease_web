@@ -9,6 +9,7 @@ import { GoogleTagManager } from '@next/third-parties/google';
 import { getOrganizationSchema, getSoftwareApplicationSchema } from "@/data/structured-data";
 import AuthInitializer from "@/components/auth/AuthInitializer";
 import AuthGuard from "@/components/auth/AuthGuard";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -77,11 +78,13 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(getSoftwareApplicationSchema()) }}
         />
         <div className="relative flex min-h-screen flex-col">
-          <AuthInitializer>
-            <AuthGuard>
-              <ConditionalLayout>{children}</ConditionalLayout>
-            </AuthGuard>
-          </AuthInitializer>
+          <QueryProvider>
+            <AuthInitializer>
+              <AuthGuard>
+                <ConditionalLayout>{children}</ConditionalLayout>
+              </AuthGuard>
+            </AuthInitializer>
+          </QueryProvider>
         </div>
       </body>
     </html>

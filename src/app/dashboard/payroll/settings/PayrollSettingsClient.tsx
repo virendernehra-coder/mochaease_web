@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
     ArrowLeft, Shield, UserPlus, Search, 
     Trash2, Edit3, MapPin, Wallet, Sparkles, Plus, Calendar, User, Filter, DollarSign,
@@ -25,11 +26,17 @@ export default function PayrollSettingsClient() {
     const contextName = isGlobal ? (user?.business_name || 'Global Business') : 
                        (user?.outlet_name || 'Outlet Context');
 
-    const [employees, setEmployees] = useState<EmployeeDetails[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const queryClient = useQueryClient();
+    const queryContextId = isGlobal ? user?.business_id : activeContextId;
+
+    const { data: employees = [], isLoading } = useQuery({
+        queryKey: ['employees', queryContextId, isGlobal],
+        queryFn: () => getEmployees(queryContextId!, isGlobal),
+        enabled: !!user?.business_id && !!queryContextId,
+    });
+
     const [searchQuery, setSearchQuery] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
     
     const [wizardFormData, setWizardFormData] = useState({
         first_name: '', // used as employee_id
@@ -41,76 +48,64 @@ export default function PayrollSettingsClient() {
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [successData, setSuccessData] = useState({ name: '', pay: 0 });
 
-    useEffect(() => {
-        async function loadData() {
-            if (!user?.business_id) return;
-            setIsLoading(true);
-            try {
-                const queryContextId = isGlobal ? user.business_id : activeContextId;
-                
-                const empData = await getEmployees(queryContextId, isGlobal);
-                
-                setEmployees(empData);
-            } catch (err) {
-                console.error('Failed to load payroll data:', err);
-                toast.error('Failed to load staff records');
-            } finally {
-                setIsLoading(false);
-            }
-        }
-        loadData();
-    }, [activeContextId, user?.business_id, isGlobal]);
-
-    const filteredEmployees = employees.filter(emp => 
-        `${emp.first_name} ${emp.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        emp.role_id_employee?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    const handlePayUpdate = async () => {
-        if (!wizardFormData.first_name) return; // first_name stores employee_id in this pivot
-        setIsSubmitting(true);
-        try {
-            const payData = {
-                employee_fix_pay: parseFloat(wizardFormData.employee_fix_pay) || 0,
-                employee_variable_pay: parseFloat(wizardFormData.employee_variable_pay) || 0,
-                employee_bonus: parseFloat(wizardFormData.employee_bonus) || 0
-            };
-            
-            await updateEmployeePayDetails(wizardFormData.first_name, payData);
-            
-            const employee = employees.find(emp => emp.employee_id === wizardFormData.first_name);
-            
-            setEmployees(prev => prev.map(emp => 
-                emp.employee_id === wizardFormData.first_name 
-                ? { ...emp, ...payData } 
-                : emp
-            ));
-            
+    const updatePayMutation = useMutation({
+        mutationFn: (vars: { employeeId: string, payData: any }) => 
+            updateEmployeePayDetails(vars.employeeId, vars.payData),
+        onSuccess: (data, vars) => {
+            queryClient.invalidateQueries({ queryKey: ['employees'] });
+            const employee = employees.find(emp => emp.employee_id === vars.employeeId);
             setSuccessData({
                 name: employee ? `${employee.first_name} ${employee.last_name}` : 'Employee',
-                pay: payData.employee_fix_pay
+                pay: vars.payData.employee_fix_pay
             });
             setIsAddModalOpen(false);
             setShowSuccessModal(true);
-        } catch (err: any) {
+        },
+        onError: (err: any) => {
             console.error('Full update error:', err);
             const errorMsg = err.message || err.details || 'Database rejected update';
             toast.error(`Sync failed: ${errorMsg}`);
-        } finally {
-            setIsSubmitting(false);
         }
+    });
+
+    const toggleMutation = useMutation({
+        mutationFn: (vars: { empId: string, field: string, value: boolean }) => 
+            updateEmployeeGovernance(vars.empId, { [vars.field]: vars.value }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['employees'] });
+            toast.success('Governance updated');
+        },
+        onError: () => {
+            toast.error('Failed to update governance');
+        }
+    });
+
+    const isSubmitting = updatePayMutation.isPending;
+
+    const filteredEmployees = useMemo(() => {
+        return employees.filter(emp => 
+            `${emp.first_name} ${emp.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            emp.role_id_employee?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [employees, searchQuery]);
+
+    const handlePayUpdate = async () => {
+        if (!wizardFormData.first_name) return;
+        
+        const payData = {
+            employee_fix_pay: parseFloat(wizardFormData.employee_fix_pay) || 0,
+            employee_variable_pay: parseFloat(wizardFormData.employee_variable_pay) || 0,
+            employee_bonus: parseFloat(wizardFormData.employee_bonus) || 0
+        };
+
+        updatePayMutation.mutate({
+            employeeId: wizardFormData.first_name,
+            payData
+        });
     };
 
     const toggleGovernance = async (empId: string, field: 'daily_shift_status' | 'backup_shift', value: boolean) => {
-        try {
-            await updateEmployeeGovernance(empId, { [field]: value });
-            setEmployees(prev => prev.map(emp => 
-                emp.employee_id === empId ? { ...emp, [field]: value } : emp
-            ));
-            toast.success('Governance updated');
-        } catch (err) {
-            toast.error('Failed to update governance');
-        }
+        toggleMutation.mutate({ empId, field, value });
     };
 
     return (
@@ -139,20 +134,20 @@ export default function PayrollSettingsClient() {
                     </h1>
                 </div>
 
-                <div className="flex flex-wrap gap-4">
-                    <div className="relative">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full md:w-auto">
+                    <div className="relative w-full sm:w-64">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
                         <input 
                             type="text" 
                             placeholder="Search staff..."
-                            className="pl-11 pr-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white text-xs font-bold outline-none focus:border-[#C3EB7A]/50 transition-all w-64"
+                            className="pl-11 pr-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white text-xs font-bold outline-none focus:border-[#C3EB7A]/50 transition-all w-full"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
                     <button 
                         onClick={() => setIsAddModalOpen(true)}
-                        className="flex items-center gap-2 px-8 py-3 rounded-2xl bg-[#C3EB7A] text-black text-xs font-black uppercase tracking-widest hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(195,235,122,0.3)]"
+                        className="flex items-center justify-center gap-2 px-8 py-3 rounded-2xl bg-[#C3EB7A] text-black text-xs font-black uppercase tracking-widest hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(195,235,122,0.3)] w-full sm:w-auto"
                     >
                         <DollarSign className="w-4 h-4" /> Update Employee Pay
                     </button>
@@ -181,60 +176,64 @@ export default function PayrollSettingsClient() {
                                 <p className="text-white/20 font-bold uppercase tracking-widest text-xs">No staff records found in this context</p>
                             </div>
                         ) : filteredEmployees.map((emp) => (
-                            <div key={emp.employee_id} className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-all group">
-                                <div className="flex flex-wrap items-center gap-8">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center font-black text-white group-hover:scale-110 transition-transform">
-                                        {emp.first_name?.charAt(0)}
-                                    </div>
-                                    
-                                    <div className="flex-1 min-w-[150px]">
-                                        <h4 className="text-lg font-black text-white tracking-tight">{emp.first_name} {emp.last_name}</h4>
-                                        <p className="text-[10px] text-white/20 uppercase tracking-widest">{emp.role_id_employee || 'Unassigned'}</p>
-                                    </div>
-
-                                    <div className="text-right">
-                                        <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Base Salary</p>
-                                        <div className="flex items-center gap-2 justify-end">
-                                            <span className="text-xl font-black text-[#C3EB7A]">${(emp.employee_fix_pay || 0).toLocaleString()}</span>
-                                            <button 
-                                                onClick={() => {
-                                                    setWizardFormData({
-                                                        first_name: emp.employee_id,
-                                                        employee_fix_pay: emp.employee_fix_pay?.toString() || '',
-                                                        employee_variable_pay: emp.employee_variable_pay?.toString() || '',
-                                                        employee_bonus: emp.employee_bonus?.toString() || '',
-                                                    });
-                                                    setIsAddModalOpen(true);
-                                                }}
-                                                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/20 hover:text-white transition-all"
-                                            >
-                                                <Edit3 className="w-3.5 h-3.5" />
-                                            </button>
+                            <div key={emp.employee_id} className="p-4 md:p-6 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-all group">
+                                <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
+                                    <div className="flex items-center gap-6 flex-1 min-w-0">
+                                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center font-black text-white group-hover:scale-110 transition-transform shrink-0">
+                                            {emp.first_name?.charAt(0)}
+                                        </div>
+                                        
+                                        <div className="min-w-0">
+                                            <h4 className="text-base md:text-lg font-black text-white tracking-tight truncate uppercase">{emp.first_name} {emp.last_name}</h4>
+                                            <p className="text-[9px] md:text-[10px] text-white/20 uppercase tracking-widest truncate">{emp.role_id_employee || 'Unassigned'}</p>
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col gap-2 min-w-[140px]">
-                                        <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Governance</p>
-                                        <div className="flex items-center gap-4">
-                                            <button 
-                                                onClick={() => toggleGovernance(emp.employee_id, 'daily_shift_status', !emp.daily_shift_status)}
-                                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all text-[9px] font-black uppercase tracking-wider ${emp.daily_shift_status ? 'bg-[#C3EB7A]/10 border-[#C3EB7A]/20 text-[#C3EB7A]' : 'bg-white/5 border-white/10 text-white/20'}`}
-                                            >
-                                                OT
-                                            </button>
-                                            <button 
-                                                onClick={() => toggleGovernance(emp.employee_id, 'backup_shift', !emp.backup_shift)}
-                                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all text-[9px] font-black uppercase tracking-wider ${emp.backup_shift ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-white/5 border-white/10 text-white/20'}`}
-                                            >
-                                                Tax
+                                    <div className="flex items-center justify-between md:justify-end gap-6 md:gap-12 w-full md:w-auto">
+                                        <div className="text-left md:text-right shrink-0">
+                                            <p className="text-[9px] md:text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Base Salary</p>
+                                            <div className="flex items-center gap-2 justify-end">
+                                                <span className="text-xl font-black text-[#C3EB7A] tabular-nums tracking-tighter">${(emp.employee_fix_pay || 0).toLocaleString()}</span>
+                                                <button 
+                                                    onClick={() => {
+                                                        setWizardFormData({
+                                                            first_name: emp.employee_id,
+                                                            employee_fix_pay: emp.employee_fix_pay?.toString() || '',
+                                                            employee_variable_pay: emp.employee_variable_pay?.toString() || '',
+                                                            employee_bonus: emp.employee_bonus?.toString() || '',
+                                                        });
+                                                        setIsAddModalOpen(true);
+                                                    }}
+                                                    className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/20 hover:text-white transition-all"
+                                                >
+                                                    <Edit3 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col items-center md:items-end gap-2 shrink-0">
+                                            <p className="text-[9px] md:text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Governance</p>
+                                            <div className="flex items-center gap-2">
+                                                <button 
+                                                    onClick={() => toggleGovernance(emp.employee_id, 'daily_shift_status', !emp.daily_shift_status)}
+                                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all text-[8px] md:text-[9px] font-black uppercase tracking-wider ${emp.daily_shift_status ? 'bg-[#C3EB7A]/10 border-[#C3EB7A]/20 text-[#C3EB7A]' : 'bg-white/5 border-white/10 text-white/20'}`}
+                                                >
+                                                    OT
+                                                </button>
+                                                <button 
+                                                    onClick={() => toggleGovernance(emp.employee_id, 'backup_shift', !emp.backup_shift)}
+                                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all text-[8px] md:text-[9px] font-black uppercase tracking-wider ${emp.backup_shift ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-white/5 border-white/10 text-white/20'}`}
+                                                >
+                                                    Tax
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <button className="p-2.5 md:p-3 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 text-red-500/20 hover:text-red-500 hover:bg-red-500/5 transition-all">
+                                                <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                             </button>
                                         </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                        <button className="p-3 rounded-2xl bg-white/5 border border-white/10 text-red-500/20 hover:text-red-500 hover:bg-red-500/5 transition-all">
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -306,7 +305,7 @@ export default function PayrollSettingsClient() {
                                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                                 animate={{ scale: 1, opacity: 1, y: 0 }}
                                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                                className="relative w-full max-w-2xl bg-[#0A0A0A] border border-white/10 rounded-[40px] shadow-[0_0_100px_rgba(0,0,0,1)] z-10 flex flex-col overflow-hidden max-h-[90vh]"
+                                className="relative w-[92%] sm:max-w-2xl bg-[#0A0A0A] border border-white/10 rounded-[40px] shadow-[0_0_100px_rgba(0,0,0,1)] z-10 flex flex-col overflow-hidden max-h-[90vh]"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 <button 
@@ -316,11 +315,11 @@ export default function PayrollSettingsClient() {
                                     <X className="w-5 h-5" />
                                 </button>
 
-                                <div className="p-10 space-y-8">
-                                    <div>
-                                        <h3 className="text-3xl font-black text-white tracking-tighter uppercase mb-1">Update Employee Pay</h3>
-                                        <p className="text-[10px] text-white/30 font-black uppercase tracking-[3px]">Configure active compensation matrix</p>
-                                    </div>
+                                    <div className="p-6 sm:p-10 space-y-6 sm:space-y-8">
+                                        <div>
+                                            <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tighter uppercase mb-1">Update Employee Pay</h3>
+                                            <p className="text-[10px] text-white/30 font-black uppercase tracking-[3px]">Configure active compensation matrix</p>
+                                        </div>
 
                                     <form onSubmit={(e) => {
                                         e.preventDefault();
@@ -402,7 +401,7 @@ export default function PayrollSettingsClient() {
                                             </div>
                                         </div>
 
-                                        <div className="pt-4">
+                                        <div className="pt-4 pb-4">
                                             <button 
                                                 type="submit"
                                                 disabled={isSubmitting || !wizardFormData.first_name}
@@ -435,7 +434,7 @@ export default function PayrollSettingsClient() {
                                 initial={{ scale: 0.8, opacity: 0, y: 40 }}
                                 animate={{ scale: 1, opacity: 1, y: 0 }}
                                 exit={{ scale: 0.8, opacity: 0, y: 40 }}
-                                className="relative w-full max-w-md bg-[#0A0A0A] border border-white/5 rounded-[50px] p-12 overflow-hidden shadow-[0_0_150px_rgba(195,235,122,0.1)]"
+                                className="relative w-[92%] sm:max-w-md bg-[#0A0A0A] border border-white/5 rounded-[50px] p-8 sm:p-12 overflow-hidden shadow-[0_0_150px_rgba(195,235,122,0.1)]"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-[#C3EB7A] to-transparent opacity-20" />
@@ -449,7 +448,7 @@ export default function PayrollSettingsClient() {
                                     <Sparkles className="w-10 h-10 text-[#C3EB7A]" />
                                 </motion.div>
 
-                                <h3 className="text-3xl font-black text-white tracking-tighter mb-4 uppercase">Matrix Synchronized</h3>
+                                <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tighter mb-4 uppercase">Matrix Synchronized</h3>
                                 <p className="text-white/40 font-medium text-sm leading-relaxed mb-8">
                                     The compensation structure for <span className="text-white font-bold">{successData.name}</span> has been successfully updated to <span className="text-[#C3EB7A] font-black tracking-tight">${successData.pay.toLocaleString()}</span> and synced with active payroll governance.
                                 </p>
