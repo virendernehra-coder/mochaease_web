@@ -9,7 +9,7 @@ import { useRouter, usePathname } from 'next/navigation';
 
 export default function AuthInitializer({ children }: { children: React.ReactNode }) {
     const supabase = createClient();
-    const { setUser, setBusinessConfig, clearSession } = useUserStore();
+    const { setUser, setBusinessConfig, clearSession, setSessionExpired } = useUserStore();
     const { setOutlets, clearBusinessData } = useBusinessStore();
     const router = useRouter();
     const pathname = usePathname();
@@ -17,6 +17,7 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session) {
+                setSessionExpired(false);
                 const userId = session.user.id;
                 
                 // 1. Try fetching Owner Profile
@@ -90,16 +91,36 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
                     return;
                 }
             } else if (event === 'SIGNED_OUT') {
-                clearSession();
-                clearBusinessData();
                 if (pathname.startsWith('/dashboard')) {
-                    router.push('/login');
+                    // Show beautiful session expired screen instead of redirecting
+                    setSessionExpired(true);
+                } else {
+                    clearSession();
+                    clearBusinessData();
                 }
             }
         });
 
-        return () => subscription.unsubscribe();
-    }, [supabase, setUser, clearSession, router, pathname]);
+        // Add window focus/visibility listeners to revalidate session when user returns
+        const revalidateSession = async () => {
+            if (pathname.startsWith('/dashboard')) {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) {
+                    setSessionExpired(true);
+                }
+            }
+        };
+
+        window.addEventListener('focus', revalidateSession);
+        window.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') revalidateSession();
+        });
+
+        return () => {
+            subscription.unsubscribe();
+            window.removeEventListener('focus', revalidateSession);
+        };
+    }, [supabase, setUser, clearSession, setSessionExpired, clearBusinessData, router, pathname]);
 
     return <>{children}</>;
 }

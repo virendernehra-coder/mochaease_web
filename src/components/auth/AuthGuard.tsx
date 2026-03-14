@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUserStore } from '@/store/user-store';
 import { Loader2, ShieldAlert } from 'lucide-react';
+import SessionExpiredOverlay from './SessionExpiredOverlay';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated, user } = useUserStore();
+    const { isAuthenticated, isSessionExpired, user } = useUserStore();
     const router = useRouter();
     const pathname = usePathname();
     const [isChecking, setIsChecking] = useState(true);
@@ -44,6 +45,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
                 </div>
             </main>
         );
+    }
+
+    if (isSessionExpired && pathname.startsWith('/dashboard')) {
+        return <SessionExpiredOverlay />;
     }
 
     return <>{children}</>;

@@ -190,3 +190,14 @@ export type ElitePerformanceRecord = {
     growth_pct: string;
     product_classification: 'Star' | 'Cash Cow' | 'Rising Star' | 'Dog';
 };
+
+export type CategoryPerformanceRecord = {
+    idx: number;
+    business_id: string;
+    outlet_id: string | null;
+    category_name: string;
+    total_qty: number;
+    net_sales: number;
+    sales_share_pct: string;
+    estimated_category_profit: string;
+};

@@ -567,3 +567,33 @@ export async function getProductElitePerformance(
 
     return (data || []) as import('./queries').ElitePerformanceRecord[];
 }
+
+/**
+ * Fetches category performance data from the comprehensive category view.
+ */
+export async function getCategoryPerformance(
+    businessId: string,
+    outletId: string | null
+): Promise<import('./queries').CategoryPerformanceRecord[]> {
+    const supabase = createClient();
+    
+    let query = supabase
+        .from('category_analytics_comprehensive_v1')
+        .select('*')
+        .eq('business_id', businessId);
+
+    if (outletId && outletId !== 'business') {
+        query = query.eq('outlet_id', outletId);
+    } else {
+        query = query.is('outlet_id', null);
+    }
+
+    const { data, error } = await query.order('net_sales', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching category performance:', error);
+        return [];
+    }
+
+    return (data || []) as import('./queries').CategoryPerformanceRecord[];
+}

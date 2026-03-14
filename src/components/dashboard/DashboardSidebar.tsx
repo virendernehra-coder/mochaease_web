@@ -20,8 +20,9 @@ const navItems = [
         icon: LayoutDashboard,
         subItems: [
             { name: 'Overview', href: '/dashboard' },
-            { name: 'Category Sales', href: '/dashboard/analytics/categories' },
-            { name: 'Product Sales', href: '/dashboard/analytics/products' },
+            { name: 'Category Analytics', href: '/dashboard/analytics/categories' },
+            { name: 'Product Analytics', href: '/dashboard/analytics/products' },
+            { name: 'Outlet Analytics', href: '/dashboard/analytics/outlets' },
             { name: 'Retention Analysis', href: '/dashboard/analytics/retention' },
             { name: 'Payment Breakdown', href: '/dashboard/analytics/payments' },
             { name: 'Order History', href: '/dashboard/analytics/history' },

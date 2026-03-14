@@ -34,9 +34,11 @@ export interface BusinessConfig {
 interface UserState {
     user: SessionUser | null;
     isAuthenticated: boolean;
+    isSessionExpired: boolean;
     lastChecked: number | null;
     businessConfig: BusinessConfig;
     setUser: (user: SessionUser | null) => void;
+    setSessionExpired: (isExpired: boolean) => void;
     setBusinessConfig: (config: Partial<BusinessConfig>) => void;
     clearSession: () => void;
 }
@@ -68,6 +70,7 @@ export const useUserStore = create<UserState>()(
         (set) => ({
             user: null,
             isAuthenticated: false,
+            isSessionExpired: false,
             lastChecked: null,
             businessConfig: {
                 currency: 'USD',
@@ -76,14 +79,17 @@ export const useUserStore = create<UserState>()(
             setUser: (user) => set({ 
                 user, 
                 isAuthenticated: !!user, 
+                isSessionExpired: false, // Reset on new user
                 lastChecked: Date.now() 
             }),
+            setSessionExpired: (isExpired) => set({ isSessionExpired: isExpired }),
             setBusinessConfig: (config) => set((state) => ({
                 businessConfig: { ...state.businessConfig, ...config }
             })),
             clearSession: () => set({ 
                 user: null, 
                 isAuthenticated: false, 
+                isSessionExpired: false,
                 lastChecked: null,
                 businessConfig: {
                     currency: 'USD',
