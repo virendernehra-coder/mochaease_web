@@ -11,7 +11,7 @@ import {
     ArrowLeft, Filter, 
     MapPin, TrendingUp,
     Coffee, Utensils, IceCream, Pizza, GlassWater, 
-    Zap, Sparkles, LayoutGrid, PieChart as PieChartIcon,
+    Zap, Sparkles, LayoutGrid, PieChart as PieChartIcon, TrendingDown, Clock, 
     ArrowUpRight, ArrowDownRight, Target, Download, Activity,
     DollarSign, BarChart3
 } from 'lucide-react';
@@ -42,6 +42,11 @@ export default function CategorySalesClient() {
     const businessId = user?.business_id;
     const outletId = isGlobal ? null : activeContextId;
     const currency = businessConfig?.currency || 'USD';
+    
+    // Pagination State
+    const [performancePage, setPerformancePage] = React.useState(1);
+    const [trendPage, setTrendPage] = React.useState(1);
+    const ITEMS_PER_PAGE = 10;
 
     const { data: rawData, isLoading: loadingPerformance } = useQuery({
         queryKey: ['category-performance', businessId, outletId],
@@ -63,15 +68,58 @@ export default function CategorySalesClient() {
 
     const chartData = useMemo(() => {
         if (!rawData) return [];
-        return rawData.map((item: any, idx: any) => ({
-            name: item.category_name,
-            value: Number(item.net_sales),
-            share: parseFloat(item.sales_share_pct),
-            profit: parseFloat(item.estimated_category_profit),
-            qty: item.total_qty,
-            color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length]
-        }));
+        return rawData.map((item: any, idx: any) => {
+            const val = Number(item.net_sales);
+            const profit = parseFloat(item.estimated_category_profit);
+            const margin = val > 0 ? (profit / val) * 100 : 0;
+            
+            return {
+                name: item.category_name,
+                value: val,
+                share: parseFloat(item.sales_share_pct),
+                profit: profit,
+                margin: margin,
+                qty: item.total_qty,
+                color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
+                insights: {
+                    noInventory: margin === 100,
+                    dangerZone: margin < 15 && margin > 0
+                }
+            };
+        });
     }, [rawData]);
+
+    // Aggregate Data for Viz (Top 10 + Others)
+    const vizData = useMemo(() => {
+        if (chartData.length <= 10) return chartData;
+        
+        const top10 = chartData.slice(0, 10);
+        const others = chartData.slice(10);
+        const othersValue = others.reduce((acc, curr) => acc + curr.value, 0);
+        const othersShare = others.reduce((acc, curr) => acc + curr.share, 0);
+        const othersQty = others.reduce((acc, curr) => acc + curr.qty, 0);
+        
+        return [
+            ...top10,
+            {
+                name: 'Others',
+                value: othersValue,
+                share: parseFloat(othersShare.toFixed(2)),
+                qty: othersQty,
+                color: '#333333',
+                insights: { noInventory: false, dangerZone: false }
+            }
+        ];
+    }, [chartData]);
+
+    const opportunities = useMemo(() => 
+        chartData.filter(c => c.insights.noInventory && c.value > 0), [chartData]
+    );
+
+    const paginatedPerformance = useMemo(() => {
+        const start = (performancePage - 1) * ITEMS_PER_PAGE;
+        return chartData.slice(start, start + ITEMS_PER_PAGE);
+    }, [chartData, performancePage]);
 
     const totalRevenue = useMemo(() => 
         chartData.reduce((acc: any, curr: any) => acc + curr.value, 0), [chartData]
@@ -151,6 +199,31 @@ export default function CategorySalesClient() {
         setTimeout(() => window.URL.revokeObjectURL(url), 100);
     };
 
+    const handleExportUntrackedCSV = () => {
+        const untracked = chartData.filter(c => c.insights.noInventory && c.value > 0);
+        if (untracked.length === 0) return;
+
+        const headers = ["Category Name", "Net Revenue", "Units Sold", "Issue Detected"];
+        const csvRows = untracked.map(c => [
+            `"${c.name.replace(/"/g, '""')}"`,
+            c.value.toFixed(2),
+            c.qty,
+            "100% Margin (Missing COGS/Inventory Sync)"
+        ]);
+
+        const csvContent = "\uFEFF" + [headers.join(","), ...csvRows.map((r: any) => r.join(","))].join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        
+        const timestamp = new Date().toISOString().split('T')[0];
+        link.href = url;
+        link.setAttribute("download", `untracked_categories_audit_${timestamp}.csv`);
+        link.click();
+        
+        setTimeout(() => window.URL.revokeObjectURL(url), 100);
+    };
+
     if (isLoading) {
         return (
             <div className="h-[600px] flex flex-col items-center justify-center space-y-4">
@@ -193,6 +266,59 @@ export default function CategorySalesClient() {
                     </button>
                 </div>
             </div>
+
+            {/* Opportunities Hub - Dynamic Insights */}
+            {opportunities.length > 0 && (
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <Sparkles className="w-5 h-5 text-[#C3EB7A]" />
+                            <h2 className="text-xl font-black text-white tracking-tight uppercase">Operational Gains <span className="text-white/20">Detected</span></h2>
+                        </div>
+                        <button 
+                            onClick={handleExportUntrackedCSV}
+                            className="px-6 py-2.5 rounded-xl bg-[#C3EB7A]/10 border border-[#C3EB7A]/20 text-[#C3EB7A] font-black text-[10px] uppercase tracking-widest hover:bg-[#C3EB7A] hover:text-black transition-all"
+                        >
+                            Export Untracked Audit
+                        </button>
+                    </div>
+                    
+                    <div className="flex flex-nowrap overflow-x-auto gap-6 pb-6 scrollbar-hide">
+                        {opportunities.map((opt, i) => (
+                            <motion.div 
+                                key={`opt-${opt.name}`}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="min-w-[320px] p-8 rounded-[38px] bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] border border-orange-500/20 relative overflow-hidden group shadow-2xl"
+                            >
+                                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:rotate-12 transition-transform duration-700">
+                                    <Activity className="w-20 h-20 text-orange-400" />
+                                </div>
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                                        <span className="text-[10px] font-black text-white/40 uppercase tracking-[2px]">Sync Opportunity</span>
+                                    </div>
+                                    <h3 className="text-2xl font-black text-white tracking-tight mb-2">{opt.name}</h3>
+                                    <p className="text-sm font-bold text-white/30 leading-relaxed mb-8">
+                                        Detected 100% margin on <span className="text-white">{formatCurrency(opt.value, currency)}</span> revenue. This suggests ingredients & COGS are not being tracked.
+                                    </p>
+                                    <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Potential Impact</span>
+                                            <span className="text-xs font-black text-orange-400">Inventory Blindspot</span>
+                                        </div>
+                                        <button className="p-3 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white transition-all">
+                                            <ArrowUpRight className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Top Categories Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -269,7 +395,7 @@ export default function CategorySalesClient() {
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
-                                        data={chartData}
+                                        data={vizData}
                                         cx="50%"
                                         cy="50%"
                                         innerRadius={80}
@@ -278,7 +404,7 @@ export default function CategorySalesClient() {
                                         dataKey="value"
                                         stroke="none"
                                     >
-                                        {chartData.map((entry: any, index: any) => (
+                                        {vizData.map((entry: any, index: any) => (
                                             <Cell 
                                                 key={`cell-${index}`} 
                                                 fill={entry.color}
@@ -298,8 +424,28 @@ export default function CategorySalesClient() {
                         </div>
 
                         <div className="flex-1 w-full space-y-5">
-                            <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[3px] mb-6">CATEGORY PERFORMANCE</h4>
-                            {chartData.map((cat: any, i: any) => (
+                            <div className="flex items-center justify-between mb-6">
+                                <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[3px]">CATEGORY PERFORMANCE</h4>
+                                <div className="flex items-center gap-2">
+                                    <button 
+                                        disabled={performancePage === 1}
+                                        onClick={() => setPerformancePage(p => Math.max(1, p - 1))}
+                                        className="p-1 px-3 rounded-lg bg-white/5 border border-white/10 text-[10px] font-black text-white/40 hover:text-white disabled:opacity-30 transition-all"
+                                    >
+                                        PREV
+                                    </button>
+                                    <span className="text-[10px] font-black text-[#C3EB7A]">{performancePage}</span>
+                                    <button 
+                                        disabled={performancePage * ITEMS_PER_PAGE >= chartData.length}
+                                        onClick={() => setPerformancePage(p => p + 1)}
+                                        className="p-1 px-3 rounded-lg bg-white/5 border border-white/10 text-[10px] font-black text-white/40 hover:text-white disabled:opacity-30 transition-all"
+                                    >
+                                        NEXT
+                                    </button>
+                                </div>
+                            </div>
+
+                            {paginatedPerformance.map((cat: any, i: any) => (
                                 <div key={cat.name} className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all group">
                                     <div className="flex items-center gap-4">
                                         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cat.color }} />
@@ -395,7 +541,24 @@ export default function CategorySalesClient() {
                             <p className="text-[9px] font-black text-white/20 uppercase tracking-[2px] mt-1">Growth velocity vs Profit mapping</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 mr-4">
+                            <button 
+                                disabled={trendPage === 1}
+                                onClick={() => setTrendPage(p => Math.max(1, p - 1))}
+                                className="p-1 px-3 rounded-lg bg-white/10 text-[10px] font-black text-white hover:bg-[#C3EB7A] hover:text-black disabled:opacity-20 transition-all"
+                            >
+                                PREV
+                            </button>
+                            <span className="text-[10px] font-black text-[#C3EB7A] min-w-[3ch] text-center">PAGE {trendPage}</span>
+                            <button 
+                                disabled={!trendData || trendPage * ITEMS_PER_PAGE >= trendData.length}
+                                onClick={() => setTrendPage(p => p + 1)}
+                                className="p-1 px-3 rounded-lg bg-white/10 text-[10px] font-black text-white hover:bg-[#C3EB7A] hover:text-black disabled:opacity-20 transition-all"
+                            >
+                                NEXT
+                            </button>
+                        </div>
                         <button 
                             onClick={handleExportTrendCSV}
                             className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-[#C3EB7A] hover:bg-[#C3EB7A]/5 transition-all group/dl"
@@ -406,7 +569,7 @@ export default function CategorySalesClient() {
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="w-full text-left min-w-[800px]">
                         <thead>
                             <tr className="bg-white/[0.01]">
                                 <th className="px-10 py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Category</th>
@@ -417,7 +580,7 @@ export default function CategorySalesClient() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
-                            {trendData?.map((trend: any, idx: any) => (
+                            {trendData?.slice((trendPage - 1) * ITEMS_PER_PAGE, trendPage * ITEMS_PER_PAGE).map((trend: any, idx: any) => (
                                 <motion.tr 
                                     key={trend.category_name}
                                     initial={{ opacity: 0, x: -10 }}
@@ -430,7 +593,21 @@ export default function CategorySalesClient() {
                                             <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 group-hover/row:text-[#C3EB7A] group-hover/row:bg-[#C3EB7A]/10 transition-all">
                                                 <LayoutGrid className="w-5 h-5" />
                                             </div>
-                                            <span className="text-sm font-black text-white">{trend.category_name}</span>
+                                            <div>
+                                                <span className="text-sm font-black text-white block mb-0.5">{trend.category_name}</span>
+                                                {trend.margin_pct === 100 && (
+                                                    <span className="text-[7px] font-black text-orange-400 uppercase tracking-widest flex items-center gap-1">
+                                                        <Activity className="w-2.5 h-2.5" />
+                                                        Missing COGS Sync
+                                                    </span>
+                                                )}
+                                                {trend.margin_pct < 15 && trend.margin_pct > 0 && (
+                                                    <span className="text-[7px] font-black text-red-400 uppercase tracking-widest flex items-center gap-1">
+                                                        <Target className="w-2.5 h-2.5" />
+                                                        Danger Zone Margin
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </td>
                                     <td className="px-10 py-7">
@@ -447,12 +624,14 @@ export default function CategorySalesClient() {
                                     </td>
                                     <td className="px-10 py-7 text-right">
                                         <div className="inline-flex flex-col items-end">
-                                            <span className="text-sm font-black text-[#C3EB7A]">{trend.margin_pct.toFixed(1)}%</span>
+                                            <span className={`text-sm font-black ${trend.margin_pct < 15 ? 'text-red-400 animate-pulse' : 'text-[#C3EB7A]'}`}>
+                                                {trend.margin_pct.toFixed(1)}%
+                                            </span>
                                             <div className="w-24 h-1 bg-white/5 rounded-full mt-2 overflow-hidden">
                                                 <motion.div 
                                                     initial={{ width: 0 }}
                                                     animate={{ width: `${trend.margin_pct}%` }}
-                                                    className="h-full bg-[#C3EB7A] shadow-[0_0_10px_rgba(195,235,122,0.4)]"
+                                                    className={`h-full ${trend.margin_pct < 15 ? 'bg-red-500' : 'bg-[#C3EB7A] shadow-[0_0_10px_rgba(195,235,122,0.4)]'}`}
                                                 />
                                             </div>
                                         </div>
