@@ -158,3 +158,35 @@ export type DailyTrendRecord = {
     outlet_id: string | null;
     total_sales: number;
 };
+
+export type ProductPerformance = {
+    business_id: string;
+    outlet_id: string | null;
+    product_name: string;
+    total_quantity: number;
+    total_price: number;
+    net_sales: number;
+    gross_profit: number;
+};
+
+export type NetProfitPerformance = {
+    business_id: string;
+    outlet_id: string | null;
+    net_sales: number;
+    total_cogs: number;
+    gross_profit: number;
+    total_opex: number;
+    true_net_profit: number;
+    gross_margin_pct: number;
+};
+
+export type ElitePerformanceRecord = {
+    idx: number;
+    business_id: string;
+    outlet_id: string | null;
+    product_name: string;
+    current_qty: number;
+    current_net_sales: number;
+    growth_pct: string;
+    product_classification: 'Star' | 'Cash Cow' | 'Rising Star' | 'Dog';
+};

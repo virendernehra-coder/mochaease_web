@@ -473,3 +473,97 @@ export async function getHourlyPerformance(
     
     return (data || []) as import('./queries').HourlyPerformanceRecord[];
 }
+
+/**
+ * Fetches product performance data for a specific date range using the RPC function.
+ */
+export async function getProductPerformance(
+    businessId: string,
+    outletId: string | null,
+    startDate: string,
+    endDate: string
+): Promise<import('./queries').ProductPerformance[]> {
+    const supabase = createClient();
+    
+    // Call the RPC that handles product-level aggregation
+    // Parameters: business_id, startdate, enddate
+    const { data, error } = await supabase.rpc('get_unique_items_sold_v2', {
+        p_business_id: businessId,
+        p_start_date: startDate,
+        p_end_date: endDate
+    });
+
+    if (error) {
+        console.error('Error in get_unique_items_sold_v2:', error);
+        return [];
+    }
+
+    const records = (data || []) as any[];
+    
+    return records as import('./queries').ProductPerformance[];
+}
+
+/**
+ * Fetches true net profit performance data for a specific date range using the RPC function.
+ */
+export async function getNetProfitPerformance(
+    businessId: string,
+    outletId: string | null,
+    startDate: string,
+    endDate: string
+): Promise<import('./queries').NetProfitPerformance | null> {
+    const supabase = createClient();
+    
+    // Call the RPC that handles financial aggregation
+    const { data, error } = await supabase.rpc('get_true_net_profit_v1', {
+        p_business_id: businessId,
+        p_start_date: startDate,
+        p_end_date: endDate
+    });
+
+    if (error) {
+        console.error('Error in get_true_net_profit_v1:', error);
+        return null;
+    }
+
+    const records = (data || []) as any[];
+    
+    // Find the record for the specific context
+    const targetRecord = records.find(r => 
+        outletId && outletId !== 'business' 
+            ? r.outlet_id === outletId 
+            : r.outlet_id === null
+    );
+
+    return (targetRecord || null) as import('./queries').NetProfitPerformance | null;
+}
+
+/**
+ * Fetches elite product performance data (categorization) from the elite view.
+ */
+export async function getProductElitePerformance(
+    businessId: string,
+    outletId: string | null
+): Promise<import('./queries').ElitePerformanceRecord[]> {
+    const supabase = createClient();
+    
+    let query = supabase
+        .from('product_performance_elite_v1')
+        .select('*')
+        .eq('business_id', businessId);
+
+    if (outletId && outletId !== 'business') {
+        query = query.eq('outlet_id', outletId);
+    } else {
+        query = query.is('outlet_id', null);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+        console.error('Error fetching elite product performance:', error);
+        return [];
+    }
+
+    return (data || []) as import('./queries').ElitePerformanceRecord[];
+}
