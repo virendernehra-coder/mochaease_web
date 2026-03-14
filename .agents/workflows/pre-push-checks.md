@@ -19,14 +19,18 @@ npm run build
    - **Deprecated Request Methods:** Next.js 14+ deprecates `request.geo` in middleware. Use `request.headers.get('x-vercel-ip-country')` instead.
    - **Missing Assets:** Ensure all Image `src` paths are correctly relative to the `/public` dir.
 
-5. **If the build succeeds:**
-   - **CRITICAL: Ask the user for explicit confirmation before pushing code to production.** Ensure they are completely satisfied with the batched fixes.
+5. **User Approval (MANDATORY):**
+   - > [!IMPORTANT]
+   - > **NEVER PUSH CODE WITHOUT EXPLICIT USER APPROVAL.**
+   - Even if the build passes, you must notify the user, summarize the final state, and ask: "Ready to push these changes to production?"
+   - **Wait for a "Yes", "Push it", or similar confirmation before proceeding to the git push step.**
+
+6. **Once Approved:**
 // turbo
 git add .
 // turbo
 git commit -m "feat/fix: descriptive message covering all batched changes"
-
-6. **Wait for user approval.** Once approved, push the code:
+// turbo
 git push
 
-By following this workflow, we ensure our Vercel deployments will never fail due to static typing errors!
+By following this workflow, we ensure our Vercel deployments are both stable and user-approved!

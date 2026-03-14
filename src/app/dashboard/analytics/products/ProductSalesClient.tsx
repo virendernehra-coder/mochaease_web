@@ -326,7 +326,7 @@ export default function ProductSalesClient() {
                         {/* Inner Gradient Glow */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-orange-400/5 blur-[80px] rounded-full -mr-32 -mt-32 pointer-events-none" />
                         
-                        <div className="p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 md:gap-8">
+                        <div className="p-5 md:p-8 flex flex-col md:flex-row items-center gap-6 md:gap-8">
                             <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-orange-400/10 border border-orange-400/20 flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(251,146,60,0.1)]">
                                 <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-orange-400 animate-pulse" />
                             </div>
@@ -416,14 +416,14 @@ export default function ProductSalesClient() {
                     </div>
                     
                     <div className="overflow-x-auto no-scrollbar scroll-smooth">
-                        <table className="w-full">
+                        <table className="w-full min-w-[700px]">
                             <thead>
                                 <tr className="bg-white/[0.01] text-left border-b border-white/5">
-                                    <th className="px-3 md:px-10 py-4 md:py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Rank</th>
-                                    <th className="px-3 py-4 md:py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Product</th>
-                                    <th className="hidden md:table-cell px-6 py-4 md:py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Units Sold</th>
-                                    <th className="px-3 py-4 md:py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Revenue</th>
-                                    <th className="hidden md:table-cell px-4 py-4 md:py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Market Trend</th>
+                                    <th className="px-5 md:px-10 py-5 md:py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Rank</th>
+                                    <th className="px-5 py-5 md:py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Product</th>
+                                    <th className="hidden md:table-cell px-6 py-5 md:py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Units Sold</th>
+                                    <th className="px-5 py-5 md:py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Revenue</th>
+                                    <th className="hidden md:table-cell px-4 py-5 md:py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Market Trend</th>
                                     <th className="hidden lg:table-cell px-6 md:px-10 py-5 md:py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px] text-right">Deep Dive</th>
                                 </tr>
                             </thead>
@@ -452,12 +452,12 @@ export default function ProductSalesClient() {
                                                 transition={{ delay: 0.1 + (idx * 0.05) }}
                                                 className="group/row hover:bg-white/[0.03] transition-all"
                                             >
-                                                <td className="px-3 md:px-10 py-5 md:py-7">
+                                                <td className="px-5 md:px-10 py-5 md:py-7">
                                                     <span className={`text-[11px] md:text-sm font-black ${rank <= 3 ? 'text-[#C3EB7A]' : 'text-white/20'}`}>
                                                         #{rank.toString().padStart(2, '0')}
                                                     </span>
                                                 </td>
-                                            <td className="px-3 py-5 md:py-7">
+                                            <td className="px-5 py-5 md:py-7">
                                                 <div className="flex items-center gap-2 md:gap-5">
                                                     <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 group-hover/row:bg-[#C3EB7A]/10 group-hover/row:text-[#C3EB7A] transition-all shadow-lg group-hover/row:scale-110 shrink-0">
                                                         <Package className="w-3.5 h-3.5 md:w-5 md:h-5" />
@@ -483,7 +483,7 @@ export default function ProductSalesClient() {
                                                     <span className="text-xs md:text-sm font-black text-white">{product.total_quantity.toLocaleString()}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-3 py-5 md:py-7">
+                                            <td className="px-5 py-5 md:py-7">
                                                 <p className="text-[11px] md:text-sm font-black text-[#C3EB7A] whitespace-nowrap">{formatCurrency(product.net_sales, currency)}</p>
                                             </td>
                                             <td className="hidden md:table-cell px-4 py-5 md:py-7">
@@ -616,7 +616,7 @@ function PerformanceMatrixSection({ data, isLoading }: { data: any[], isLoading:
             label: 'Dogs', 
             icon: <Ghost className="w-4 h-4 text-red-400" />, 
             color: 'border-red-400/20 bg-red-400/5 text-red-400',
-            description: 'Review for Optimization'
+            description: 'Underperforming Items'
         }
     ];
 
@@ -687,7 +687,7 @@ function ElitePerformanceCard({ label, icon, color, description, products }: {
             viewport={{ once: true }}
             className={`relative overflow-hidden rounded-[32px] border ${color.split(' ')[0]} ${color.split(' ')[1]} p-1 transition-all group`}
         >
-            <div className="bg-[#0A0A0A] rounded-[31px] p-5 h-full flex flex-col">
+            <div className="bg-[#0A0A0A] rounded-[31px] p-4 md:p-5 h-full flex flex-col">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-xl bg-white/5 border border-white/10 ${color.split(' ')[2]}`}>
@@ -769,7 +769,7 @@ function HealthScoreSection({ stats, isLoading }: { stats: any, isLoading: boole
             animate={{ opacity: 1, scale: 1 }}
             className="grid grid-cols-1 lg:grid-cols-3 gap-6"
         >
-            <div className="lg:col-span-2 bg-[#0A0A0A] border border-white/5 rounded-[40px] p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 md:gap-12 relative overflow-hidden group">
+            <div className="lg:col-span-2 bg-[#0A0A0A] border border-white/5 rounded-[40px] p-5 md:p-8 flex flex-col md:flex-row items-center gap-6 md:gap-12 relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-64 h-64 bg-[#C3EB7A]/10 blur-[100px] rounded-full -ml-32 -mt-32 pointer-events-none group-hover:bg-[#C3EB7A]/20 transition-all duration-700" />
                 
                 <div className="relative w-40 h-40 md:w-48 md:h-48 shrink-0">

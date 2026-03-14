@@ -573,42 +573,71 @@ export async function getProductElitePerformance(
  */
 export async function getCategoryPerformance(
     businessId: string,
-    outletId: string | null
+    outletId: string | null,
+    startDate: string,
+    endDate: string
 ): Promise<import('./queries').CategoryPerformanceRecord[]> {
     const supabase = createClient();
     
-    let query = supabase
-        .from('category_analytics_comprehensive_v1')
-        .select('*')
-        .eq('business_id', businessId);
-
-    if (outletId && outletId !== 'business') {
-        query = query.eq('outlet_id', outletId);
-    } else {
-        query = query.is('outlet_id', null);
-    }
-
-    const { data, error } = await query.order('net_sales', { ascending: false });
+    const { data, error } = await supabase.rpc('get_category_analytics_v1', {
+        p_business_id: businessId,
+        p_start_date: startDate,
+        p_end_date: endDate
+    });
 
     if (error) {
-        console.error('Error fetching category performance:', error);
+        console.error('Error fetching category performance via RPC:', error);
         return [];
     }
 
-    return (data || []) as import('./queries').CategoryPerformanceRecord[];
+    const records = (data || []) as any[];
+    
+    // Filter by outlet if applicable
+    const filtered = records.filter(r => 
+        outletId && outletId !== 'business' 
+            ? r.outlet_id === outletId 
+            : r.outlet_id === null
+    );
+
+    return filtered as import('./queries').CategoryPerformanceRecord[];
 }
 
 export async function getCategoryTrend(
     businessId: string,
-    outletId: string | null = null
+    outletId: string | null = null,
+    startDate?: string,
+    endDate?: string
 ): Promise<import('./queries').CategoryTrendRecord[]> {
     const supabase = createClient();
+    
+    // If dates are provided, use the dynamic RPC
+    if (startDate && endDate) {
+        const { data, error } = await supabase.rpc('get_category_analytics_v1', {
+            p_business_id: businessId,
+            p_start_date: startDate,
+            p_end_date: endDate
+        });
+
+        if (error) {
+            console.error('Error fetching category trend via RPC:', error);
+            return [];
+        }
+
+        const records = (data || []) as any[];
+        return records.filter(r => 
+            outletId && outletId !== 'business' 
+                ? r.outlet_id === outletId 
+                : r.outlet_id === null
+        ) as import('./queries').CategoryTrendRecord[];
+    }
+
+    // Fallback to static view if no dates (legacy support)
     let query = supabase
         .from('category_trend_analysis_v1')
         .select('*')
         .eq('business_id', businessId);
 
-    if (outletId) {
+    if (outletId && outletId !== 'business') {
         query = query.eq('outlet_id', outletId);
     } else {
         query = query.is('outlet_id', null);

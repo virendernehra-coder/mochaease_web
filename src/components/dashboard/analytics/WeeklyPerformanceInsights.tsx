@@ -139,7 +139,7 @@ export default function WeeklyPerformanceInsights() {
                 </div>
             </div>
  
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-10">
                 {/* Visual Chart - Left Side (3/4 width) */}
                 <div className="lg:col-span-3 h-[400px] relative">
                     <AnimatePresence mode="wait">
@@ -235,7 +235,7 @@ export default function WeeklyPerformanceInsights() {
                         color="text-blue-400"
                         bg="bg-blue-400/10"
                     />
-                    <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col justify-center mt-auto">
+                    <div className="p-5 md:p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col justify-center mt-auto">
                         <div className="flex items-center gap-2 mb-3">
                             <Target className="w-4 h-4 text-orange-400" />
                             <h4 className="text-[10px] font-black text-white/40 uppercase tracking-widest">Growth Opportunity</h4>
