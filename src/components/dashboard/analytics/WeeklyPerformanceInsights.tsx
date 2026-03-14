@@ -91,55 +91,55 @@ export default function WeeklyPerformanceInsights() {
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-[40px] bg-[#0F0F0F] border border-white/5 p-8 relative overflow-hidden group"
+            className="rounded-[40px] bg-[#0F0F0F] border border-white/5 p-5 md:p-8 relative overflow-hidden group"
         >
             {/* Glossy Background Accent */}
             <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full -mt-40 pointer-events-none" />
 
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-12 relative z-10">
-                <div className="flex items-center gap-5">
-                    <div className="p-4 rounded-[24px] bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                        <Calendar className="w-6 h-6" />
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 md:mb-12 relative z-10">
+                <div className="flex items-center gap-3 md:gap-5">
+                    <div className="p-3 md:p-4 rounded-[20px] md:rounded-[24px] bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                        <Calendar className="w-5 h-5 md:w-6 md:h-6" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-white/40 uppercase tracking-[3px]">Weekly Rhythm</h3>
-                        <h2 className="text-3xl font-black text-white tracking-tighter">Day of Week Performance</h2>
+                        <h3 className="text-[10px] md:text-sm font-black text-white/40 uppercase tracking-[2px] md:tracking-[3px]">Weekly Rhythm</h3>
+                        <h2 className="text-xl md:text-3xl font-black text-white tracking-tighter">Day of Week Performance</h2>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div className="flex flex-wrap items-center gap-4 lg:gap-6 w-full lg:w-auto">
                     {/* Perspective Toggle */}
-                    <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-1.5 p-1">
+                    <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-1 md:p-1.5 transition-all">
                         <button 
                             onClick={() => setChartType('bar')}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${chartType === 'bar' ? 'bg-[#C3EB7A] text-black shadow-lg shadow-[#C3EB7A]/20' : 'text-white/40 hover:text-white'}`}
+                            className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${chartType === 'bar' ? 'bg-[#C3EB7A] text-black shadow-lg shadow-[#C3EB7A]/20' : 'text-white/40 hover:text-white'}`}
                         >
                             Bar
                         </button>
                         <button 
                             onClick={() => setChartType('area')}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${chartType === 'area' ? 'bg-[#C3EB7A] text-black shadow-lg shadow-[#C3EB7A]/20' : 'text-white/40 hover:text-white'}`}
+                            className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${chartType === 'area' ? 'bg-[#C3EB7A] text-black shadow-lg shadow-[#C3EB7A]/20' : 'text-white/40 hover:text-white'}`}
                         >
                             Line
                         </button>
                     </div>
-
+ 
                     {stats && (
-                        <div className="flex items-center gap-3 p-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
-                            <div className="px-4 py-2 text-center border-r border-white/10">
-                                <p className="text-[9px] font-black text-white/30 uppercase tracking-[2px] mb-0.5">Prime Day</p>
-                                <p className="text-xs font-black text-[#C3EB7A]">{stats.bestDay.dow_name}</p>
+                        <div className="flex flex-1 md:flex-none items-center gap-2 md:gap-3 p-1.5 md:p-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
+                            <div className="flex-1 md:flex-none px-3 md:px-4 py-1.5 md:py-2 text-center border-r border-white/10">
+                                <p className="text-[8px] md:text-[9px] font-black text-white/30 uppercase tracking-[1px] md:tracking-[2px] mb-0.5">Prime Day</p>
+                                <p className="text-[10px] md:text-xs font-black text-[#C3EB7A]">{stats.bestDay.dow_name}</p>
                             </div>
-                            <div className="px-4 py-2 text-center">
-                                <p className="text-[9px] font-black text-white/30 uppercase tracking-[2px] mb-0.5">Avg Revenue</p>
-                                <p className="text-xs font-black text-white">{formatCurrency(stats.avgSales, currency)}</p>
+                            <div className="flex-1 md:flex-none px-3 md:px-4 py-1.5 md:py-2 text-center">
+                                <p className="text-[8px] md:text-[9px] font-black text-white/30 uppercase tracking-[1px] md:tracking-[2px] mb-0.5">Avg Revenue</p>
+                                <p className="text-[10px] md:text-xs font-black text-white">{formatCurrency(stats.avgSales, currency)}</p>
                             </div>
                         </div>
                     )}
                 </div>
             </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+ 
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-12">
                 {/* Visual Chart - Left Side (3/4 width) */}
                 <div className="lg:col-span-3 h-[400px] relative">
                     <AnimatePresence mode="wait">

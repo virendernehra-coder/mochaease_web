@@ -30,7 +30,7 @@ export default function DashboardPage() {
     const currency = businessConfig?.currency || 'USD';
 
     return (
-        <div className="space-y-8 pb-20">
+        <div className="space-y-5 md:space-y-8 pb-20">
             
             {/* Page Title / AI Summary */}
             <div className="flex items-end justify-between">
@@ -39,7 +39,7 @@ export default function DashboardPage() {
                         <MapPin className="w-3 h-3 text-[#C3EB7A]" />
                         <span className="text-[10px] font-black text-white/30 uppercase tracking-[2px]">{contextName}</span>
                     </div>
-                    <h1 className="text-4xl font-black text-white tracking-tighter mb-2">Command Center</h1>
+                    <h1 className="text-2xl md:text-4xl font-black text-white tracking-tighter mb-2">Command Center</h1>
                     <div className="flex items-center gap-3">
                         <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C3EB7A]/10 text-[#C3EB7A] text-[10px] font-black uppercase tracking-wider border border-[#C3EB7A]/20">
                             <Activity className="w-3 h-3" /> System Optimal

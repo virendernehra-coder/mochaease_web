@@ -120,21 +120,21 @@ export default function PerformanceDashboard() {
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="lg:col-span-2 relative overflow-hidden rounded-[32px] bg-[#111111] border border-white/5 p-8 group"
+                className="lg:col-span-2 relative overflow-hidden rounded-[32px] bg-[#111111] border border-white/5 p-5 md:p-8 group"
             >
                 {/* Background Glow */}
                 <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#C3EB7A]/5 blur-[100px] rounded-full -mr-20 -mt-20 group-hover:bg-[#C3EB7A]/10 transition-colors duration-700" />
                 
                 <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center justify-between mb-6 md:mb-8">
                         <div className="flex items-center gap-3">
-                            <div className="p-3 rounded-2xl bg-[#C3EB7A]/10 text-[#C3EB7A] border border-[#C3EB7A]/20">
+                            <div className="p-2.5 md:p-3 rounded-2xl bg-[#C3EB7A]/10 text-[#C3EB7A] border border-[#C3EB7A]/20">
                                 <Target className="w-5 h-5" />
                             </div>
                             <div>
                                 <h3 className="text-sm font-black text-white/40 uppercase tracking-[2px]">Revenue Milestone</h3>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-2xl font-black text-white tracking-tight">Monthly Target</span>
+                                    <span className="text-xl md:text-2xl font-black text-white tracking-tight">Monthly Target</span>
                                     <Sparkles className="w-4 h-4 text-[#C3EB7A] animate-pulse" />
                                 </div>
                             </div>
@@ -148,13 +148,13 @@ export default function PerformanceDashboard() {
                     </div>
 
                     <div className="space-y-6">
-                        <div className="flex items-end justify-between">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                             <div>
-                                <p className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-1">
+                                <p className="text-2xl md:text-5xl font-black text-white tracking-tighter mb-1">
                                     {formatCurrency(currentProgress, currency)}
-                                    <span className="text-lg md:text-xl text-white/20 ml-2 md:ml-3">/ {formatCurrency(monthlyGoal, currency)}</span>
+                                    <span className="text-base md:text-xl text-white/20 ml-2 md:ml-3">/ {formatCurrency(monthlyGoal, currency)}</span>
                                 </p>
-                                <p className="text-sm font-bold text-white/40">You've reached {progressPercent.toFixed(1)}% of your monthly goal.</p>
+                                <p className="text-xs md:text-sm font-bold text-white/40">You've reached {progressPercent.toFixed(1)}% of your monthly goal.</p>
                             </div>
                             <div className="hidden md:block text-right">
                                 <p className={`text-sm font-black flex items-center gap-1 justify-end ${dayDiff >= 0 ? 'text-[#C3EB7A]' : 'text-red-400'}`}>
@@ -189,7 +189,7 @@ export default function PerformanceDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="rounded-[32px] bg-[#111111] border border-white/5 p-8 flex flex-col justify-between group overflow-hidden relative"
+                className="rounded-[32px] bg-[#111111] border border-white/5 p-5 md:p-8 flex flex-col justify-between group overflow-hidden relative"
             >
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                 

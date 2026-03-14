@@ -84,58 +84,58 @@ export default function SalesTrendAnalysis() {
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-[40px] bg-[#0F0F0F] border border-white/5 p-10 relative overflow-hidden group mb-8"
+            className="rounded-[40px] bg-[#0F0F0F] border border-white/5 p-5 md:p-10 relative overflow-hidden group mb-8"
         >
             {/* Background Gradient Mesh */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-30 pointer-events-none" />
             <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#C3EB7A]/5 blur-[100px] rounded-full pointer-events-none" />
 
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12 relative z-10">
-                <div className="flex items-center gap-5">
-                    <div className="p-4 rounded-[24px] bg-[#C3EB7A]/10 text-[#C3EB7A] border border-[#C3EB7A]/20">
-                        <TrendingUp className="w-6 h-6" />
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 md:gap-8 mb-8 md:mb-12 relative z-10">
+                <div className="flex items-center gap-3 md:gap-5">
+                    <div className="p-3 md:p-4 rounded-[20px] md:rounded-[24px] bg-[#C3EB7A]/10 text-[#C3EB7A] border border-[#C3EB7A]/20">
+                        <TrendingUp className="w-5 h-5 md:w-6 md:h-6" />
                     </div>
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-sm font-black text-white/40 uppercase tracking-[3px]">Financial Velocity</h3>
+                            <h3 className="text-[10px] md:text-sm font-black text-white/40 uppercase tracking-[2px] md:tracking-[3px]">Financial Velocity</h3>
                             <Sparkles className="w-4 h-4 text-yellow-500/50" />
                         </div>
-                        <h2 className="text-3xl font-black text-white tracking-tighter">30-Day Sales Trend</h2>
+                        <h2 className="text-xl md:text-3xl font-black text-white tracking-tighter">30-Day Sales Trend</h2>
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full lg:w-auto">
                     {/* View Toggle */}
-                    <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-1.5 p-1 mr-4">
+                    <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-1 mr-2 md:mr-4">
                         <button 
                             onClick={() => setChartType('area')}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${chartType === 'area' ? 'bg-[#C3EB7A] text-black shadow-lg shadow-[#C3EB7A]/20' : 'text-white/40 hover:text-white'}`}
+                            className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${chartType === 'area' ? 'bg-[#C3EB7A] text-black shadow-lg shadow-[#C3EB7A]/20' : 'text-white/40 hover:text-white'}`}
                         >
                             Line
                         </button>
                         <button 
                             onClick={() => setChartType('bar')}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${chartType === 'bar' ? 'bg-[#C3EB7A] text-black shadow-lg shadow-[#C3EB7A]/20' : 'text-white/40 hover:text-white'}`}
+                            className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${chartType === 'bar' ? 'bg-[#C3EB7A] text-black shadow-lg shadow-[#C3EB7A]/20' : 'text-white/40 hover:text-white'}`}
                         >
                             Bar
                         </button>
                     </div>
-
-                    <div className="p-4 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-md">
-                        <p className="text-[9px] font-black text-white/20 uppercase tracking-[2px] mb-1">Rolling Avg</p>
-                        <p className="text-xl font-black text-white">{formatCurrency(stats?.avg || 0, currency)}</p>
+ 
+                    <div className="flex-1 md:flex-none p-3 md:p-4 rounded-2xl md:rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-md">
+                        <p className="text-[8px] md:text-[9px] font-black text-white/20 uppercase tracking-[2px] mb-0.5 md:mb-1">Rolling Avg</p>
+                        <p className="text-lg md:text-xl font-black text-white">{formatCurrency(stats?.avg || 0, currency)}</p>
                     </div>
-                    <div className="p-4 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-md">
-                        <p className="text-[9px] font-black text-white/20 uppercase tracking-[2px] mb-1">Month Growth</p>
-                        <div className={`flex items-center gap-1.5 font-black text-xl ${stats && stats.growth >= 0 ? 'text-[#C3EB7A]' : 'text-red-400'}`}>
+                    <div className="flex-1 md:flex-none p-3 md:p-4 rounded-2xl md:rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-md">
+                        <p className="text-[8px] md:text-[9px] font-black text-white/20 uppercase tracking-[2px] mb-0.5 md:mb-1">Month Growth</p>
+                        <div className={`flex items-center gap-1.5 font-black text-lg md:text-xl ${stats && stats.growth >= 0 ? 'text-[#C3EB7A]' : 'text-red-400'}`}>
                             {stats && stats.growth >= 0 ? <ArrowUpRight className="w-5 h-5" /> : <ArrowDownRight className="w-5 h-5" />}
                             {Math.abs(stats?.growth || 0).toFixed(1)}%
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div className="h-[300px] w-full relative z-10">
+ 
+            <div className="h-[250px] md:h-[300px] w-full relative z-10">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={chartType}

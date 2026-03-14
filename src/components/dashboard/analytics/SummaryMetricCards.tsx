@@ -37,7 +37,7 @@ const MetricCard = ({ title, value, icon, color, delay, isCurrency }: MetricCard
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay, duration: 0.5, ease: "circOut" }}
-            className="relative group overflow-hidden rounded-3xl bg-[#111111] border border-white/5 p-5 hover:border-white/10 transition-all duration-500"
+            className="relative group overflow-hidden rounded-3xl bg-[#111111] border border-white/5 p-4 md:p-5 hover:border-white/10 transition-all duration-500"
         >
             {/* Hover & Active Glow Effect */}
             <motion.div 
@@ -49,14 +49,14 @@ const MetricCard = ({ title, value, icon, color, delay, isCurrency }: MetricCard
             />
             
             <div className="relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                    <div className={`p-2.5 rounded-xl bg-white/5 border border-white/5 group-hover:border-white/10 transition-all duration-500 flex items-center justify-center`}>
+                <div className="flex items-center justify-between mb-2 md:mb-4">
+                    <div className={`p-2 rounded-xl bg-white/5 border border-white/5 group-hover:border-white/10 transition-all duration-500 flex items-center justify-center`}>
                         {icon}
                     </div>
                 </div>
                 
-                <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[2px] mb-1">{title}</h3>
-                <div className="flex items-baseline gap-2 overflow-hidden h-7">
+                <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[1px] md:tracking-[2px] mb-1">{title}</h3>
+                <div className="flex items-baseline gap-2 overflow-hidden h-6 md:h-7">
                     <AnimatePresence mode="wait">
                         <motion.span
                             key={activePreset + value}
@@ -64,7 +64,7 @@ const MetricCard = ({ title, value, icon, color, delay, isCurrency }: MetricCard
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.3, ease: "circOut" }}
-                            className="text-xl font-black text-white tracking-tight block"
+                            className="text-lg md:text-xl font-black text-white tracking-tight block"
                         >
                             {isCurrency ? formatCurrency(Number(value), currency) : value.toLocaleString()}
                         </motion.span>

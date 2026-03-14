@@ -11,7 +11,7 @@ import { Search, Bell, Settings, Menu } from 'lucide-react';
 const NetworkBackground = dynamic(() => import('@/components/NetworkBackground'), { ssr: false });
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = React.useState(true);
 
     return (
         <div className="flex min-h-screen bg-[#050505] selection:bg-[#C3EB7A]/30 overflow-hidden">

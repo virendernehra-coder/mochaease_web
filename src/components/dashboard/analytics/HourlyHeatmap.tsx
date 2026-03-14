@@ -86,16 +86,16 @@ export default function HourlyHeatmap() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="rounded-[40px] bg-[#0F0F0F] border border-white/5 p-10 overflow-hidden relative group"
+            className="rounded-[40px] bg-[#0F0F0F] border border-white/5 p-5 md:p-10 overflow-hidden relative group"
         >
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-12">
-                <div className="flex items-center gap-5">
-                    <div className="p-4 rounded-[24px] bg-[#C3EB7A]/10 text-[#C3EB7A] border border-[#C3EB7A]/20">
-                        <Activity className="w-6 h-6" />
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 md:gap-8 mb-8 md:mb-12">
+                <div className="flex items-center gap-3 md:gap-5">
+                    <div className="p-3 md:p-4 rounded-[20px] md:rounded-[24px] bg-[#C3EB7A]/10 text-[#C3EB7A] border border-[#C3EB7A]/20">
+                        <Activity className="w-5 h-5 md:w-6 md:h-6" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-white/40 uppercase tracking-[3px]">Operation Intelligence</h3>
-                        <h2 className="text-3xl font-black text-white tracking-tighter">Avg. Hourly Revenue Heatmap</h2>
+                        <h3 className="text-[10px] md:text-sm font-black text-white/40 uppercase tracking-[2px] md:tracking-[3px]">Operation Intelligence</h3>
+                        <h2 className="text-xl md:text-3xl font-black text-white tracking-tighter">Avg. Hourly Revenue Heatmap</h2>
                     </div>
                 </div>
 
@@ -140,7 +140,7 @@ export default function HourlyHeatmap() {
                             <Bar 
                                 dataKey="avgRevenue" 
                                 radius={[6, 6, 6, 6]}
-                                barSize={16}
+                                barSize={window?.innerWidth < 640 ? 12 : 16}
                                 animationDuration={1500}
                             >
                                 {chartData.map((entry, index) => (
@@ -152,7 +152,7 @@ export default function HourlyHeatmap() {
                 )}
             </div>
 
-            <div className="mt-8 pt-8 border-t border-white/5 flex flex-wrap gap-4">
+            <div className="mt-8 pt-8 border-t border-white/5 flex flex-col sm:flex-row gap-4">
                <MetaInsight 
                 icon={TrendingUp} 
                 label="Peak Revenue Hours" 
