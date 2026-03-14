@@ -22,6 +22,7 @@ const navItems = [
             { name: 'Overview', href: '/dashboard' },
             { name: 'Category Sales', href: '/dashboard/analytics/categories' },
             { name: 'Product Sales', href: '/dashboard/analytics/products' },
+            { name: 'Retention Analysis', href: '/dashboard/analytics/retention' },
             { name: 'Payment Breakdown', href: '/dashboard/analytics/payments' },
             { name: 'Order History', href: '/dashboard/analytics/history' },
         ]
@@ -49,6 +50,7 @@ const navItems = [
     { name: 'Employees', href: '/dashboard/employees', icon: Users },
     { name: 'Schedules', href: '/dashboard/schedules', icon: Calendar },
     { name: 'Expenses', href: '/dashboard/expenses', icon: CreditCard },
+    { name: 'Offers & Promos', href: '/dashboard/offers', icon: Tag },
     { 
         name: 'Settings', 
         href: '/dashboard/settings', 

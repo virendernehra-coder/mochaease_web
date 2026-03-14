@@ -54,7 +54,27 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/icon",
+    apple: "/apple-touch-icon.png",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "MochaEase",
+    startupImage: [
+      "/splash-screen.png",
+    ],
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport = {
+    themeColor: '#0A0A0A',
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
 };
 
 export default function RootLayout({

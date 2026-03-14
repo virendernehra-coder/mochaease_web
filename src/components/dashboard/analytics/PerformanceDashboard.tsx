@@ -126,7 +126,7 @@ export default function PerformanceDashboard() {
                 <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#C3EB7A]/5 blur-[100px] rounded-full -mr-20 -mt-20 group-hover:bg-[#C3EB7A]/10 transition-colors duration-700" />
                 
                 <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-6 md:mb-8">
+                    <div className="flex items-start justify-between gap-4 mb-6 md:mb-8">
                         <div className="flex items-center gap-3">
                             <div className="p-2.5 md:p-3 rounded-2xl bg-[#C3EB7A]/10 text-[#C3EB7A] border border-[#C3EB7A]/20">
                                 <Target className="w-5 h-5" />
@@ -141,7 +141,7 @@ export default function PerformanceDashboard() {
                         </div>
                         <div className="text-right">
                             <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Status</p>
-                            <span className="px-3 py-1 rounded-full bg-[#C3EB7A]/10 text-[#C3EB7A] text-[10px] font-black border border-[#C3EB7A]/20 uppercase tracking-widest">
+                            <span className="px-3 py-1 rounded-full bg-[#C3EB7A]/10 text-[#C3EB7A] text-[10px] font-black border border-[#C3EB7A]/20 uppercase tracking-widest whitespace-nowrap">
                                 On Track
                             </span>
                         </div>
@@ -150,9 +150,9 @@ export default function PerformanceDashboard() {
                     <div className="space-y-6">
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                             <div>
-                                <p className="text-2xl md:text-5xl font-black text-white tracking-tighter mb-1">
-                                    {formatCurrency(currentProgress, currency)}
-                                    <span className="text-base md:text-xl text-white/20 ml-2 md:ml-3">/ {formatCurrency(monthlyGoal, currency)}</span>
+                                <p className="text-2xl md:text-5xl font-black text-white tracking-tighter mb-1 flex flex-wrap items-baseline gap-x-2">
+                                    <span>{formatCurrency(currentProgress, currency)}</span>
+                                    <span className="text-sm md:text-xl text-white/20">/ {formatCurrency(monthlyGoal, currency)}</span>
                                 </p>
                                 <p className="text-xs md:text-sm font-bold text-white/40">You've reached {progressPercent.toFixed(1)}% of your monthly goal.</p>
                             </div>

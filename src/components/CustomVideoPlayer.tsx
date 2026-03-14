@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Volume2, VolumeX, Maximize } from 'lucide-react';
+import Image from 'next/image';
 
 interface CustomVideoPlayerProps {
     src: string;
@@ -92,8 +93,7 @@ export default function CustomVideoPlayer({ src, poster }: CustomVideoPlayerProp
             <video
                 ref={videoRef}
                 src={src}
-                poster={poster}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover relative z-10"
                 onTimeUpdate={handleTimeUpdate}
                 onEnded={() => setIsPlaying(false)}
                 onWaiting={() => setIsBuffering(true)}
@@ -103,6 +103,20 @@ export default function CustomVideoPlayer({ src, poster }: CustomVideoPlayerProp
                 playsInline
                 preload="none"
             />
+
+            {/* Optimized Poster Image with Lazy Loading */}
+            {poster && !isPlaying && (
+                <div className="absolute inset-0 z-20">
+                    <Image
+                        src={poster}
+                        alt="Video Poster"
+                        fill
+                        className="object-cover"
+                        priority={false}
+                        loading="lazy"
+                    />
+                </div>
+            )}
 
             {/* Dark Gradient Overlay for Controls */}
             <AnimatePresence>
@@ -123,7 +137,7 @@ export default function CustomVideoPlayer({ src, poster }: CustomVideoPlayerProp
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 1.2, opacity: 0 }}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
                     >
                         <div className="relative flex items-center justify-center w-20 h-20 md:w-28 md:h-28 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white transition-transform hover:scale-110 hover:bg-white/20">
                             {/* Outer Glow */}
