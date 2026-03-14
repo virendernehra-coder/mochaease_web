@@ -3,22 +3,23 @@
 import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
+    PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, AreaChart, Area
+} from 'recharts';
+import { getCategoryPerformance, getCategoryTrend } from '@/utils/supabase/queries-client';
+import { 
     ArrowLeft, Filter, 
     MapPin, TrendingUp,
     Coffee, Utensils, IceCream, Pizza, GlassWater, 
     Zap, Sparkles, LayoutGrid, PieChart as PieChartIcon,
-    ArrowUpRight, Target, Download
+    ArrowUpRight, ArrowDownRight, Target, Download, Activity,
+    DollarSign, BarChart3
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/store/user-store';
 import { useBusinessStore } from '@/store/business-store';
 import { useQuery } from '@tanstack/react-query';
-import { getCategoryPerformance } from '@/utils/supabase/queries-client';
 import { formatCurrency } from '@/utils/format';
-import { 
-    PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
-    BarChart, Bar, XAxis, YAxis, CartesianGrid
-} from 'recharts';
 
 const CATEGORY_COLORS = ['#C3EB7A', '#4A90E2', '#F59E0B', '#8B5CF6', '#EC4899', '#10B981', '#F43F5E'];
 
@@ -42,18 +43,27 @@ export default function CategorySalesClient() {
     const outletId = isGlobal ? null : activeContextId;
     const currency = businessConfig?.currency || 'USD';
 
-    const { data: rawData, isLoading } = useQuery({
+    const { data: rawData, isLoading: loadingPerformance } = useQuery({
         queryKey: ['category-performance', businessId, outletId],
         queryFn: () => getCategoryPerformance(businessId!, outletId),
         enabled: !!businessId,
-        staleTime: 1000 * 60 * 15, // 15 minutes
+        staleTime: 1000 * 60 * 15,
     });
+
+    const { data: trendData, isLoading: loadingTrend } = useQuery({
+        queryKey: ['category-trend', businessId, outletId],
+        queryFn: () => getCategoryTrend(businessId!, outletId),
+        enabled: !!businessId,
+        staleTime: 1000 * 60 * 15,
+    });
+
+    const isLoading = loadingPerformance || loadingTrend;
 
     const contextName = isGlobal ? 'Global Business' : 'Selected Outlet';
 
     const chartData = useMemo(() => {
         if (!rawData) return [];
-        return rawData.map((item, idx) => ({
+        return rawData.map((item: any, idx: any) => ({
             name: item.category_name,
             value: Number(item.net_sales),
             share: parseFloat(item.sales_share_pct),
@@ -64,7 +74,7 @@ export default function CategorySalesClient() {
     }, [rawData]);
 
     const totalRevenue = useMemo(() => 
-        chartData.reduce((acc, curr) => acc + curr.value, 0), [chartData]
+        chartData.reduce((acc: any, curr: any) => acc + curr.value, 0), [chartData]
     );
 
     // --- CSV Export Handlers ---
@@ -72,14 +82,14 @@ export default function CategorySalesClient() {
         if (chartData.length === 0) return;
 
         const headers = ["Category Name", "Net Revenue", "Market Share %", "Units Sold"];
-        const csvRows = chartData.map(c => [
+        const csvRows = chartData.map((c: any) => [
             `"${c.name.replace(/"/g, '""')}"`,
             c.value.toFixed(2),
             `${c.share}%`,
             c.qty
         ]);
 
-        const csvContent = "\uFEFF" + [headers.join(","), ...csvRows.map(r => r.join(","))].join("\n");
+        const csvContent = "\uFEFF" + [headers.join(","), ...csvRows.map((r: any) => r.join(","))].join("\n");
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -96,14 +106,14 @@ export default function CategorySalesClient() {
         if (chartData.length === 0) return;
 
         const headers = ["Category Name", "Net Revenue", "Estimated Profit", "Margin %"];
-        const csvRows = chartData.map(c => [
+        const csvRows = chartData.map((c: any) => [
             `"${c.name.replace(/"/g, '""')}"`,
             c.value.toFixed(2),
             c.profit.toFixed(2),
             `${((c.profit / c.value) * 100).toFixed(1)}%`
         ]);
 
-        const csvContent = "\uFEFF" + [headers.join(","), ...csvRows.map(r => r.join(","))].join("\n");
+        const csvContent = "\uFEFF" + [headers.join(","), ...csvRows.map((r: any) => r.join(","))].join("\n");
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -111,6 +121,31 @@ export default function CategorySalesClient() {
         const timestamp = new Date().toISOString().split('T')[0];
         link.href = url;
         link.setAttribute("download", `category_profitability_${timestamp}.csv`);
+        link.click();
+        
+        setTimeout(() => window.URL.revokeObjectURL(url), 100);
+    };
+
+    const handleExportTrendCSV = () => {
+        if (!trendData || trendData.length === 0) return;
+
+        const headers = ["Category Name", "Net Sales", "Growth %", "Avg Unit Price", "Margin %"];
+        const csvRows = trendData.map((t: any) => [
+            `"${t.category_name.replace(/"/g, '""')}"`,
+            t.net_sales.toFixed(2),
+            `${t.growth_pct.toFixed(2)}%`,
+            t.avg_unit_price.toFixed(2),
+            `${t.margin_pct.toFixed(2)}%`
+        ]);
+
+        const csvContent = "\uFEFF" + [headers.join(","), ...csvRows.map((r: any) => r.join(","))].join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        
+        const timestamp = new Date().toISOString().split('T')[0];
+        link.href = url;
+        link.setAttribute("download", `category_trend_analysis_${timestamp}.csv`);
         link.click();
         
         setTimeout(() => window.URL.revokeObjectURL(url), 100);
@@ -162,7 +197,7 @@ export default function CategorySalesClient() {
             {/* Top Categories Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 <AnimatePresence>
-                    {chartData.slice(0, 4).map((cat, i) => {
+                    {chartData.slice(0, 4).map((cat: any, i: any) => {
                         const Icon = getCategoryIcon(cat.name);
                         return (
                             <motion.div 
@@ -243,7 +278,7 @@ export default function CategorySalesClient() {
                                         dataKey="value"
                                         stroke="none"
                                     >
-                                        {chartData.map((entry, index) => (
+                                        {chartData.map((entry: any, index: any) => (
                                             <Cell 
                                                 key={`cell-${index}`} 
                                                 fill={entry.color}
@@ -264,7 +299,7 @@ export default function CategorySalesClient() {
 
                         <div className="flex-1 w-full space-y-5">
                             <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[3px] mb-6">CATEGORY PERFORMANCE</h4>
-                            {chartData.map((cat, i) => (
+                            {chartData.map((cat: any, i: any) => (
                                 <div key={cat.name} className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all group">
                                     <div className="flex items-center gap-4">
                                         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cat.color }} />
@@ -312,7 +347,7 @@ export default function CategorySalesClient() {
                             </div>
 
                             <div className="flex-1 space-y-8">
-                                {chartData.slice(0, 5).map((cat, i) => (
+                                {chartData.slice(0, 5).map((cat: any, i: any) => (
                                     <div key={cat.name} className="space-y-3">
                                         <div className="flex justify-between items-end">
                                             <div>
@@ -343,6 +378,91 @@ export default function CategorySalesClient() {
                     </div>
                 </motion.div>
             </div>
+
+            {/* Growth & Velocity Matrix */}
+            <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-[#0F0F0F] border border-white/10 rounded-[48px] overflow-hidden group"
+            >
+                <div className="p-10 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-[#C3EB7A]/10 text-[#C3EB7A] border border-[#C3EB7A]/20">
+                            <BarChart3 className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-black text-white tracking-tight">Category Velocity & Growth Analysis</h3>
+                            <p className="text-[9px] font-black text-white/20 uppercase tracking-[2px] mt-1">Growth velocity vs Profit mapping</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={handleExportTrendCSV}
+                            className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-[#C3EB7A] hover:bg-[#C3EB7A]/5 transition-all group/dl"
+                        >
+                            <Download className="w-5 h-5 group-hover/dl:scale-110 transition-transform" />
+                        </button>
+                    </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="bg-white/[0.01]">
+                                <th className="px-10 py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Category</th>
+                                <th className="px-10 py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Net Sales</th>
+                                <th className="px-10 py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Growth Delta</th>
+                                <th className="px-10 py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px]">Avg Order Value</th>
+                                <th className="px-10 py-6 text-[10px] font-black text-white/20 uppercase tracking-[2px] text-right">Profit Efficiency</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {trendData?.map((trend: any, idx: any) => (
+                                <motion.tr 
+                                    key={trend.category_name}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    className="group/row hover:bg-white/[0.03] transition-all"
+                                >
+                                    <td className="px-10 py-7">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 group-hover/row:text-[#C3EB7A] group-hover/row:bg-[#C3EB7A]/10 transition-all">
+                                                <LayoutGrid className="w-5 h-5" />
+                                            </div>
+                                            <span className="text-sm font-black text-white">{trend.category_name}</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-10 py-7">
+                                        <span className="text-sm font-black text-white">{formatCurrency(trend.net_sales, currency)}</span>
+                                    </td>
+                                    <td className="px-10 py-7">
+                                        <div className={`flex items-center gap-1.5 text-xs font-black ${trend.growth_pct >= 0 ? 'text-[#C3EB7A]' : 'text-red-400'}`}>
+                                            {trend.growth_pct >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                                            {Math.abs(trend.growth_pct).toFixed(1)}%
+                                        </div>
+                                    </td>
+                                    <td className="px-10 py-7">
+                                        <span className="text-sm font-black text-white/60">{formatCurrency(trend.avg_unit_price, currency)}</span>
+                                    </td>
+                                    <td className="px-10 py-7 text-right">
+                                        <div className="inline-flex flex-col items-end">
+                                            <span className="text-sm font-black text-[#C3EB7A]">{trend.margin_pct.toFixed(1)}%</span>
+                                            <div className="w-24 h-1 bg-white/5 rounded-full mt-2 overflow-hidden">
+                                                <motion.div 
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${trend.margin_pct}%` }}
+                                                    className="h-full bg-[#C3EB7A] shadow-[0_0_10px_rgba(195,235,122,0.4)]"
+                                                />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </motion.tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </motion.div>
         </div>
     );
 }

@@ -597,3 +597,29 @@ export async function getCategoryPerformance(
 
     return (data || []) as import('./queries').CategoryPerformanceRecord[];
 }
+
+export async function getCategoryTrend(
+    businessId: string,
+    outletId: string | null = null
+): Promise<import('./queries').CategoryTrendRecord[]> {
+    const supabase = createClient();
+    let query = supabase
+        .from('category_trend_analysis_v1')
+        .select('*')
+        .eq('business_id', businessId);
+
+    if (outletId) {
+        query = query.eq('outlet_id', outletId);
+    } else {
+        query = query.is('outlet_id', null);
+    }
+
+    const { data, error } = await query.order('net_sales', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching category trend:', error);
+        return [];
+    }
+
+    return (data || []) as import('./queries').CategoryTrendRecord[];
+}

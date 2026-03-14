@@ -201,3 +201,14 @@ export type CategoryPerformanceRecord = {
     sales_share_pct: string;
     estimated_category_profit: string;
 };
+
+export type CategoryTrendRecord = {
+    idx: number;
+    business_id: string;
+    outlet_id: string | null;
+    category_name: string;
+    net_sales: number;
+    growth_pct: number;
+    avg_unit_price: number;
+    margin_pct: number;
+};
