@@ -267,58 +267,6 @@ export default function CategorySalesClient() {
                 </div>
             </div>
 
-            {/* Opportunities Hub - Dynamic Insights */}
-            {opportunities.length > 0 && (
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Sparkles className="w-5 h-5 text-[#C3EB7A]" />
-                            <h2 className="text-xl font-black text-white tracking-tight uppercase">Operational Gains <span className="text-white/20">Detected</span></h2>
-                        </div>
-                        <button 
-                            onClick={handleExportUntrackedCSV}
-                            className="px-6 py-2.5 rounded-xl bg-[#C3EB7A]/10 border border-[#C3EB7A]/20 text-[#C3EB7A] font-black text-[10px] uppercase tracking-widest hover:bg-[#C3EB7A] hover:text-black transition-all"
-                        >
-                            Export Untracked Audit
-                        </button>
-                    </div>
-                    
-                    <div className="flex flex-nowrap overflow-x-auto gap-6 pb-6 scrollbar-hide">
-                        {opportunities.map((opt, i) => (
-                            <motion.div 
-                                key={`opt-${opt.name}`}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: i * 0.1 }}
-                                className="min-w-[320px] p-8 rounded-[38px] bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] border border-orange-500/20 relative overflow-hidden group shadow-2xl"
-                            >
-                                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:rotate-12 transition-transform duration-700">
-                                    <Activity className="w-20 h-20 text-orange-400" />
-                                </div>
-                                <div className="relative z-10">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                                        <span className="text-[10px] font-black text-white/40 uppercase tracking-[2px]">Sync Opportunity</span>
-                                    </div>
-                                    <h3 className="text-2xl font-black text-white tracking-tight mb-2">{opt.name}</h3>
-                                    <p className="text-sm font-bold text-white/30 leading-relaxed mb-8">
-                                        Detected 100% margin on <span className="text-white">{formatCurrency(opt.value, currency)}</span> revenue. This suggests ingredients & COGS are not being tracked.
-                                    </p>
-                                    <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                                        <div className="flex flex-col">
-                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Potential Impact</span>
-                                            <span className="text-xs font-black text-orange-400">Inventory Blindspot</span>
-                                        </div>
-                                        <button className="p-3 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white transition-all">
-                                            <ArrowUpRight className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            )}
 
             {/* Top Categories Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -524,6 +472,60 @@ export default function CategorySalesClient() {
                     </div>
                 </motion.div>
             </div>
+
+
+            {/* Opportunities Hub - Dynamic Insights */}
+            {opportunities.length > 0 && (
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <Sparkles className="w-5 h-5 text-[#C3EB7A]" />
+                            <h2 className="text-xl font-black text-white tracking-tight uppercase">Operational Gains <span className="text-white/20">Detected</span></h2>
+                        </div>
+                        <button 
+                            onClick={handleExportUntrackedCSV}
+                            className="px-6 py-2.5 rounded-xl bg-[#C3EB7A]/10 border border-[#C3EB7A]/20 text-[#C3EB7A] font-black text-[10px] uppercase tracking-widest hover:bg-[#C3EB7A] hover:text-black transition-all"
+                        >
+                            Export Untracked Audit
+                        </button>
+                    </div>
+                    
+                    <div className="flex flex-nowrap overflow-x-auto gap-6 pb-6 scrollbar-hide">
+                        {opportunities.map((opt, i) => (
+                            <motion.div 
+                                key={`opt-${opt.name}`}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="min-w-[320px] p-8 rounded-[38px] bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] border border-orange-500/20 relative overflow-hidden group shadow-2xl"
+                            >
+                                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:rotate-12 transition-transform duration-700">
+                                    <Activity className="w-20 h-20 text-orange-400" />
+                                </div>
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                                        <span className="text-[10px] font-black text-white/40 uppercase tracking-[2px]">Sync Opportunity</span>
+                                    </div>
+                                    <h3 className="text-2xl font-black text-white tracking-tight mb-2">{opt.name}</h3>
+                                    <p className="text-sm font-bold text-white/30 leading-relaxed mb-8">
+                                        Detected 100% margin on <span className="text-white">{formatCurrency(opt.value, currency)}</span> revenue. This suggests ingredients & COGS are not being tracked.
+                                    </p>
+                                    <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Potential Impact</span>
+                                            <span className="text-xs font-black text-orange-400">Inventory Blindspot</span>
+                                        </div>
+                                        <button className="p-3 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white transition-all">
+                                            <ArrowUpRight className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Growth & Velocity Matrix */}
             <motion.div 
