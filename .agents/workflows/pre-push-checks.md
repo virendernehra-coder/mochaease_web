@@ -30,7 +30,12 @@ npm run build
 git add .
 // turbo
 git commit -m "feat/fix: descriptive message covering all batched changes"
-// turbo
+
+7. **The Final Confirmation (CRITICAL):**
+   - > [!WARNING]
+   - > **NEVER combine the `git push` command with any other tool calls or commands.**
+   - > **NEVER use `git push` until the user has specifically replied "Yes", "Push it", or "Go ahead" to your summary message.**
+   - Once (and only once) you have that confirmation:
 git push
 
 By following this workflow, we ensure our Vercel deployments are both stable and user-approved!

@@ -1,7 +1,7 @@
 'use client';
 
 import { createClient } from './client';
-import { type PayrollReport, type EmployeeDetails, type HealthSummary, type Recommendation, type Task, type InventoryStock } from './queries';
+import { type PayrollReport, type EmployeeDetails, type HealthSummary, type Recommendation, type Task, type InventoryStock, type TrackInventory, type InventoryAuditLog } from './queries';
 
 export async function getUserProfile(userId: string) {
     const supabase = createClient();
@@ -850,4 +850,98 @@ export async function getInventoryStock(
     }
 
     return (data || []) as InventoryStock[];
+}
+
+export async function getTrackInventory(
+    businessId: string,
+    outletId: string | null = null,
+    page: number = 1,
+    pageSize: number = 15,
+    searchTerm: string = '',
+    category: string | null = null,
+    needsReviewOnly: boolean = false
+): Promise<{ data: TrackInventory[], count: number }> {
+    const supabase = createClient();
+    let query = supabase
+        .from('track_inventory')
+        .select('*', { count: 'exact' })
+        .eq('business_id', businessId);
+
+    if (outletId && outletId !== 'business') {
+        query = query.eq('outlet_id', outletId);
+    }
+
+    if (searchTerm) {
+        query = query.ilike('item_name', `%${searchTerm}%`);
+    }
+
+    if (category && category !== 'All') {
+        query = query.eq('suggested_category', category);
+    }
+
+    if (needsReviewOnly) {
+        query = query.eq('needs_review', true);
+    }
+
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    const { data, error, count } = await query
+        .order('item_name', { ascending: true })
+        .range(from, to);
+
+    if (error) {
+        console.error('Error fetching track_inventory:', error);
+        return { data: [], count: 0 };
+    }
+
+    return { 
+        data: (data || []) as TrackInventory[], 
+        count: count || 0 
+    };
+}
+
+export async function getInventoryAuditLogs(
+    businessId: string,
+    outletId: string | null = null,
+    page: number = 1,
+    pageSize: number = 15
+): Promise<{ data: InventoryAuditLog[], count: number }> {
+    const supabase = createClient();
+    let query = supabase
+        .from('inventory_audit_log')
+        .select('*', { count: 'exact' })
+        .eq('business_id', businessId);
+
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    const { data, error, count } = await query
+        .order('audit_date', { ascending: false })
+        .range(from, to);
+
+    if (error) {
+        console.error('Error fetching inventory_audit_log:', error);
+        return { data: [], count: 0 };
+    }
+
+    return { 
+        data: (data || []) as InventoryAuditLog[], 
+        count: count || 0 
+    };
+}
+
+export async function updateTrackInventory(
+    id: number,
+    updates: Partial<TrackInventory>
+): Promise<{ data: TrackInventory | null, error: any }> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from('track_inventory')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+    return { data: data as TrackInventory, error };
 }

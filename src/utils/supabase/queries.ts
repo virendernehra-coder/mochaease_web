@@ -310,3 +310,50 @@ export type InventoryStock = {
     last_calculated_at: string;
     target_stock_days: number;
 };
+
+export type TrackInventory = {
+    idx: number;
+    id: number;
+    business_id: string;
+    outlet_id: string;
+    outlet_name: string;
+    item_name: string;
+    sku: string | null;
+    base_unit_of_measure: string;
+    quantity_on_hand: number | string;
+    average_cost_per_base_unit: number | string;
+    last_purchase_unit: string;
+    last_purchase_quantity: number | string;
+    last_purchase_price_per_unit: number | string;
+    last_purchase_size_info: string | null;
+    needs_review: boolean;
+    created_at: string;
+    last_updated_at: string;
+    last_updated_by_user_id: string;
+    suggested_category: string;
+    suggested_base_unit: string | null;
+    extracted_attributes: any; // JSONB
+    user_defined_purchase_unit: string;
+    user_defined_conversion_factor: number | string;
+    lead_time_days: number;
+    track_expiry: boolean;
+    last_purchase_expiry_date: string | null;
+    target_stock_days: number;
+};
+
+export type InventoryAuditLog = {
+    idx: number;
+    id: number;
+    inventory_id: number;
+    business_id: string;
+    outlet_name: string;
+    item_name: string;
+    expected_quantity: number | string;
+    actual_quantity: number | string;
+    variance_quantity: number | string;
+    audited_by_user_id: string;
+    audit_date: string;
+    audit_notes: string;
+    is_approved: boolean;
+    created_at: string;
+};
