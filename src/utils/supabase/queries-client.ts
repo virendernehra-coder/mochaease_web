@@ -1,7 +1,7 @@
 'use client';
 
 import { createClient } from './client';
-import { type PayrollReport, type EmployeeDetails, type HealthSummary, type Recommendation, type Task } from './queries';
+import { type PayrollReport, type EmployeeDetails, type HealthSummary, type Recommendation, type Task, type InventoryStock } from './queries';
 
 export async function getUserProfile(userId: string) {
     const supabase = createClient();
@@ -818,4 +818,36 @@ export async function createTask(task: Omit<Task, 'id' | 'created_at' | 'updated
         throw error;
     }
     return data as Task;
+}
+
+export async function getInventoryStock(
+    businessId: string,
+    outletId: string | null = null
+): Promise<InventoryStock[]> {
+    const supabase = createClient();
+    let query = supabase
+        .from('stock_levels_comprehensive')
+        .select('*')
+        .eq('business_id', businessId);
+
+    if (outletId && outletId !== 'business') {
+        const { data: outlet } = await supabase
+            .from('business_details')
+            .select('outlet_name')
+            .eq('outlet_id', outletId)
+            .single();
+        
+        if (outlet) {
+            query = query.eq('outlet_name', outlet.outlet_name);
+        }
+    }
+
+    const { data, error } = await query.order('item_name', { ascending: true });
+
+    if (error) {
+        console.error('Error fetching inventory stock:', error);
+        return [];
+    }
+
+    return (data || []) as InventoryStock[];
 }
