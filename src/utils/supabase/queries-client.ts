@@ -1,7 +1,7 @@
 'use client';
 
 import { createClient } from './client';
-import { type PayrollReport, type EmployeeDetails } from './queries';
+import { type PayrollReport, type EmployeeDetails, type HealthSummary, type Recommendation, type Task } from './queries';
 
 export async function getUserProfile(userId: string) {
     const supabase = createClient();
@@ -651,4 +651,171 @@ export async function getCategoryTrend(
     }
 
     return (data || []) as import('./queries').CategoryTrendRecord[];
+}
+
+/**
+ * Fetches health summary data for a business or specific outlet.
+ */
+export async function getHealthSummary(
+    businessId: string,
+    outletId: string | null,
+    scoreType: 'weekly' | 'monthly' = 'weekly'
+): Promise<HealthSummary | null> {
+    const supabase = createClient();
+    const tableName = outletId ? 'outlet_health_summaries' : 'business_health_summaries';
+    
+    let query = supabase
+        .from(tableName)
+        .select('*')
+        .eq('business_id', businessId)
+        .eq('score_type', scoreType)
+        .order('is_current_period', { ascending: false }) // Prioritize current period
+        .order('period_start_date', { ascending: false });
+
+    if (outletId) {
+        query = query.eq('outlet_id', outletId);
+    }
+
+    const { data, error } = await query.limit(1).maybeSingle();
+    
+    if (error || !data) {
+        console.error(`getHealthSummary (${tableName}):`, error);
+        return null;
+    }
+
+    // Multi-Column JSONB Parsing & Flattening
+    const recCols = [
+        { key: 'financial_recs', category: 'Financial' },
+        { key: 'operational_recs', category: 'Operational' },
+        { key: 'workforce_recs', category: 'Workforce' },
+        { key: 'customer_recs', category: 'Customer' },
+        { key: 'recommendations', category: 'General' } // Legacy support
+    ];
+
+    let flattenedRecs: Recommendation[] = [];
+
+    for (const col of recCols) {
+        let rawVal = data[col.key];
+        if (!rawVal) continue;
+
+        let parsed = rawVal;
+        let parseCount = 0;
+        while (typeof parsed === 'string' && parseCount < 5) {
+            try {
+                const next = JSON.parse(parsed);
+                if (next === parsed) break;
+                parsed = next;
+                parseCount++;
+            } catch { break; }
+        }
+
+        if (Array.isArray(parsed)) {
+            const normalized = parsed.map(item => ({
+                ...item,
+                category: col.category, // Inject category from column name
+                recommendation_text: item.recommendation_text || item.text || '' // Support both field names
+            }));
+            flattenedRecs = [...flattenedRecs, ...normalized];
+        }
+    }
+
+    const result = {
+        ...data,
+        recommendations: flattenedRecs
+    } as any;
+    // Embed the full raw record for forensic audit
+    result._debug_full_record = data;
+    return result;
+}
+
+/**
+ * Fetches historical health summary data to populate trend charts.
+ */
+export async function getHealthHistory(
+    businessId: string,
+    outletId: string | null,
+    scoreType: 'weekly' | 'monthly' = 'weekly',
+    limit: number = 10
+): Promise<HealthSummary[]> {
+    const supabase = createClient();
+    const tableName = outletId ? 'outlet_health_summaries' : 'business_health_summaries';
+    
+    let query = supabase
+        .from(tableName)
+        .select('*')
+        .eq('business_id', businessId)
+        .eq('score_type', scoreType);
+
+    if (outletId) {
+        query = query.eq('outlet_id', outletId);
+    }
+
+    const { data, error } = await query
+        .order('period_start_date', { ascending: false })
+        .limit(limit);
+
+    if (error) {
+        console.error(`Error fetching health history from ${tableName}:`, error);
+        return [];
+    }
+
+    const processedData = (data || []).map(row => {
+        // Multi-Column JSONB Parsing & Flattening (Consistency with getHealthSummary)
+        const recCols = [
+            { key: 'financial_recs', category: 'Financial' },
+            { key: 'operational_recs', category: 'Operational' },
+            { key: 'workforce_recs', category: 'Workforce' },
+            { key: 'customer_recs', category: 'Customer' },
+            { key: 'recommendations', category: 'General' }
+        ];
+
+        let flattenedRecs: Recommendation[] = [];
+
+        for (const col of recCols) {
+            let rawVal = (row as any)[col.key];
+            if (!rawVal) continue;
+
+            let parsed = rawVal;
+            let parseCount = 0;
+            while (typeof parsed === 'string' && parseCount < 5) {
+                try {
+                    const next = JSON.parse(parsed);
+                    if (next === parsed) break;
+                    parsed = next;
+                    parseCount++;
+                } catch { break; }
+            }
+
+            if (Array.isArray(parsed)) {
+                const normalized = parsed.map((item: any) => ({
+                    ...item,
+                    category: col.category,
+                    recommendation_text: item.recommendation_text || item.text || ''
+                }));
+                flattenedRecs = [...flattenedRecs, ...normalized];
+            }
+        }
+
+        return {
+            ...row,
+            recommendations: flattenedRecs
+        } as HealthSummary;
+    });
+
+    return processedData;
+}
+
+export async function createTask(task: Omit<Task, 'id' | 'created_at' | 'updated_at'>) {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from('tasks')
+        .insert([task])
+        .select()
+        .single();
+    
+    if (error) {
+        console.error('Error creating task:', error);
+        throw error;
+    }
+    return data as Task;
 }

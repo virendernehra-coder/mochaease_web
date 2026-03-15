@@ -212,3 +212,45 @@ export type CategoryTrendRecord = {
     avg_unit_price: number;
     margin_pct: number;
 };
+
+export type Recommendation = {
+    id: string;
+    category: string;
+    recommendation_text?: string;
+    text?: string;
+    created_at: string;
+};
+
+export type HealthSummary = {
+    business_id: string;
+    outlet_id?: string | null;
+    overall_score: number | string;
+    financial_score: number | string;
+    operational_score: number | string;
+    workforce_score: number | string;
+    customer_score: number | string;
+    recommendations: Recommendation[];
+    financial_recs?: string | Recommendation[];
+    operational_recs?: string | Recommendation[];
+    workforce_recs?: string | Recommendation[];
+    customer_recs?: string | Recommendation[];
+    period_start_date: string;
+    is_current_period: boolean;
+    score_type: string;
+};
+export type Task = {
+    id: number;
+    business_id: string;
+    outlet_id: string;
+    title: string;
+    description: string | null;
+    status: 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
+    priority: 'low' | 'medium' | 'high' | 'critical';
+    assigned_to_user_id: string | null;
+    created_by_user_id: string | null;
+    due_date: string | null;
+    recommendation_reference_id: string | null;
+    created_at: string;
+    updated_at: string;
+    employee_name: string | null;
+};
